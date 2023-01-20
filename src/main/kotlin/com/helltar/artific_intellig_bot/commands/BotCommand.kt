@@ -2,6 +2,10 @@ package com.helltar.artific_intellig_bot.commands
 
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.*
+import com.helltar.artific_intellig_bot.BotConfig.DIR_DB
+import com.helltar.artific_intellig_bot.BotConfig.EXT_DISABLED
+import com.helltar.artific_intellig_bot.BotConfig.SUDOERS
+import java.io.File
 
 abstract class BotCommand(val bot: Bot, val message: Message, val args: List<String>) {
 
@@ -11,7 +15,12 @@ abstract class BotCommand(val bot: Bot, val message: Message, val args: List<Str
 
     abstract fun run()
 
-    protected fun sendMessage(
+    fun isCommandEnable(commandName: String): Boolean {
+        if (!isNotAdmin()) return true
+        return !File(DIR_DB + commandName + EXT_DISABLED).exists()
+    }
+
+    fun sendMessage(
         text: String, replyTo: Long = replyToMessageId,
         disableWebPagePreview: Boolean = true, replyMarkup: ReplyMarkup? = null
     ) =
@@ -20,6 +29,9 @@ abstract class BotCommand(val bot: Bot, val message: Message, val args: List<Str
             replyToMessageId = replyTo, allowSendingWithoutReply = true,
             replyMarkup = replyMarkup
         ).get().messageId
+
+    protected fun isNotAdmin() =
+        !SUDOERS.contains(userId.toString())
 
     protected fun sendPhoto(photo: TelegramFile, caption: String, replyTo: Long = replyToMessageId) =
         bot.sendPhoto(

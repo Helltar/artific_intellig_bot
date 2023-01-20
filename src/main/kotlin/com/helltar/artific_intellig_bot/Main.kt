@@ -12,11 +12,16 @@ import com.github.kotlintelegrambot.extensions.filters.Filter
 import com.github.kotlintelegrambot.logging.LogLevel
 import com.helltar.artific_intellig_bot.BotConfig.BOT_TOKEN
 import com.helltar.artific_intellig_bot.BotConfig.BOT_USERNAME
+import com.helltar.artific_intellig_bot.BotConfig.DIR_DB
 import com.helltar.artific_intellig_bot.BotConfig.DIR_STABLE_DIFFUSION
-import com.helltar.artific_intellig_bot.commands.BotCommand
-import com.helltar.artific_intellig_bot.commands.ChatGPTCommand
-import com.helltar.artific_intellig_bot.commands.DallE2Command
-import com.helltar.artific_intellig_bot.commands.StableDiffusionCommand
+import com.helltar.artific_intellig_bot.commands.*
+import com.helltar.artific_intellig_bot.commands.Commands.adminCommandDisable
+import com.helltar.artific_intellig_bot.commands.Commands.adminCommandEnable
+import com.helltar.artific_intellig_bot.commands.Commands.commandChat
+import com.helltar.artific_intellig_bot.commands.Commands.commandDalle
+import com.helltar.artific_intellig_bot.commands.Commands.commandStableDiffusion
+import com.helltar.artific_intellig_bot.commands.admin.DisableCommand
+import com.helltar.artific_intellig_bot.commands.admin.EnableCommand
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -29,7 +34,7 @@ private val requestList = hashMapOf<String, Job>()
 
 fun main() {
 
-    File(DIR_STABLE_DIFFUSION).mkdir()
+    mkDirs()
 
     log.info("start ...")
 
@@ -38,13 +43,16 @@ fun main() {
         logLevel = LogLevel.Error
 
         dispatch {
-            command("chat") { runCommand(ChatGPTCommand(bot, update.message!!, args)) }
-            command("dalle") { runCommand(DallE2Command(bot, update.message!!, args)) }
-            command("sdif") { runCommand(StableDiffusionCommand(bot, update.message!!, args)) }
+            command(commandChat) { runCommand(ChatGPTCommand(bot, update.message!!, args), commandChat) }
+            command(commandDalle) { runCommand(DallE2Command(bot, update.message!!, args), commandDalle) }
+            command(commandStableDiffusion) { runCommand(StableDiffusionCommand(bot, update.message!!, args), commandStableDiffusion) }
+
+            command(adminCommandEnable) { runCommand(EnableCommand(bot, update.message!!, args), adminCommandEnable) }
+            command(adminCommandDisable) { runCommand(DisableCommand(bot, update.message!!, args), adminCommandDisable) }
 
             message(Filter.Reply) {
                 if (update.message!!.replyToMessage!!.from!!.username == BOT_USERNAME)
-                    runCommand(ChatGPTCommand(bot, update.message!!, listOf("reply")))
+                    runCommand(ChatGPTCommand(bot, update.message!!, listOf("reply")), commandChat)
             }
 
             telegramError { log.error(error.getErrorMessage()) }
@@ -53,17 +61,20 @@ fun main() {
         .startPolling()
 }
 
-private fun runCommand(botCommand: BotCommand) {
+private fun runCommand(botCommand: BotCommand, commandName: String) {
     val user = botCommand.message.from ?: return
     val userId = user.id
     val chat = botCommand.message.chat
-    val commandName = botCommand.javaClass.simpleName
+    val classSimpleName = botCommand.javaClass.simpleName
 
-    log.info("$commandName: ${chat.id} $userId ${user.username} ${user.firstName} ${chat.title} : ${botCommand.args}")
+    log.info("$classSimpleName: ${chat.id} $userId ${user.username} ${user.firstName} ${chat.title} : ${botCommand.args}")
 
-    addRequest("$commandName@$userId", botCommand.bot, botCommand.message) {
-        botCommand.run()
-    }
+    if (botCommand.isCommandEnable(commandName))
+        addRequest("$classSimpleName@$userId", botCommand.bot, botCommand.message) {
+            botCommand.run()
+        }
+    else
+        botCommand.sendMessage(Strings.command_disabled)
 }
 
 private fun addRequest(requestKey: String, bot: Bot, message: Message, func: () -> Unit) {
@@ -79,4 +90,9 @@ private fun addRequest(requestKey: String, bot: Bot, message: Message, func: () 
         }
 
     requestList[requestKey] = CoroutineScope(Dispatchers.Default).launch { func() }
+}
+
+private fun mkDirs() {
+    File(DIR_STABLE_DIFFUSION).mkdir()
+    File(DIR_DB).mkdir()
 }

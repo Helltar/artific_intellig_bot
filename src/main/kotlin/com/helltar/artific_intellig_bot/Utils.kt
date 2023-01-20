@@ -28,6 +28,8 @@ object Utils {
             ""
         }
 
+    fun getListFromFile(filename: String) = getTextFromFile(filename).split("\n")
+
     fun escapeHtml(text: String) = text
         .replace("&", "&amp;")
         .replace("<", "&lt;")

@@ -40,7 +40,7 @@ class StableDiffusionCommand(bot: Bot, message: Message, args: List<String>) : B
             }
         else {
             response.run {
-                sendMessage(String.format(Strings.bad_request, "$responseMessage ($statusCode)"))
+                sendMessage(Strings.bad_request)
                 log.error("$responseMessage $statusCode : $text")
             }
         }
