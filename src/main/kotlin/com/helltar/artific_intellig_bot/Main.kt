@@ -17,6 +17,7 @@ import com.helltar.artific_intellig_bot.BotConfig.DIR_STABLE_DIFFUSION
 import com.helltar.artific_intellig_bot.commands.*
 import com.helltar.artific_intellig_bot.commands.Commands.adminCommandDisable
 import com.helltar.artific_intellig_bot.commands.Commands.adminCommandEnable
+import com.helltar.artific_intellig_bot.commands.Commands.commandAbout
 import com.helltar.artific_intellig_bot.commands.Commands.commandChat
 import com.helltar.artific_intellig_bot.commands.Commands.commandDalle
 import com.helltar.artific_intellig_bot.commands.Commands.commandStableDiffusion
@@ -46,12 +47,19 @@ fun main() {
             command(commandChat) { runCommand(ChatGPTCommand(bot, update.message!!, args), commandChat) }
             command(commandDalle) { runCommand(DallE2Command(bot, update.message!!, args), commandDalle) }
             command(commandStableDiffusion) { runCommand(StableDiffusionCommand(bot, update.message!!, args), commandStableDiffusion) }
+            command(commandAbout) { runCommand(AboutCommand(bot, update.message!!), commandAbout) }
 
             command(adminCommandEnable) { runCommand(EnableCommand(bot, update.message!!, args), adminCommandEnable) }
             command(adminCommandDisable) { runCommand(DisableCommand(bot, update.message!!, args), adminCommandDisable) }
 
             message(Filter.Reply) {
-                if (update.message!!.replyToMessage!!.from!!.username == BOT_USERNAME)
+                val replyToMessage = update.message!!.replyToMessage!!
+                val text = update.message!!.text ?: "/"
+
+                if (text.startsWith("/")) return@message
+                if (replyToMessage.photo != null) return@message
+
+                if (replyToMessage.from!!.username == BOT_USERNAME)
                     runCommand(ChatGPTCommand(bot, update.message!!, listOf("reply")), commandChat)
             }
 

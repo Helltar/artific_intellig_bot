@@ -26,8 +26,6 @@ class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotComman
     private val log = LoggerFactory.getLogger(javaClass)
 
     override fun run() {
-        if (message.replyToMessage?.photo != null) return
-
         if (args.isEmpty()) {
             sendMessage(Strings.chat_hello)
             return
