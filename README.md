@@ -39,3 +39,4 @@ Admin commands:
 - **ChatGPT**.json : [OpenAI](https://beta.openai.com/playground/p/default-chat?model=text-davinci-003)
 - **DallE2**.json : [OpenAI](https://beta.openai.com/docs/guides/images/usage?lang=curl)
 - **StableDiffusion**.json : [Stable Diffusion](https://api.stability.ai/docs#tag/v1alphageneration/operation/v1alpha/generation#textToImage)
+- **TextToSpeech**.json : [Google Text-to-Speech](https://cloud.google.com/text-to-speech/docs/reference/rest/v1/text/synthesize)
