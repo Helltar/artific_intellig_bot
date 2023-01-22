@@ -14,13 +14,18 @@ import com.helltar.artific_intellig_bot.BotConfig.BOT_TOKEN
 import com.helltar.artific_intellig_bot.BotConfig.BOT_USERNAME
 import com.helltar.artific_intellig_bot.BotConfig.DIR_DB
 import com.helltar.artific_intellig_bot.BotConfig.DIR_STABLE_DIFFUSION
+import com.helltar.artific_intellig_bot.BotConfig.DIR_TEXT_TO_SPEECH
 import com.helltar.artific_intellig_bot.commands.*
-import com.helltar.artific_intellig_bot.commands.Commands.adminCommandDisable
-import com.helltar.artific_intellig_bot.commands.Commands.adminCommandEnable
+import com.helltar.artific_intellig_bot.commands.Commands.commandChatAsText
+import com.helltar.artific_intellig_bot.commands.Commands.commandChatAsVoice
+import com.helltar.artific_intellig_bot.commands.Commands.commandDisable
+import com.helltar.artific_intellig_bot.commands.Commands.commandEnable
 import com.helltar.artific_intellig_bot.commands.Commands.commandAbout
 import com.helltar.artific_intellig_bot.commands.Commands.commandChat
 import com.helltar.artific_intellig_bot.commands.Commands.commandDalle
 import com.helltar.artific_intellig_bot.commands.Commands.commandStableDiffusion
+import com.helltar.artific_intellig_bot.commands.admin.ChatAsTextCommand
+import com.helltar.artific_intellig_bot.commands.admin.ChatAsVoiceCommand
 import com.helltar.artific_intellig_bot.commands.admin.DisableCommand
 import com.helltar.artific_intellig_bot.commands.admin.EnableCommand
 import kotlinx.coroutines.CoroutineScope
@@ -49,8 +54,10 @@ fun main() {
             command(commandStableDiffusion) { runCommand(StableDiffusionCommand(bot, update.message!!, args), commandStableDiffusion) }
             command(commandAbout) { runCommand(AboutCommand(bot, update.message!!), commandAbout) }
 
-            command(adminCommandEnable) { runCommand(EnableCommand(bot, update.message!!, args), adminCommandEnable) }
-            command(adminCommandDisable) { runCommand(DisableCommand(bot, update.message!!, args), adminCommandDisable) }
+            command(commandEnable) { runCommand(EnableCommand(bot, update.message!!, args), commandEnable) }
+            command(commandDisable) { runCommand(DisableCommand(bot, update.message!!, args), commandDisable) }
+            command(commandChatAsText) { runCommand(ChatAsTextCommand(bot, update.message!!), commandChatAsText) }
+            command(commandChatAsVoice) { runCommand(ChatAsVoiceCommand(bot, update.message!!), commandChatAsVoice) }
 
             message(Filter.Reply) {
                 val replyToMessage = update.message!!.replyToMessage!!
@@ -101,6 +108,7 @@ private fun addRequest(requestKey: String, bot: Bot, message: Message, func: () 
 }
 
 private fun mkDirs() {
-    File(DIR_STABLE_DIFFUSION).mkdir()
     File(DIR_DB).mkdir()
+    File(DIR_STABLE_DIFFUSION).mkdir()
+    File(DIR_TEXT_TO_SPEECH).mkdir()
 }

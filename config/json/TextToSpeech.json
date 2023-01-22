@@ -1,0 +1,13 @@
+{
+    "input": {
+    "text": "%s"
+    },
+    "voice": {
+      "languageCode": "%s",
+      "ssmlGender": "FEMALE"
+    },
+    "audioConfig": {
+      "audioEncoding": "OGG_OPUS",
+      "speakingRate": 1.0
+    }
+}

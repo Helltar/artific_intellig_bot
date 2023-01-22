@@ -5,13 +5,20 @@ import com.github.kittinunf.fuel.core.isSuccessful
 import com.github.kittinunf.fuel.httpPost
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.Message
+import com.helltar.artific_intellig_bot.BotConfig.DIR_DB
+import com.helltar.artific_intellig_bot.BotConfig.DIR_TEXT_TO_SPEECH
 import com.helltar.artific_intellig_bot.BotConfig.JSON_CHATGPT
+import com.helltar.artific_intellig_bot.BotConfig.JSON_TEXT_TO_SPEECH
 import com.helltar.artific_intellig_bot.BotConfig.OPENAI_TOKEN
+import com.helltar.artific_intellig_bot.BotConfig.TEXT_TO_SPEECH_TOKEN
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.Utils
+import com.helltar.artific_intellig_bot.commands.Commands.commandChatAsText
 import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
+import java.io.File
+import java.util.*
 
 private val chatDialogContext = hashMapOf<Long, String>()
 
@@ -20,6 +27,7 @@ class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotComman
     companion object {
         private const val MAX_MESSAGE_TEXT_LENGTH = 300
         private const val MAX_DIALOG_CONTEXT_LENGTH = 256
+        private const val TEXT_TO_SPEECH_LANG_CODE = "uk-UA"
         private const val DELIMITER = "\\n"
     }
 
@@ -68,16 +76,24 @@ class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotComman
 
         try {
             val answer =
-                Utils.escapeHtml(
-                    JSONObject(response.third.get())
-                        .getJSONArray("choices")
-                        .getJSONObject(0)
-                        .getString("text")
-                        .substringAfter(":")
-                )
+                JSONObject(response.third.get())
+                    .getJSONArray("choices")
+                    .getJSONObject(0)
+                    .getString("text")
+
+                    // todo: !
+                    .replace("'", "")
+                    .replace("\"", "")
+                    .replace("\\", "")
+
+                    .substringAfter(":")
 
             chatDialogContext[userId] += "AI: $answer$DELIMITER"
-            sendMessage(answer)
+
+            if (File(DIR_DB + commandChatAsText).exists())
+                sendMessage(answer)
+            else
+                sendVoice(textToSpeech(Utils.escapeHtml(answer), TEXT_TO_SPEECH_LANG_CODE) ?: return)
 
         } catch (e: JSONException) {
             log.error(e.message)
@@ -90,4 +106,24 @@ class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotComman
             .header("Authorization", "Bearer $OPENAI_TOKEN")
             .jsonBody(String.format(JSON_CHATGPT, prompt))
             .responseString()
+
+    private fun textToSpeech(text: String, languageCode: String): ByteArray? {
+        val json =
+            "https://texttospeech.googleapis.com/v1/text:synthesize?fields=audioContent&key=$TEXT_TO_SPEECH_TOKEN"
+                .httpPost()
+                .header("Content-Type", "application/json; charset=utf-8")
+                .jsonBody(String.format(JSON_TEXT_TO_SPEECH, text, languageCode))
+                .responseString()
+                .third.get()
+
+        return try {
+            val audioBytes = Base64.getDecoder().decode(JSONObject(json).getString("audioContent"))
+            File("$DIR_TEXT_TO_SPEECH${userId}_${Utils.randomUUID()}.ogg").writeBytes(audioBytes)
+            audioBytes
+        } catch (e: Exception) {
+            sendMessage(Strings.chat_exception)
+            log.error(e.message)
+            null
+        }
+    }
 }

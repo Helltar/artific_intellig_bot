@@ -7,7 +7,7 @@ import com.helltar.artific_intellig_bot.BotConfig.EXT_DISABLED
 import com.helltar.artific_intellig_bot.BotConfig.SUDOERS
 import java.io.File
 
-abstract class BotCommand(val bot: Bot, val message: Message, val args: List<String>) {
+abstract class BotCommand(val bot: Bot, val message: Message, val args: List<String> = listOf()) {
 
     protected val userId = message.from!!.id
     private val chatId = ChatId.fromId(message.chat.id)
@@ -36,5 +36,11 @@ abstract class BotCommand(val bot: Bot, val message: Message, val args: List<Str
     protected fun sendPhoto(photo: TelegramFile, caption: String, replyTo: Long = replyToMessageId) =
         bot.sendPhoto(
             chatId, photo, caption, replyToMessageId = replyTo, allowSendingWithoutReply = true
+        )
+
+    protected fun sendVoice(audio: ByteArray) =
+        bot.sendVoice(
+            chatId, TelegramFile.ByByteArray(audio),
+            replyToMessageId = replyToMessageId, allowSendingWithoutReply = true
         )
 }
