@@ -22,7 +22,7 @@ abstract class BotCommand(val bot: Bot, val message: Message, val args: List<Str
     fun isChatInWhiteList(commandName: String): Boolean {
         if (isNotAdmin())
             if (commandsList.isNotEmpty() && commandsList.contains(commandName))
-                return chatsWhiteList.contains(chatId.id.toString())
+                return getChatsWhiteList().contains(chatId.id.toString())
 
         return true
     }
@@ -38,7 +38,7 @@ abstract class BotCommand(val bot: Bot, val message: Message, val args: List<Str
         ).get().messageId
 
     protected fun isNotAdmin() =
-        !sudoers.contains(userId.toString())
+        !getSudoers().contains(userId.toString())
 
     private fun isAdmin() =
         !isNotAdmin()

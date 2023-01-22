@@ -2,6 +2,8 @@ package com.helltar.artific_intellig_bot.commands.admin
 
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.Message
+import com.helltar.artific_intellig_bot.DIR_DB
+import com.helltar.artific_intellig_bot.EXT_DISABLED
 import com.helltar.artific_intellig_bot.commands.BotCommand
 import com.helltar.artific_intellig_bot.commands.Commands
 import java.io.File

@@ -5,6 +5,8 @@ import com.github.kittinunf.fuel.core.isSuccessful
 import com.github.kittinunf.fuel.httpPost
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.Message
+import com.helltar.artific_intellig_bot.DIR_DB
+import com.helltar.artific_intellig_bot.DIR_TEXT_TO_SPEECH
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.Utils
 import com.helltar.artific_intellig_bot.commands.Commands.commandChatAsText
@@ -58,20 +60,22 @@ class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotComman
         // todo: !
         prompt = prompt.replace("""[^\p{L}\p{Z}\d,.:]""".toRegex(), "")
 
-        val response = sendPrompt(prompt)
+        val json: String
 
-        response.second.run {
-            if (!isSuccessful) {
-                log.error("$responseMessage $statusCode")
-                sendMessage(Strings.chat_exception)
+        sendPrompt(prompt).run {
+            if (second.isSuccessful)
+                json = third.get()
+            else {
                 chatDialogContext[userId] = ""
+                sendMessage(Strings.chat_exception)
+                log.error(third.component2()?.message)
                 return
             }
         }
 
         try {
             val answer =
-                JSONObject(response.third.get())
+                JSONObject(json)
                     .getJSONArray("choices")
                     .getJSONObject(0)
                     .getString("text")
@@ -87,9 +91,12 @@ class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotComman
 
             if (File(DIR_DB + commandChatAsText).exists())
                 sendMessage(answer)
-            else
-                sendVoice(textToSpeech(Utils.escapeHtml(answer), TEXT_TO_SPEECH_LANG_CODE) ?: return)
-
+            else {
+                textToSpeech(Utils.escapeHtml(answer), TEXT_TO_SPEECH_LANG_CODE)?.let {
+                    sendVoice(it)
+                }
+                    ?: sendMessage(Strings.chat_exception)
+            }
         } catch (e: JSONException) {
             log.error(e.message)
         }
@@ -98,18 +105,26 @@ class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotComman
     private fun sendPrompt(prompt: String) =
         "https://api.openai.com/v1/completions".httpPost()
             .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer ${openaiToken}")
-            .jsonBody(String.format(jsonChatGPT, prompt))
+            .header("Authorization", "Bearer $openaiKey")
+            .jsonBody(String.format(getJsonChatGPT(), prompt))
             .responseString()
 
     private fun textToSpeech(text: String, languageCode: String): ByteArray? {
-        val json =
-            "https://texttospeech.googleapis.com/v1/text:synthesize?fields=audioContent&key=$textToSpeechToken"
-                .httpPost()
-                .header("Content-Type", "application/json; charset=utf-8")
-                .jsonBody(String.format(jsonTextToSpeech, text, languageCode))
-                .responseString()
-                .third.get()
+        var json: String
+
+        "https://texttospeech.googleapis.com/v1/text:synthesize?fields=audioContent&key=$googleCloudKey"
+            .httpPost()
+            .header("Content-Type", "application/json; charset=utf-8")
+            .jsonBody(String.format(getJsonTextToSpeech(), text, languageCode))
+            .responseString().run {
+                json =
+                    if (second.isSuccessful)
+                        third.get()
+                    else {
+                        log.error(this.third.component2()?.message)
+                        return null
+                    }
+            }
 
         return try {
             val audioBytes = Base64.getDecoder().decode(JSONObject(json).getString("audioContent"))

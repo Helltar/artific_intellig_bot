@@ -6,6 +6,7 @@ import com.github.kittinunf.fuel.httpPost
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.Message
 import com.github.kotlintelegrambot.entities.TelegramFile
+import com.helltar.artific_intellig_bot.DIR_STABLE_DIFFUSION
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.Utils
 import org.slf4j.LoggerFactory
@@ -28,18 +29,16 @@ class StableDiffusionCommand(bot: Bot, message: Message, args: List<String>) : B
             return
         }
 
-        val response = sendPrompt(text).second
+        val response = sendPrompt(text)
 
-        if (response.isSuccessful)
+        if (response.second.isSuccessful)
             File(DIR_STABLE_DIFFUSION + "${userId}_${Utils.randomUUID()}.png").run {
-                writeBytes(response.data)
+                writeBytes(response.second.data)
                 sendPhoto(TelegramFile.ByFile(this), text)
             }
         else {
-            response.run {
-                sendMessage(Strings.bad_request)
-                log.error("$responseMessage $statusCode : $text")
-            }
+            sendMessage(Strings.bad_request)
+            log.error("${response.third.component2()?.message} : $text")
         }
     }
 
@@ -47,7 +46,7 @@ class StableDiffusionCommand(bot: Bot, message: Message, args: List<String>) : B
         "https://api.stability.ai/v1alpha/generation/stable-diffusion-512-v2-0/text-to-image".httpPost()
             .header("Content-Type", "application/json")
             .header("Accept", "image/png")
-            .header("Authorization", stableDiffusionToken)
-            .jsonBody(String.format(jsonStableDiffusion, prompt))
+            .header("Authorization", stableDiffusionKey)
+            .jsonBody(String.format(getJsonStableDiffusion(), prompt))
             .responseString()
 }
