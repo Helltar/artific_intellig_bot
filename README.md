@@ -1,6 +1,8 @@
 artific_intellig_bot
 --------------------
 
+Demo: https://t.me/+siikRmY3uyE5YTBi
+
 ./_config_:
 
 - **bot_token**.txt : [BotFather](https://t.me/BotFather)
@@ -9,11 +11,10 @@ artific_intellig_bot
 - **stable_diffusion_token**.txt : [Stable Diffusion](https://beta.dreamstudio.ai/membership?tab=apiKeys)
 - **text_to_speech_token.txt** : [Text-to-Speech](https://console.cloud.google.com/apis/credentials) (**API Key**)
 
-List of superuser IDs (ID per line):
-- **sudoers**.txt
+<br>
 
-Chat IDs where and only where commands are available, if empty - commands are available to everyone (ID per line):
-- **chats_white_list**.txt
+- **sudoers**.txt : List of superuser IDs (ID per line)
+- **chats_white_list**.txt : Chat IDs where and only where commands are available, if empty - commands are available to everyone (ID per line)
 
 <br>
 
