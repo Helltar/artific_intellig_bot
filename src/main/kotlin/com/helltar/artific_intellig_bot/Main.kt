@@ -84,12 +84,15 @@ private fun runCommand(botCommand: BotCommand, commandName: String) {
 
     log.info("$classSimpleName: ${chat.id} $userId ${user.username} ${user.firstName} ${chat.title} : ${botCommand.args}")
 
-    if (botCommand.isCommandEnable(commandName))
-        addRequest("$classSimpleName@$userId", botCommand.bot, botCommand.message) {
-            botCommand.run()
-        }
+    if (botCommand.isChatInWhiteList(commandName))
+        if (botCommand.isCommandEnable(commandName))
+            addRequest("$classSimpleName@$userId", botCommand.bot, botCommand.message) {
+                botCommand.run()
+            }
+        else
+            botCommand.sendMessage(Strings.command_disabled)
     else
-        botCommand.sendMessage(Strings.command_disabled)
+        botCommand.sendMessage(Strings.command_not_supported_in_chat)
 }
 
 private fun addRequest(requestKey: String, bot: Bot, message: Message, func: () -> Unit) {

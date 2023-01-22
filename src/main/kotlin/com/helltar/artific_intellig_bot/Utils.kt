@@ -2,8 +2,9 @@ package com.helltar.artific_intellig_bot
 
 import org.slf4j.LoggerFactory
 import java.io.BufferedReader
-import java.io.FileNotFoundException
+import java.io.File
 import java.io.FileReader
+import java.io.IOException
 import java.util.*
 
 object Utils {
@@ -22,8 +23,9 @@ object Utils {
 
     fun getTextFromFile(filename: String): String =
         try {
+            File(filename).run { if (!exists()) createNewFile() }
             FileReader(filename).readText()
-        } catch (e: FileNotFoundException) {
+        } catch (e: IOException) {
             log.error(e.message, e)
             ""
         }

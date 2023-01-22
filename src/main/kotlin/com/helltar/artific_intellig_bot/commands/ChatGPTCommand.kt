@@ -41,10 +41,11 @@ class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotComman
 
         var text = message.text ?: return
 
-        if (text.length > MAX_MESSAGE_TEXT_LENGTH) {
-            sendMessage(String.format(Strings.many_characters, MAX_MESSAGE_TEXT_LENGTH))
-            return
-        }
+        if (isNotAdmin())
+            if (text.length > MAX_MESSAGE_TEXT_LENGTH) {
+                sendMessage(String.format(Strings.many_characters, MAX_MESSAGE_TEXT_LENGTH))
+                return
+            }
 
         // todo: !
         text = text.replace("\n", " ")

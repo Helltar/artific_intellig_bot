@@ -2,9 +2,11 @@ package com.helltar.artific_intellig_bot.commands
 
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.*
+import com.helltar.artific_intellig_bot.BotConfig.CHATS_WHITE_LIST
 import com.helltar.artific_intellig_bot.BotConfig.DIR_DB
 import com.helltar.artific_intellig_bot.BotConfig.EXT_DISABLED
 import com.helltar.artific_intellig_bot.BotConfig.SUDOERS
+import com.helltar.artific_intellig_bot.commands.Commands.commandsList
 import java.io.File
 
 abstract class BotCommand(val bot: Bot, val message: Message, val args: List<String> = listOf()) {
@@ -16,8 +18,16 @@ abstract class BotCommand(val bot: Bot, val message: Message, val args: List<Str
     abstract fun run()
 
     fun isCommandEnable(commandName: String): Boolean {
-        if (!isNotAdmin()) return true
+        if (isAdmin()) return true
         return !File(DIR_DB + commandName + EXT_DISABLED).exists()
+    }
+
+    fun isChatInWhiteList(commandName: String): Boolean {
+        if (isNotAdmin())
+            if (commandsList.isNotEmpty() && commandsList.contains(commandName))
+                return CHATS_WHITE_LIST.contains(chatId.id.toString())
+
+        return true
     }
 
     fun sendMessage(
@@ -32,6 +42,9 @@ abstract class BotCommand(val bot: Bot, val message: Message, val args: List<Str
 
     protected fun isNotAdmin() =
         !SUDOERS.contains(userId.toString())
+
+    private fun isAdmin() =
+        !isNotAdmin()
 
     protected fun sendPhoto(photo: TelegramFile, caption: String, replyTo: Long = replyToMessageId) =
         bot.sendPhoto(

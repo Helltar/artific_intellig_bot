@@ -20,6 +20,7 @@ object BotConfig {
     val JSON_TEXT_TO_SPEECH= getTextFromFile("$DIR_JSON/TextToSpeech.json")
 
     val SUDOERS = getListFromFile("$DIR_CONFIG/sudoers.txt")
+    val CHATS_WHITE_LIST = getListFromFile("$DIR_CONFIG/chats_white_list.txt")
 
     val BOT_USERNAME = getLineFromFile("$DIR_CONFIG/bot_username.txt")
     val BOT_TOKEN = getLineFromFile("$DIR_CONFIG/bot_token.txt")
