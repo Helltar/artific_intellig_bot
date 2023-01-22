@@ -8,7 +8,14 @@ artific_intellig_bot
 - **openai_token**.txt : [OpenAI](https://beta.openai.com/account/api-keys)
 - **stable_diffusion_token**.txt : [Stable Diffusion](https://beta.dreamstudio.ai/membership?tab=apiKeys)
 - **text_to_speech_token.txt** : [Text-to-Speech](https://console.cloud.google.com/apis/credentials) (**API Key**)
-- **sudoers**.txt : Superuser Ids List (ID per line)
+
+List of superuser IDs (ID per line):
+- **sudoers**.txt
+
+Chat IDs where and only where commands are available, if empty - commands are available to everyone (ID per line):
+- **chats_white_list**.txt
+
+<br>
 
 `./gradlew run`
 
