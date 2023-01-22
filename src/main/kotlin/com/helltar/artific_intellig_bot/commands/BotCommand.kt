@@ -2,14 +2,11 @@ package com.helltar.artific_intellig_bot.commands
 
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.*
-import com.helltar.artific_intellig_bot.BotConfig.CHATS_WHITE_LIST
-import com.helltar.artific_intellig_bot.BotConfig.DIR_DB
-import com.helltar.artific_intellig_bot.BotConfig.EXT_DISABLED
-import com.helltar.artific_intellig_bot.BotConfig.SUDOERS
+import com.helltar.artific_intellig_bot.*
 import com.helltar.artific_intellig_bot.commands.Commands.commandsList
 import java.io.File
 
-abstract class BotCommand(val bot: Bot, val message: Message, val args: List<String> = listOf()) {
+abstract class BotCommand(val bot: Bot, val message: Message, val args: List<String> = listOf()) : BotConfig() {
 
     protected val userId = message.from!!.id
     private val chatId = ChatId.fromId(message.chat.id)
@@ -25,7 +22,7 @@ abstract class BotCommand(val bot: Bot, val message: Message, val args: List<Str
     fun isChatInWhiteList(commandName: String): Boolean {
         if (isNotAdmin())
             if (commandsList.isNotEmpty() && commandsList.contains(commandName))
-                return CHATS_WHITE_LIST.contains(chatId.id.toString())
+                return chatsWhiteList.contains(chatId.id.toString())
 
         return true
     }
@@ -41,7 +38,7 @@ abstract class BotCommand(val bot: Bot, val message: Message, val args: List<Str
         ).get().messageId
 
     protected fun isNotAdmin() =
-        !SUDOERS.contains(userId.toString())
+        !sudoers.contains(userId.toString())
 
     private fun isAdmin() =
         !isNotAdmin()

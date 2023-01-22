@@ -5,8 +5,6 @@ import com.github.kittinunf.fuel.httpPost
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.Message
 import com.github.kotlintelegrambot.entities.TelegramFile
-import com.helltar.artific_intellig_bot.BotConfig.JSON_DALLE2
-import com.helltar.artific_intellig_bot.BotConfig.OPENAI_TOKEN
 import com.helltar.artific_intellig_bot.Strings
 import org.json.JSONException
 import org.json.JSONObject
@@ -48,7 +46,7 @@ class DallE2Command(bot: Bot, message: Message, args: List<String>) : BotCommand
     private fun sendPrompt(prompt: String) =
         "https://api.openai.com/v1/images/generations".httpPost()
             .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer $OPENAI_TOKEN")
-            .jsonBody(String.format(JSON_DALLE2, prompt))
+            .header("Authorization", "Bearer $openaiToken")
+            .jsonBody(String.format(jsonDalle2, prompt))
             .responseString()
 }

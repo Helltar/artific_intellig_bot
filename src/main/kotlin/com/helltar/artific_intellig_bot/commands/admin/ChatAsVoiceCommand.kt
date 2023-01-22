@@ -2,7 +2,6 @@ package com.helltar.artific_intellig_bot.commands.admin
 
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.Message
-import com.helltar.artific_intellig_bot.BotConfig.DIR_DB
 import com.helltar.artific_intellig_bot.commands.BotCommand
 import com.helltar.artific_intellig_bot.commands.Commands.commandChatAsText
 import com.helltar.artific_intellig_bot.commands.Commands.commandChatAsVoice

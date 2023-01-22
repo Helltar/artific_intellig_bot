@@ -5,12 +5,6 @@ import com.github.kittinunf.fuel.core.isSuccessful
 import com.github.kittinunf.fuel.httpPost
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.Message
-import com.helltar.artific_intellig_bot.BotConfig.DIR_DB
-import com.helltar.artific_intellig_bot.BotConfig.DIR_TEXT_TO_SPEECH
-import com.helltar.artific_intellig_bot.BotConfig.JSON_CHATGPT
-import com.helltar.artific_intellig_bot.BotConfig.JSON_TEXT_TO_SPEECH
-import com.helltar.artific_intellig_bot.BotConfig.OPENAI_TOKEN
-import com.helltar.artific_intellig_bot.BotConfig.TEXT_TO_SPEECH_TOKEN
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.Utils
 import com.helltar.artific_intellig_bot.commands.Commands.commandChatAsText
@@ -104,16 +98,16 @@ class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotComman
     private fun sendPrompt(prompt: String) =
         "https://api.openai.com/v1/completions".httpPost()
             .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer $OPENAI_TOKEN")
-            .jsonBody(String.format(JSON_CHATGPT, prompt))
+            .header("Authorization", "Bearer ${openaiToken}")
+            .jsonBody(String.format(jsonChatGPT, prompt))
             .responseString()
 
     private fun textToSpeech(text: String, languageCode: String): ByteArray? {
         val json =
-            "https://texttospeech.googleapis.com/v1/text:synthesize?fields=audioContent&key=$TEXT_TO_SPEECH_TOKEN"
+            "https://texttospeech.googleapis.com/v1/text:synthesize?fields=audioContent&key=$textToSpeechToken"
                 .httpPost()
                 .header("Content-Type", "application/json; charset=utf-8")
-                .jsonBody(String.format(JSON_TEXT_TO_SPEECH, text, languageCode))
+                .jsonBody(String.format(jsonTextToSpeech, text, languageCode))
                 .responseString()
                 .third.get()
 

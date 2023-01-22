@@ -10,11 +10,11 @@ import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.entities.Message
 import com.github.kotlintelegrambot.extensions.filters.Filter
 import com.github.kotlintelegrambot.logging.LogLevel
-import com.helltar.artific_intellig_bot.BotConfig.BOT_TOKEN
-import com.helltar.artific_intellig_bot.BotConfig.BOT_USERNAME
-import com.helltar.artific_intellig_bot.BotConfig.DIR_DB
-import com.helltar.artific_intellig_bot.BotConfig.DIR_STABLE_DIFFUSION
-import com.helltar.artific_intellig_bot.BotConfig.DIR_TEXT_TO_SPEECH
+import com.helltar.artific_intellig_bot.BotConfig.Companion.BOT_TOKEN
+import com.helltar.artific_intellig_bot.BotConfig.Companion.BOT_USERNAME
+import com.helltar.artific_intellig_bot.BotConfig.Companion.DIR_DB
+import com.helltar.artific_intellig_bot.BotConfig.Companion.DIR_STABLE_DIFFUSION
+import com.helltar.artific_intellig_bot.BotConfig.Companion.DIR_TEXT_TO_SPEECH
 import com.helltar.artific_intellig_bot.commands.*
 import com.helltar.artific_intellig_bot.commands.Commands.commandChatAsText
 import com.helltar.artific_intellig_bot.commands.Commands.commandChatAsVoice

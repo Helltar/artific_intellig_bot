@@ -6,9 +6,6 @@ import com.github.kittinunf.fuel.httpPost
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.Message
 import com.github.kotlintelegrambot.entities.TelegramFile
-import com.helltar.artific_intellig_bot.BotConfig.DIR_STABLE_DIFFUSION
-import com.helltar.artific_intellig_bot.BotConfig.JSON_STABLE_DIFFUSION
-import com.helltar.artific_intellig_bot.BotConfig.STABLE_DIFFUSION_TOKEN
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.Utils
 import org.slf4j.LoggerFactory
@@ -50,7 +47,7 @@ class StableDiffusionCommand(bot: Bot, message: Message, args: List<String>) : B
         "https://api.stability.ai/v1alpha/generation/stable-diffusion-512-v2-0/text-to-image".httpPost()
             .header("Content-Type", "application/json")
             .header("Accept", "image/png")
-            .header("Authorization", STABLE_DIFFUSION_TOKEN)
-            .jsonBody(String.format(JSON_STABLE_DIFFUSION, prompt))
+            .header("Authorization", stableDiffusionToken)
+            .jsonBody(String.format(jsonStableDiffusion, prompt))
             .responseString()
 }
