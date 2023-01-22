@@ -21,14 +21,14 @@ class EnableCommand(bot: Bot, message: Message, args: List<String>) : BotCommand
             return
         }
 
-        val file = File(DIR_DB + commandName + BotConfig.EXT_DISABLED)
-
-        if (file.exists())
-            if (file.delete())
-                sendMessage("✅ Command <b>$commandName</b> enable")
+        File(DIR_DB + commandName + BotConfig.EXT_DISABLED).run {
+            if (exists())
+                if (delete())
+                    sendMessage("✅ Command <b>$commandName</b> enable")
+                else
+                    sendMessage("❌ Error when delete lock file: <code>$name</code>")
             else
-                sendMessage("❌ Error when delete lock file: <code>${file.name}</code>")
-        else
-            sendMessage("✅ Command <b>$commandName</b> already enabled")
+                sendMessage("✅ Command <b>$commandName</b> already enabled")
+        }
     }
 }

@@ -12,8 +12,6 @@ import java.io.IOException
 
 class DisableCommand(bot: Bot, message: Message, args: List<String>) : BotCommand(bot, message, args) {
 
-    private val log = LoggerFactory.getLogger(javaClass)
-
     override fun run() {
         if (isNotAdmin()) return
         if (args.isEmpty()) return
@@ -25,17 +23,17 @@ class DisableCommand(bot: Bot, message: Message, args: List<String>) : BotComman
             return
         }
 
-        val file = File(DIR_DB + commandName + EXT_DISABLED)
-
-        if (!file.exists())
-            try {
-                file.createNewFile()
-                sendMessage("✅ Command <b>$commandName</b> disabled")
-            } catch (e: IOException) {
-                sendMessage("❌ <code>${e.message}</code>")
-                log.error(e.message)
-            }
-        else
-            sendMessage("✅ Command <b>$commandName</b> already disabled")
+        File(DIR_DB + commandName + EXT_DISABLED).run {
+            if (!exists())
+                try {
+                    createNewFile()
+                    sendMessage("✅ Command <b>$commandName</b> disabled")
+                } catch (e: IOException) {
+                    sendMessage("❌ <code>${e.message}</code>")
+                    LoggerFactory.getLogger(javaClass).error(e.message)
+                }
+            else
+                sendMessage("✅ Command <b>$commandName</b> already disabled")
+        }
     }
 }
