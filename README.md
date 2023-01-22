@@ -7,6 +7,7 @@ artific_intellig_bot
 - **bot_username**.txt : [BotFather](https://t.me/BotFather)
 - **openai_token**.txt : [OpenAI](https://beta.openai.com/account/api-keys)
 - **stable_diffusion_token**.txt : [Stable Diffusion](https://beta.dreamstudio.ai/membership?tab=apiKeys)
+- **text_to_speech_token.txt** : [Text-to-Speech](https://console.cloud.google.com/apis/credentials) (**API Key**)
 - **sudoers**.txt : Superuser Ids List (ID per line)
 
 `./gradlew run`
@@ -21,6 +22,8 @@ Admin commands:
 
 - /**enable** _commandName_
 - /**disable** _commandName_
+- /**chat_as_text** (ChatGPT answers as text)
+- /**chat_as_voice** (ChatGPT answers as voice)
 
 ### Docs
 
