@@ -1,15 +1,12 @@
 package com.helltar.artific_intellig_bot.commands
 
-import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.core.isSuccessful
-import com.github.kittinunf.fuel.httpPost
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.Message
 import com.github.kotlintelegrambot.entities.TelegramFile
 import com.helltar.artific_intellig_bot.DIR_STABLE_DIFFUSION
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.Utils
-import org.json.simple.JSONValue
 import org.slf4j.LoggerFactory
 import java.io.File
 
@@ -44,10 +41,10 @@ class StableDiffusionCommand(bot: Bot, message: Message, args: List<String>) : B
     }
 
     private fun sendPrompt(prompt: String) =
-        "https://api.stability.ai/v1alpha/generation/stable-diffusion-512-v2-0/text-to-image".httpPost()
-            .header("Content-Type", "application/json")
-            .header("Accept", "image/png")
-            .header("Authorization", stableDiffusionKey)
-            .jsonBody(String.format(getJsonStableDiffusion(), JSONValue.escape(prompt)))
-            .responseString()
+        sendPrompt(
+            ReqData(
+                "https://api.stability.ai/v1alpha/generation/stable-diffusion-512-v2-0/text-to-image",
+                stableDiffusionKey, getJsonStableDiffusion(), prompt, mapOf("Accept" to "image/png")
+            )
+        )
 }

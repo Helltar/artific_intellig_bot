@@ -1,14 +1,11 @@
 package com.helltar.artific_intellig_bot.commands
 
-import com.github.kittinunf.fuel.core.extensions.jsonBody
-import com.github.kittinunf.fuel.httpPost
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.Message
 import com.github.kotlintelegrambot.entities.TelegramFile
 import com.helltar.artific_intellig_bot.Strings
 import org.json.JSONException
 import org.json.JSONObject
-import org.json.simple.JSONValue
 import org.slf4j.LoggerFactory
 
 class DallE2Command(bot: Bot, message: Message, args: List<String>) : BotCommand(bot, message, args) {
@@ -45,9 +42,10 @@ class DallE2Command(bot: Bot, message: Message, args: List<String>) : BotCommand
     }
 
     private fun sendPrompt(prompt: String) =
-        "https://api.openai.com/v1/images/generations".httpPost()
-            .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer $openaiKey")
-            .jsonBody(String.format(getJsonDalle2(), JSONValue.escape(prompt)))
-            .responseString()
+        sendPrompt(
+            ReqData(
+                "https://api.openai.com/v1/images/generations",
+                "Bearer $openaiKey", getJsonDalle2(), prompt
+            )
+        )
 }

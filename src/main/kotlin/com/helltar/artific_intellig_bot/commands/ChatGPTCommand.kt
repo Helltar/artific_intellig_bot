@@ -91,13 +91,12 @@ class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotComman
     }
 
     private fun sendPrompt(prompt: String) =
-        "https://api.openai.com/v1/completions".httpPost()
-            .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer $openaiKey")
-            .timeout(0)
-            .timeoutRead(0)
-            .jsonBody(String.format(getJsonChatGPT(), JSONValue.escape(prompt)))
-            .responseString()
+        sendPrompt(
+            ReqData(
+                "https://api.openai.com/v1/completions",
+                "Bearer $openaiKey", getJsonChatGPT(), prompt
+            )
+        )
 
     private fun textToSpeech(text: String, languageCode: String): ByteArray? {
         var json: String

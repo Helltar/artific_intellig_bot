@@ -1,9 +1,14 @@
 package com.helltar.artific_intellig_bot.commands
 
+import com.github.kittinunf.fuel.core.extensions.jsonBody
+import com.github.kittinunf.fuel.httpPost
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.*
-import com.helltar.artific_intellig_bot.*
+import com.helltar.artific_intellig_bot.BotConfig
+import com.helltar.artific_intellig_bot.DIR_DB
+import com.helltar.artific_intellig_bot.EXT_DISABLED
 import com.helltar.artific_intellig_bot.commands.Commands.commandsList
+import org.json.simple.JSONValue
 import java.io.File
 
 abstract class BotCommand(val bot: Bot, val message: Message, val args: List<String> = listOf()) : BotConfig() {
@@ -53,4 +58,24 @@ abstract class BotCommand(val bot: Bot, val message: Message, val args: List<Str
             chatId, TelegramFile.ByByteArray(audio),
             replyToMessageId = replyToMessageId, allowSendingWithoutReply = true
         )
+
+    protected data class ReqData(
+        val url: String,
+        val apiKey: String,
+        val json: String,
+        val prompt: String,
+        val additionHeader: Map<String, String> = mapOf()
+    )
+
+    protected fun sendPrompt(reqData: ReqData) =
+        reqData.run {
+            url.httpPost()
+                .header("Content-Type", "application/json")
+                .header("Authorization", apiKey)
+                .header(additionHeader)
+                .timeout(60000)
+                .timeoutRead(60000)
+                .jsonBody(String.format(json, JSONValue.escape(prompt)))
+                .responseString()
+        }
 }
