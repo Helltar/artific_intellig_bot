@@ -8,6 +8,7 @@ import com.github.kotlintelegrambot.entities.TelegramFile
 import com.helltar.artific_intellig_bot.Strings
 import org.json.JSONException
 import org.json.JSONObject
+import org.json.simple.JSONValue
 import org.slf4j.LoggerFactory
 
 class DallE2Command(bot: Bot, message: Message, args: List<String>) : BotCommand(bot, message, args) {
@@ -47,6 +48,6 @@ class DallE2Command(bot: Bot, message: Message, args: List<String>) : BotCommand
         "https://api.openai.com/v1/images/generations".httpPost()
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer $openaiKey")
-            .jsonBody(String.format(getJsonDalle2(), prompt))
+            .jsonBody(String.format(getJsonDalle2(), JSONValue.escape(prompt)))
             .responseString()
 }

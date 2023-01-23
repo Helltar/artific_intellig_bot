@@ -9,9 +9,11 @@ import com.helltar.artific_intellig_bot.DIR_DB
 import com.helltar.artific_intellig_bot.DIR_TEXT_TO_SPEECH
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.Utils
+import com.helltar.artific_intellig_bot.Utils.detectLangCode
 import com.helltar.artific_intellig_bot.commands.Commands.commandChatAsText
 import org.json.JSONException
 import org.json.JSONObject
+import org.json.simple.JSONValue
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.*
@@ -23,7 +25,6 @@ class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotComman
     companion object {
         private const val MAX_MESSAGE_TEXT_LENGTH = 300
         private const val MAX_DIALOG_CONTEXT_LENGTH = 256
-        private const val TEXT_TO_SPEECH_LANG_CODE = "uk-UA"
         private const val DELIMITER = "\\n"
     }
 
@@ -35,16 +36,13 @@ class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotComman
             return
         }
 
-        var text = message.text ?: return
+        val text = message.text ?: return
 
         if (isNotAdmin())
             if (text.length > MAX_MESSAGE_TEXT_LENGTH) {
                 sendMessage(String.format(Strings.many_characters, MAX_MESSAGE_TEXT_LENGTH))
                 return
             }
-
-        // todo: !
-        text = text.replace("\n", " ")
 
         if (chatDialogContext.containsKey(userId)) {
             if (chatDialogContext[userId]!!.length > MAX_DIALOG_CONTEXT_LENGTH) {
@@ -55,11 +53,7 @@ class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotComman
         } else
             chatDialogContext[userId] = "Human: $text$DELIMITER"
 
-        var prompt = chatDialogContext[userId] ?: return
-
-        // todo: !
-        prompt = prompt.replace("""[^\p{L}\p{Z}\d,.:]""".toRegex(), "")
-
+        val prompt = chatDialogContext[userId] ?: return
         val json: String
 
         sendPrompt(prompt).run {
@@ -79,20 +73,14 @@ class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotComman
                     .getJSONArray("choices")
                     .getJSONObject(0)
                     .getString("text")
-
-                    // todo: !
-                    .replace("'", "")
-                    .replace("\"", "")
-                    .replace("\\", "")
-
                     .substringAfter(":")
 
             chatDialogContext[userId] += "AI: $answer$DELIMITER"
 
             if (File(DIR_DB + commandChatAsText).exists())
-                sendMessage(answer)
+                sendMessage(Utils.escapeHtml(answer))
             else {
-                textToSpeech(Utils.escapeHtml(answer), TEXT_TO_SPEECH_LANG_CODE)?.let {
+                textToSpeech(answer, detectLangCode(answer))?.let {
                     sendVoice(it)
                 }
                     ?: sendMessage(Strings.chat_exception)
@@ -106,7 +94,9 @@ class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotComman
         "https://api.openai.com/v1/completions".httpPost()
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer $openaiKey")
-            .jsonBody(String.format(getJsonChatGPT(), prompt))
+            .timeout(0)
+            .timeoutRead(0)
+            .jsonBody(String.format(getJsonChatGPT(), JSONValue.escape(prompt)))
             .responseString()
 
     private fun textToSpeech(text: String, languageCode: String): ByteArray? {
@@ -115,7 +105,7 @@ class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotComman
         "https://texttospeech.googleapis.com/v1/text:synthesize?fields=audioContent&key=$googleCloudKey"
             .httpPost()
             .header("Content-Type", "application/json; charset=utf-8")
-            .jsonBody(String.format(getJsonTextToSpeech(), text, languageCode))
+            .jsonBody(String.format(getJsonTextToSpeech(), JSONValue.escape(text), languageCode))
             .responseString().run {
                 json =
                     if (second.isSuccessful)

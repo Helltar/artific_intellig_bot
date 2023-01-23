@@ -23,6 +23,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
     implementation("org.json:json:20220924")
     implementation("org.slf4j:slf4j-api:2.0.6")
+    implementation("com.googlecode.json-simple:json-simple:1.1.1")
 
     testImplementation(kotlin("test"))
 }

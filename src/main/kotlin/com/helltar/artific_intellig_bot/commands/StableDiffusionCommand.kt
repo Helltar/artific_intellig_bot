@@ -9,6 +9,7 @@ import com.github.kotlintelegrambot.entities.TelegramFile
 import com.helltar.artific_intellig_bot.DIR_STABLE_DIFFUSION
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.Utils
+import org.json.simple.JSONValue
 import org.slf4j.LoggerFactory
 import java.io.File
 
@@ -18,7 +19,7 @@ class StableDiffusionCommand(bot: Bot, message: Message, args: List<String>) : B
 
     override fun run() {
         if (args.isEmpty()) {
-            sendMessage(Strings.empty_args)
+            sendMessage(Strings.stable_diffusion_empty_args)
             return
         }
 
@@ -47,6 +48,6 @@ class StableDiffusionCommand(bot: Bot, message: Message, args: List<String>) : B
             .header("Content-Type", "application/json")
             .header("Accept", "image/png")
             .header("Authorization", stableDiffusionKey)
-            .jsonBody(String.format(getJsonStableDiffusion(), prompt))
+            .jsonBody(String.format(getJsonStableDiffusion(), JSONValue.escape(prompt)))
             .responseString()
 }
