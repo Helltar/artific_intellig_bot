@@ -2,10 +2,11 @@
 .idea/
 
 build/
-db/
 scripts/
 stable_diffusion/
 text_to_speech/
 test/
+
+/db/
 
 logback.log
