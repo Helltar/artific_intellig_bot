@@ -34,7 +34,7 @@ Admin commands:
 
 - /**enable** _commandName_
 - /**disable** _commandName_
-- 
+
 - /**chat_as_text** (ChatGPT answers as text)
 - /**chat_as_voice** (ChatGPT answers as voice)
 
