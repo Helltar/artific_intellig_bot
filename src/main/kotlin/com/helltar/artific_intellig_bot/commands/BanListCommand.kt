@@ -1,8 +1,7 @@
-package com.helltar.artific_intellig_bot.commands.admin
+package com.helltar.artific_intellig_bot.commands
 
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.Message
-import com.helltar.artific_intellig_bot.commands.BotCommand
 import com.helltar.artific_intellig_bot.db.Database
 
 class BanListCommand(bot: Bot, message: Message) : BotCommand(bot, message) {

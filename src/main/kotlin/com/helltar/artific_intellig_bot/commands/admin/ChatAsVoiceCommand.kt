@@ -13,8 +13,6 @@ import java.io.IOException
 class ChatAsVoiceCommand(bot: Bot, message: Message) : BotCommand(bot, message) {
 
     override fun run() {
-        if (isNotAdmin()) return
-
         File(DIR_DB + cmdChatAsText).run {
             if (exists())
                 try {

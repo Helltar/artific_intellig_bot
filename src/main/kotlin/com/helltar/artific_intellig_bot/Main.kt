@@ -49,16 +49,15 @@ fun main() {
             command(cmdChat) { runCommand(ChatGPTCommand(bot, update.message!!, args), cmdChat) }
             command(cmdDalle) { runCommand(DallE2Command(bot, update.message!!, args), cmdDalle) }
             command(cmdStableDiffusion) { runCommand(StableDiffusionCommand(bot, update.message!!, args), cmdStableDiffusion) }
-
-            command(cmdEnable) { runCommand(EnableCommand(bot, update.message!!, args), cmdEnable) }
-            command(cmdDisable) { runCommand(DisableCommand(bot, update.message!!, args), cmdDisable) }
-            command(cmdChatAsText) { runCommand(ChatAsTextCommand(bot, update.message!!), cmdChatAsText) }
-            command(cmdChatAsVoice) { runCommand(ChatAsVoiceCommand(bot, update.message!!), cmdChatAsVoice) }
-            command(cmdBanUser) { runCommand(BanUserCommand(bot, update.message!!, args), cmdBanUser) }
-            command(cmdUnbanUser) { runCommand(UnbanUserCommand(bot, update.message!!), cmdUnbanUser) }
             command(cmdBanList) { runCommand(BanListCommand(bot, update.message!!), cmdBanList) }
-
             command(cmdAbout) { runCommand(AboutCommand(bot, update.message!!), cmdAbout) }
+
+            command(cmdEnable) { runCommand(EnableCommand(bot, update.message!!, args), cmdEnable, true) }
+            command(cmdDisable) { runCommand(DisableCommand(bot, update.message!!, args), cmdDisable, true) }
+            command(cmdChatAsText) { runCommand(ChatAsTextCommand(bot, update.message!!), cmdChatAsText, true) }
+            command(cmdChatAsVoice) { runCommand(ChatAsVoiceCommand(bot, update.message!!), cmdChatAsVoice, true) }
+            command(cmdBanUser) { runCommand(BanUserCommand(bot, update.message!!, args), cmdBanUser, true) }
+            command(cmdUnbanUser) { runCommand(UnbanUserCommand(bot, update.message!!), cmdUnbanUser, true) }
 
             message(Filter.Reply) {
                 val replyToMessage = update.message!!.replyToMessage!!
@@ -77,13 +76,17 @@ fun main() {
         .startPolling()
 }
 
-private fun runCommand(botCommand: BotCommand, commandName: String) {
+private fun runCommand(botCommand: BotCommand, commandName: String, isAdminCommand: Boolean = false) {
     val user = botCommand.message.from ?: return
     val userId = user.id
     val chat = botCommand.message.chat
     val classSimpleName = botCommand.javaClass.simpleName
 
     log.info("$classSimpleName: ${chat.id} $userId ${user.username} ${user.firstName} ${chat.title} : ${botCommand.args}")
+
+    if (isAdminCommand)
+        if (botCommand.isNotAdmin())
+            return
 
     botCommand.run {
         if (isNotAdmin()) {

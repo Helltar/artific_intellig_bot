@@ -13,7 +13,6 @@ import java.io.IOException
 class DisableCommand(bot: Bot, message: Message, args: List<String>) : BotCommand(bot, message, args) {
 
     override fun run() {
-        if (isNotAdmin()) return
         if (args.isEmpty()) return
 
         val commandName = args[0]
