@@ -5,14 +5,14 @@ Demo: https://t.me/+siikRmY3uyE5YTBi
 
 <br>
 
-./_config/_:
+./_config/_
 
 - **bot_token**.txt : [BotFather](https://t.me/BotFather)
 - **bot_username**.txt : [BotFather](https://t.me/BotFather)
 - **sudoers**.txt : List of superuser IDs (ID per line)
 - **chats_white_list**.txt : Chat IDs where and only where commands are available, if empty - commands are available to everyone (ID per line)
 
-./_config/api_keys.ini_:
+./_config/api_keys.ini_
 
 - **openai_key** : [OpenAI API Key](https://beta.openai.com/account/api-keys)
 - **stable_diffusion_key** : [Stable Diffusion API Key](https://beta.dreamstudio.ai/membership?tab=apiKeys)
@@ -34,12 +34,17 @@ Admin commands:
 
 - /**enable** _commandName_
 - /**disable** _commandName_
+- 
 - /**chat_as_text** (ChatGPT answers as text)
 - /**chat_as_voice** (ChatGPT answers as voice)
 
+- /**ban_user** (use as reply to user message)
+- /**unban_user** (use as reply to user message)
+- /**ban_list** (view banned users list)
+
 ### Docs
 
-./_config/json/_:
+./_config/json/_
 
 - **ChatGPT**.json : [OpenAI Chat](https://beta.openai.com/playground/p/default-chat?model=text-davinci-003)
 - **DallE2**.json : [OpenAI Image generation](https://beta.openai.com/docs/guides/images/usage?lang=curl)
