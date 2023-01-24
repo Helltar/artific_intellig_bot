@@ -10,6 +10,9 @@ object Commands {
     const val commandDisable = "disable"
     const val commandChatAsText = "chat_as_text"
     const val commandChatAsVoice = "chat_as_voice"
+    const val commandBanUser = "ban_user"
+    const val commandUnbanUser = "unban_user"
+    const val commandBanList = "ban_list"
 
     const val commandAbout = "about"
 

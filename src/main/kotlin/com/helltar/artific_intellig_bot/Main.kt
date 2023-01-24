@@ -16,13 +16,14 @@ import com.helltar.artific_intellig_bot.commands.Commands.commandChatAsVoice
 import com.helltar.artific_intellig_bot.commands.Commands.commandDisable
 import com.helltar.artific_intellig_bot.commands.Commands.commandEnable
 import com.helltar.artific_intellig_bot.commands.Commands.commandAbout
+import com.helltar.artific_intellig_bot.commands.Commands.commandBanList
+import com.helltar.artific_intellig_bot.commands.Commands.commandBanUser
 import com.helltar.artific_intellig_bot.commands.Commands.commandChat
 import com.helltar.artific_intellig_bot.commands.Commands.commandDalle
 import com.helltar.artific_intellig_bot.commands.Commands.commandStableDiffusion
-import com.helltar.artific_intellig_bot.commands.admin.ChatAsTextCommand
-import com.helltar.artific_intellig_bot.commands.admin.ChatAsVoiceCommand
-import com.helltar.artific_intellig_bot.commands.admin.DisableCommand
-import com.helltar.artific_intellig_bot.commands.admin.EnableCommand
+import com.helltar.artific_intellig_bot.commands.Commands.commandUnbanUser
+import com.helltar.artific_intellig_bot.commands.admin.*
+import com.helltar.artific_intellig_bot.db.Database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -36,6 +37,7 @@ private val requestList = hashMapOf<String, Job>()
 fun main() {
 
     mkDirs()
+    Database.init()
 
     log.info("start ...")
 
@@ -47,12 +49,16 @@ fun main() {
             command(commandChat) { runCommand(ChatGPTCommand(bot, update.message!!, args), commandChat) }
             command(commandDalle) { runCommand(DallE2Command(bot, update.message!!, args), commandDalle) }
             command(commandStableDiffusion) { runCommand(StableDiffusionCommand(bot, update.message!!, args), commandStableDiffusion) }
-            command(commandAbout) { runCommand(AboutCommand(bot, update.message!!), commandAbout) }
 
             command(commandEnable) { runCommand(EnableCommand(bot, update.message!!, args), commandEnable) }
             command(commandDisable) { runCommand(DisableCommand(bot, update.message!!, args), commandDisable) }
             command(commandChatAsText) { runCommand(ChatAsTextCommand(bot, update.message!!), commandChatAsText) }
             command(commandChatAsVoice) { runCommand(ChatAsVoiceCommand(bot, update.message!!), commandChatAsVoice) }
+            command(commandBanUser) { runCommand(BanUserCommand(bot, update.message!!, args), commandBanUser) }
+            command(commandUnbanUser) { runCommand(UnbanUserCommand(bot, update.message!!), commandUnbanUser) }
+            command(commandBanList) { runCommand(BanListCommand(bot, update.message!!), commandBanList) }
+
+            command(commandAbout) { runCommand(AboutCommand(bot, update.message!!), commandAbout) }
 
             message(Filter.Reply) {
                 val replyToMessage = update.message!!.replyToMessage!!
@@ -79,15 +85,28 @@ private fun runCommand(botCommand: BotCommand, commandName: String) {
 
     log.info("$classSimpleName: ${chat.id} $userId ${user.username} ${user.firstName} ${chat.title} : ${botCommand.args}")
 
-    if (botCommand.isChatInWhiteList(commandName))
-        if (botCommand.isCommandEnable(commandName))
-            addRequest("$classSimpleName@$userId", botCommand.bot, botCommand.message) {
-                botCommand.run()
+    botCommand.run {
+        if (isNotAdmin()) {
+            if (isChatNotInWhiteList()) {
+                sendMessage(Strings.command_not_supported_in_chat)
+                return
             }
-        else
-            botCommand.sendMessage(Strings.command_disabled)
-    else
-        botCommand.sendMessage(Strings.command_not_supported_in_chat)
+
+            if (isCommandDisabled(commandName)) {
+                sendMessage(Strings.command_disabled)
+                return
+            }
+
+            if (isUserBanned(userId)) {
+                sendMessage("❌ BAN")
+                return
+            }
+        }
+    }
+
+    addRequest("$classSimpleName@$userId", botCommand.bot, botCommand.message) {
+        botCommand.run()
+    }
 }
 
 private fun addRequest(requestKey: String, bot: Bot, message: Message, func: () -> Unit) {

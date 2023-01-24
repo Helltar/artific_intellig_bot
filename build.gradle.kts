@@ -24,6 +24,9 @@ dependencies {
     implementation("org.json:json:20220924")
     implementation("org.slf4j:slf4j-api:2.0.6")
     implementation("com.googlecode.json-simple:json-simple:1.1.1")
+    implementation("org.xerial:sqlite-jdbc:3.40.0.0")
+    implementation("org.jetbrains.exposed:exposed-core:0.40.1")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.40.1")
 
     testImplementation(kotlin("test"))
 }

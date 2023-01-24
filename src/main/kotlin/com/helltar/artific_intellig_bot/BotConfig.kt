@@ -13,6 +13,7 @@ const val DIR_DB = "db/"
 const val DIR_STABLE_DIFFUSION = "stable_diffusion/"
 const val DIR_TEXT_TO_SPEECH = "text_to_speech/"
 const val EXT_DISABLED = ".disabled"
+const val DATABASE_FILE = DIR_DB + "database.db"
 
 val BOT_USERNAME = getLineFromFile("$DIR_CONFIG/bot_username.txt")
 val BOT_TOKEN = getLineFromFile("$DIR_CONFIG/bot_token.txt")

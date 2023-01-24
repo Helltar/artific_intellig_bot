@@ -7,7 +7,7 @@ import com.github.kotlintelegrambot.entities.*
 import com.helltar.artific_intellig_bot.BotConfig
 import com.helltar.artific_intellig_bot.DIR_DB
 import com.helltar.artific_intellig_bot.EXT_DISABLED
-import com.helltar.artific_intellig_bot.commands.Commands.commandsList
+import com.helltar.artific_intellig_bot.db.Database
 import org.json.simple.JSONValue
 import java.io.File
 
@@ -19,18 +19,17 @@ abstract class BotCommand(val bot: Bot, val message: Message, val args: List<Str
 
     abstract fun run()
 
-    fun isCommandEnable(commandName: String): Boolean {
-        if (isAdmin()) return true
-        return !File(DIR_DB + commandName + EXT_DISABLED).exists()
-    }
+    fun isCommandDisabled(commandName: String) =
+        File(DIR_DB + commandName + EXT_DISABLED).exists()
 
-    fun isChatInWhiteList(commandName: String): Boolean {
-        if (isNotAdmin())
-            if (commandsList.isNotEmpty() && commandsList.contains(commandName))
-                return getChatsWhiteList().contains(chatId.id.toString())
+    fun isChatNotInWhiteList() =
+        getChatsWhiteList().contains(chatId.id.toString())
 
-        return true
-    }
+    fun isUserBanned(userId: Long) =
+        Database.banListTable.isUserBanned(userId)
+
+    fun isNotAdmin() =
+        !getSudoers().contains(userId.toString())
 
     fun sendMessage(
         text: String, replyTo: Long = replyToMessageId,
@@ -41,12 +40,6 @@ abstract class BotCommand(val bot: Bot, val message: Message, val args: List<Str
             replyToMessageId = replyTo, allowSendingWithoutReply = true,
             replyMarkup = replyMarkup
         ).get().messageId
-
-    protected fun isNotAdmin() =
-        !getSudoers().contains(userId.toString())
-
-    private fun isAdmin() =
-        !isNotAdmin()
 
     protected fun sendPhoto(photo: TelegramFile, caption: String, replyTo: Long = replyToMessageId) =
         bot.sendPhoto(
