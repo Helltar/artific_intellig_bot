@@ -11,15 +11,15 @@ import com.github.kotlintelegrambot.entities.Message
 import com.github.kotlintelegrambot.extensions.filters.Filter
 import com.github.kotlintelegrambot.logging.LogLevel
 import com.helltar.artific_intellig_bot.commands.*
-import com.helltar.artific_intellig_bot.commands.Commands.cmdChatAsText
-import com.helltar.artific_intellig_bot.commands.Commands.cmdChatAsVoice
-import com.helltar.artific_intellig_bot.commands.Commands.cmdDisable
-import com.helltar.artific_intellig_bot.commands.Commands.cmdEnable
 import com.helltar.artific_intellig_bot.commands.Commands.cmdAbout
 import com.helltar.artific_intellig_bot.commands.Commands.cmdBanList
 import com.helltar.artific_intellig_bot.commands.Commands.cmdBanUser
 import com.helltar.artific_intellig_bot.commands.Commands.cmdChat
+import com.helltar.artific_intellig_bot.commands.Commands.cmdChatAsText
+import com.helltar.artific_intellig_bot.commands.Commands.cmdChatAsVoice
 import com.helltar.artific_intellig_bot.commands.Commands.cmdDalle
+import com.helltar.artific_intellig_bot.commands.Commands.cmdDisable
+import com.helltar.artific_intellig_bot.commands.Commands.cmdEnable
 import com.helltar.artific_intellig_bot.commands.Commands.cmdStableDiffusion
 import com.helltar.artific_intellig_bot.commands.Commands.cmdUnbanUser
 import com.helltar.artific_intellig_bot.commands.admin.*
@@ -60,14 +60,14 @@ fun main() {
             command(cmdUnbanUser) { runCommand(UnbanUserCommand(bot, update.message!!), cmdUnbanUser, true) }
 
             message(Filter.Reply) {
-                val replyToMessage = update.message!!.replyToMessage!!
-                val text = update.message!!.text ?: "/"
-
-                if (text.startsWith("/")) return@message
-                if (replyToMessage.photo != null) return@message
-
-                if (replyToMessage.from!!.username == BOT_USERNAME)
-                    runCommand(ChatGPTCommand(bot, update.message!!, listOf("reply")), cmdChat)
+                update.message?.let {
+                    it.replyToMessage?.photo
+                        ?: it.text?.let { text ->
+                            if (it.replyToMessage?.from?.username == BOT_USERNAME)
+                                if (!text.startsWith("/"))
+                                    runCommand(ChatGPTCommand(bot, it, listOf("reply")), cmdChat)
+                        }
+                }
             }
 
             telegramError { log.error(error.getErrorMessage()) }
