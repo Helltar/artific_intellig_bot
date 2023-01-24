@@ -6,6 +6,7 @@ import java.io.File
 import java.io.FileReader
 import java.io.IOException
 import java.util.*
+import java.util.regex.Pattern
 
 object Utils {
 
@@ -38,4 +39,20 @@ object Utils {
         .replace(">", "&gt;")
         .replace("\"", "&quot;")
         .replace("'", "&#039;")
+
+    fun detectLangCode(text: String): String {
+
+        fun find(regex: String) = Pattern.compile(regex).matcher(text).find()
+
+        if (find("[ёЁэЭъЪыЫ]"))
+            return "ru-RU"
+
+        if (find("[ЇїІіЄєҐґ]"))
+            return "uk-UA"
+
+        if (find("\\w"))
+            return "en-US"
+
+        return "uk-UA"
+    }
 }
