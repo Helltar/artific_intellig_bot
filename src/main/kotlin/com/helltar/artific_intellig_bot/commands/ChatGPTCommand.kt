@@ -10,7 +10,7 @@ import com.helltar.artific_intellig_bot.DIR_TEXT_TO_SPEECH
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.Utils
 import com.helltar.artific_intellig_bot.Utils.detectLangCode
-import com.helltar.artific_intellig_bot.commands.Commands.commandChatAsText
+import com.helltar.artific_intellig_bot.commands.Commands.cmdChatAsText
 import org.json.JSONException
 import org.json.JSONObject
 import org.json.simple.JSONValue
@@ -77,7 +77,7 @@ class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotComman
 
             chatDialogContext[userId] += "AI: $answer$DELIMITER"
 
-            if (File(DIR_DB + commandChatAsText).exists())
+            if (File(DIR_DB + cmdChatAsText).exists())
                 sendMessage(Utils.escapeHtml(answer))
             else {
                 textToSpeech(answer, detectLangCode(answer))?.let {

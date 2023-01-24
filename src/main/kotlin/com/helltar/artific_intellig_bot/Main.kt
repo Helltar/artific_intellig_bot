@@ -11,17 +11,17 @@ import com.github.kotlintelegrambot.entities.Message
 import com.github.kotlintelegrambot.extensions.filters.Filter
 import com.github.kotlintelegrambot.logging.LogLevel
 import com.helltar.artific_intellig_bot.commands.*
-import com.helltar.artific_intellig_bot.commands.Commands.commandChatAsText
-import com.helltar.artific_intellig_bot.commands.Commands.commandChatAsVoice
-import com.helltar.artific_intellig_bot.commands.Commands.commandDisable
-import com.helltar.artific_intellig_bot.commands.Commands.commandEnable
-import com.helltar.artific_intellig_bot.commands.Commands.commandAbout
-import com.helltar.artific_intellig_bot.commands.Commands.commandBanList
-import com.helltar.artific_intellig_bot.commands.Commands.commandBanUser
-import com.helltar.artific_intellig_bot.commands.Commands.commandChat
-import com.helltar.artific_intellig_bot.commands.Commands.commandDalle
-import com.helltar.artific_intellig_bot.commands.Commands.commandStableDiffusion
-import com.helltar.artific_intellig_bot.commands.Commands.commandUnbanUser
+import com.helltar.artific_intellig_bot.commands.Commands.cmdChatAsText
+import com.helltar.artific_intellig_bot.commands.Commands.cmdChatAsVoice
+import com.helltar.artific_intellig_bot.commands.Commands.cmdDisable
+import com.helltar.artific_intellig_bot.commands.Commands.cmdEnable
+import com.helltar.artific_intellig_bot.commands.Commands.cmdAbout
+import com.helltar.artific_intellig_bot.commands.Commands.cmdBanList
+import com.helltar.artific_intellig_bot.commands.Commands.cmdBanUser
+import com.helltar.artific_intellig_bot.commands.Commands.cmdChat
+import com.helltar.artific_intellig_bot.commands.Commands.cmdDalle
+import com.helltar.artific_intellig_bot.commands.Commands.cmdStableDiffusion
+import com.helltar.artific_intellig_bot.commands.Commands.cmdUnbanUser
 import com.helltar.artific_intellig_bot.commands.admin.*
 import com.helltar.artific_intellig_bot.db.Database
 import kotlinx.coroutines.CoroutineScope
@@ -46,19 +46,19 @@ fun main() {
         logLevel = LogLevel.Error
 
         dispatch {
-            command(commandChat) { runCommand(ChatGPTCommand(bot, update.message!!, args), commandChat) }
-            command(commandDalle) { runCommand(DallE2Command(bot, update.message!!, args), commandDalle) }
-            command(commandStableDiffusion) { runCommand(StableDiffusionCommand(bot, update.message!!, args), commandStableDiffusion) }
+            command(cmdChat) { runCommand(ChatGPTCommand(bot, update.message!!, args), cmdChat) }
+            command(cmdDalle) { runCommand(DallE2Command(bot, update.message!!, args), cmdDalle) }
+            command(cmdStableDiffusion) { runCommand(StableDiffusionCommand(bot, update.message!!, args), cmdStableDiffusion) }
 
-            command(commandEnable) { runCommand(EnableCommand(bot, update.message!!, args), commandEnable) }
-            command(commandDisable) { runCommand(DisableCommand(bot, update.message!!, args), commandDisable) }
-            command(commandChatAsText) { runCommand(ChatAsTextCommand(bot, update.message!!), commandChatAsText) }
-            command(commandChatAsVoice) { runCommand(ChatAsVoiceCommand(bot, update.message!!), commandChatAsVoice) }
-            command(commandBanUser) { runCommand(BanUserCommand(bot, update.message!!, args), commandBanUser) }
-            command(commandUnbanUser) { runCommand(UnbanUserCommand(bot, update.message!!), commandUnbanUser) }
-            command(commandBanList) { runCommand(BanListCommand(bot, update.message!!), commandBanList) }
+            command(cmdEnable) { runCommand(EnableCommand(bot, update.message!!, args), cmdEnable) }
+            command(cmdDisable) { runCommand(DisableCommand(bot, update.message!!, args), cmdDisable) }
+            command(cmdChatAsText) { runCommand(ChatAsTextCommand(bot, update.message!!), cmdChatAsText) }
+            command(cmdChatAsVoice) { runCommand(ChatAsVoiceCommand(bot, update.message!!), cmdChatAsVoice) }
+            command(cmdBanUser) { runCommand(BanUserCommand(bot, update.message!!, args), cmdBanUser) }
+            command(cmdUnbanUser) { runCommand(UnbanUserCommand(bot, update.message!!), cmdUnbanUser) }
+            command(cmdBanList) { runCommand(BanListCommand(bot, update.message!!), cmdBanList) }
 
-            command(commandAbout) { runCommand(AboutCommand(bot, update.message!!), commandAbout) }
+            command(cmdAbout) { runCommand(AboutCommand(bot, update.message!!), cmdAbout) }
 
             message(Filter.Reply) {
                 val replyToMessage = update.message!!.replyToMessage!!
@@ -68,7 +68,7 @@ fun main() {
                 if (replyToMessage.photo != null) return@message
 
                 if (replyToMessage.from!!.username == BOT_USERNAME)
-                    runCommand(ChatGPTCommand(bot, update.message!!, listOf("reply")), commandChat)
+                    runCommand(ChatGPTCommand(bot, update.message!!, listOf("reply")), cmdChat)
             }
 
             telegramError { log.error(error.getErrorMessage()) }

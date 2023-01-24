@@ -16,8 +16,8 @@ class EnableCommand(bot: Bot, message: Message, args: List<String>) : BotCommand
 
         val commandName = args[0]
 
-        if (!Commands.commandsList.contains(commandName)) {
-            sendMessage("Command <b>$commandName</b> not available: ${Commands.commandsList}")
+        if (!Commands.disalableCmdsList.contains(commandName)) {
+            sendMessage("Command <b>$commandName</b> not available: ${Commands.disalableCmdsList}")
             return
         }
 
