@@ -23,7 +23,7 @@ abstract class BotCommand(val bot: Bot, val message: Message, val args: List<Str
         File(DIR_DB + commandName + EXT_DISABLED).exists()
 
     fun isChatNotInWhiteList() =
-        getChatsWhiteList().contains(chatId.id.toString())
+        !getChatsWhiteList().contains(chatId.id.toString())
 
     fun isUserBanned(userId: Long) =
         Database.banListTable.isUserBanned(userId)
