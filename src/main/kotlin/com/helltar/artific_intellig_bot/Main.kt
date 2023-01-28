@@ -57,7 +57,7 @@ fun main() {
             command(cmdChatAsText) { runCommand(ChatAsTextCommand(bot, update.message!!), cmdChatAsText, true) }
             command(cmdChatAsVoice) { runCommand(ChatAsVoiceCommand(bot, update.message!!), cmdChatAsVoice, true) }
             command(cmdBanUser) { runCommand(BanUserCommand(bot, update.message!!, args), cmdBanUser, true) }
-            command(cmdUnbanUser) { runCommand(UnbanUserCommand(bot, update.message!!), cmdUnbanUser, true) }
+            command(cmdUnbanUser) { runCommand(UnbanUserCommand(bot, update.message!!, args), cmdUnbanUser, true) }
 
             message(Filter.Reply) {
                 update.message?.let {
