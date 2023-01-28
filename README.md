@@ -8,7 +8,6 @@ Demo: https://t.me/+siikRmY3uyE5YTBi
 ./_config/_
 
 - **bot_token**.txt : [BotFather](https://t.me/BotFather)
-- **bot_username**.txt : [BotFather](https://t.me/BotFather)
 - **sudoers**.txt : List of superuser IDs (ID per line)
 - **chats_white_list**.txt : Chat IDs where and only where commands are available, if empty - commands are available to everyone (ID per line)
 

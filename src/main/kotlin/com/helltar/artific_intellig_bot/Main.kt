@@ -63,7 +63,7 @@ fun main() {
                 update.message?.let {
                     it.replyToMessage?.photo
                         ?: it.text?.let { text ->
-                            if (it.replyToMessage?.from?.username == BOT_USERNAME)
+                            if (it.replyToMessage?.from?.username == bot.getMe().get().username)
                                 if (!text.startsWith("/"))
                                     runCommand(ChatGPTCommand(bot, it, listOf("reply")), cmdChat)
                         }
