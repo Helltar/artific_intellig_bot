@@ -52,6 +52,9 @@ abstract class BotCommand(val bot: Bot, val message: Message, val args: List<Str
             replyToMessageId = replyToMessageId, allowSendingWithoutReply = true
         )
 
+    protected fun deleteMessage(messageId: Long) =
+        bot.deleteMessage(chatId, messageId)
+
     protected data class ReqData(
         val url: String,
         val apiKey: String,
