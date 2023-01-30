@@ -4,6 +4,7 @@ import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.Message
 import com.helltar.artific_intellig_bot.DIR_DB
 import com.helltar.artific_intellig_bot.EXT_DISABLED
+import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.commands.BotCommand
 import com.helltar.artific_intellig_bot.commands.Commands
 import java.io.File
@@ -16,18 +17,18 @@ class EnableCommand(bot: Bot, message: Message, args: List<String>) : BotCommand
         val commandName = args[0]
 
         if (!Commands.disalableCmdsList.contains(commandName)) {
-            sendMessage("Command <b>$commandName</b> not available: ${Commands.disalableCmdsList}")
+            sendMessage(String.format(Strings.command_not_available, commandName, Commands.disalableCmdsList))
             return
         }
 
         File(DIR_DB + commandName + EXT_DISABLED).run {
             if (exists())
                 if (delete())
-                    sendMessage("✅ Command <b>$commandName</b> enable")
+                    sendMessage(String.format(Strings.command_enabled, commandName))
                 else
-                    sendMessage("❌ Error when delete lock file: <code>$name</code>")
+                    sendMessage(String.format(Strings.error_delete_lock_file, name))
             else
-                sendMessage("✅ Command <b>$commandName</b> already enabled")
+                sendMessage(String.format(Strings.command_already_enabled, commandName))
         }
     }
 }

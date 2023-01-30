@@ -2,6 +2,7 @@ package com.helltar.artific_intellig_bot.commands.admin
 
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.Message
+import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.commands.BotCommand
 import com.helltar.artific_intellig_bot.db.Database
 
@@ -13,8 +14,8 @@ class BanUserCommand(bot: Bot, message: Message, args: List<String>) : BotComman
         val reason = args.joinToString(" ")
 
         if (Database.banListTable.banUser(user, reason).insertedCount > 0)
-            sendMessage("❌ User banned")
+            sendMessage(Strings.user_banned)
         else
-            sendMessage("✅ User already banned")
+            sendMessage(Strings.user_already_banned)
     }
 }

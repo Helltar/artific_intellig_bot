@@ -2,6 +2,7 @@ package com.helltar.artific_intellig_bot.commands.admin
 
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.Message
+import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.commands.BotCommand
 import com.helltar.artific_intellig_bot.db.Database
 import java.util.concurrent.TimeUnit
@@ -17,9 +18,9 @@ class UnbanUserCommand(bot: Bot, message: Message, args: List<String>) : BotComm
 
         val messageId =
             if (Database.banListTable.unbanUser(userId ?: return) > 0)
-                sendMessage("✅ User unbanned")
+                sendMessage(Strings.user_unbanned)
             else
-                sendMessage("✅ User not banned")
+                sendMessage(Strings.user_not_banned)
 
         if (message.chat.type != "private") {
             TimeUnit.SECONDS.sleep(3)

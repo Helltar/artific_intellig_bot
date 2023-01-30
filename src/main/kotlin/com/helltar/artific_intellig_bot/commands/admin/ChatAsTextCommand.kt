@@ -3,6 +3,7 @@ package com.helltar.artific_intellig_bot.commands.admin
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.Message
 import com.helltar.artific_intellig_bot.DIR_DB
+import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.commands.BotCommand
 import com.helltar.artific_intellig_bot.commands.Commands.cmdChatAsText
 import com.helltar.artific_intellig_bot.commands.Commands.cmdChatAsVoice
@@ -18,13 +19,13 @@ class ChatAsTextCommand(bot: Bot, message: Message) : BotCommand(bot, message) {
                 try {
                     delete()
                     File(DIR_DB + cmdChatAsText).createNewFile()
-                    sendMessage("✅ ChatAsText")
+                    sendMessage(Strings.chat_as_text_ok)
                 } catch (e: IOException) {
                     sendMessage("❌ <code>${e.message}</code>")
                     LoggerFactory.getLogger(javaClass).error(e.message)
                 }
             else
-                sendMessage("✅ ChatAsText already enabled")
+                sendMessage(Strings.chat_as_text_already_enabled)
         }
     }
 }

@@ -2,6 +2,7 @@ package com.helltar.artific_intellig_bot.commands
 
 import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.entities.Message
+import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.db.Database
 
 class BanListCommand(bot: Bot, message: Message) : BotCommand(bot, message) {
@@ -12,6 +13,6 @@ class BanListCommand(bot: Bot, message: Message) : BotCommand(bot, message) {
         if (list.isNotEmpty())
             sendMessage(list)
         else
-            sendMessage("◻️ List is empty")
+            sendMessage(Strings.list_is_empty)
     }
 }
