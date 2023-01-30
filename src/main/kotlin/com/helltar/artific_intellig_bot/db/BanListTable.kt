@@ -6,8 +6,11 @@ import com.helltar.artific_intellig_bot.db.BanList.reason
 import com.helltar.artific_intellig_bot.db.BanList.userId
 import com.helltar.artific_intellig_bot.db.BanList.username
 import com.helltar.artific_intellig_bot.db.Database.dbQuery
-import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insertIgnore
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class BanListTable {
 
@@ -26,6 +29,10 @@ class BanListTable {
 
     fun isUserBanned(userId: Long) = dbQuery {
         BanList.select { BanList.userId eq userId }.count() > 0
+    }
+
+    fun getReason(userId: Long) = dbQuery {
+        BanList.select { BanList.userId eq userId }.single()[reason]
     }
 
     fun getList(): List<String> = dbQuery {

@@ -101,7 +101,8 @@ private fun runCommand(botCommand: BotCommand, commandName: String, isAdminComma
             }
 
             if (isUserBanned(userId)) {
-                sendMessage("❌ BAN")
+                val reason = Database.banListTable.getReason(userId).ifEmpty { "null" }
+                sendMessage("❌ Ban, reason: <b>$reason</b>")
                 return
             }
         }
