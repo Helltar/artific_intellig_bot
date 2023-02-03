@@ -90,7 +90,7 @@ private fun runCommand(botCommand: BotCommand, commandName: String, isAdminComma
 
     botCommand.run {
         if (isNotAdmin()) {
-            if (isChatNotInWhiteList()) {
+            if (!isChatInWhiteList()) {
                 sendMessage(Strings.command_not_supported_in_chat)
                 return
             }

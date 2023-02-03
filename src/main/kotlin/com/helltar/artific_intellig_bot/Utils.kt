@@ -31,7 +31,13 @@ object Utils {
             ""
         }
 
-    fun getListFromFile(filename: String) = getTextFromFile(filename).split("\n")
+    fun getListFromFile(filename: String) =
+        getTextFromFile(filename).run {
+            if (this.isNotEmpty())
+                split("\n")
+            else
+                listOf()
+        }
 
     fun escapeHtml(text: String) = text
         .replace("&", "&amp;")
