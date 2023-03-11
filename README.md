@@ -7,7 +7,7 @@ Demo: https://t.me/+siikRmY3uyE5YTBi
 Download
 --------
 
-- [ artific_intellig_bot-0.5.0.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.5.0/artific_intellig_bot-0.5.0.zip) (35.3 MB)
+- [artific_intellig_bot-0.5.0.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.5.0/artific_intellig_bot-0.5.0.zip) (35.3 MB)
 
 Installation
 ------------
@@ -29,6 +29,7 @@ Installation
 <br>
 
 ```
+unzip artific_intellig_bot-0.5.0.zip && cd artific_intellig_bot-0.5.0
 java -jar artific_intellig_bot-0.5.0-all.jar
 ```
 
