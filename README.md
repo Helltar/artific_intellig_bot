@@ -40,8 +40,6 @@ Commands
 - /**dalle** - DALL·E 2
 - /**sdif** - Stable Diffusion
 - /**dallevariations** - DALL·E 2 Variations (reply to image with text: "@")
-<br>
-
 - /**uptime**
 - /**about**
 
