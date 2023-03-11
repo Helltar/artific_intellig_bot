@@ -3,6 +3,15 @@ artific_intellig_bot
 
 Demo: https://t.me/+siikRmY3uyE5YTBi
 
+
+Download
+--------
+
+- [ artific_intellig_bot-0.5.0.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.5.0/artific_intellig_bot-0.5.0.zip) (35.3 MB)
+
+Installation
+------------
+
 ./_config/_
 
 **bot_config.yaml**:
@@ -23,47 +32,45 @@ Demo: https://t.me/+siikRmY3uyE5YTBi
 java -jar artific_intellig_bot-0.5.0-all.jar
 ```
 
-### Commands
+Commands
+--------
 
 - /**chat** - ChatGPT
 - /**dalle** - DALL·E 2
 - /**sdif** - Stable Diffusion
 - /**dallevariations** - DALL·E 2 Variations (reply to image with text: "@")
-
----
+<br>
 
 - /**uptime**
 - /**about**
 
-### Admin commands:
+Admin commands
+--------------
 
 - /**enable** _commandName_ (example: _/enable /chat_)
 - /**disable** _commandName_ (example: _/disable /dalle_)
-
----
+<br>
 
 - /**chatastext** (ChatGPT answers as text, default)
 - /**chatasvoice** (ChatGPT answers as voice, Google Text-to-Speech)
-
----
+<br>
 
 - /**ban** (use as reply to user message)
 - /**unban** (use as reply to user message or by user ID)
 - /**banlist** (view banned users list)
-
----
+<br>
 
 - /**addadmin** (add admin) (creator-only command)
 - /**rmadmin** (remove admin)
 - /**sudoers** (view admin list)
-
----
+<br>
 
 - /**addchat** (add chat to white list, use in chat or by ID) (creator-only command)
 - /**rmchat** (remove chat from white list, use in chat or by ID)
 - /**chats** (view chats list)
 
-### Docs
+Docs
+----
 
 ./_config/json/_
 
