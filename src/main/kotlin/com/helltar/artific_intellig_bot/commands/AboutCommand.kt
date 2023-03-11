@@ -1,15 +1,14 @@
 package com.helltar.artific_intellig_bot.commands
 
-import com.github.kotlintelegrambot.Bot
-import com.github.kotlintelegrambot.entities.Message
+import com.annimon.tgbotsmodule.commands.context.MessageContext
 
-class AboutCommand(bot: Bot, message: Message, args: List<String> = listOf()) : BotCommand(bot, message, args) {
+class AboutCommand(ctx: MessageContext) : BotCommand(ctx) {
 
     override fun run() {
-        sendMessage("""
+        replyToMessage("""
             <a href="https://github.com/Helltar/artific_intellig_bot">AᎥ</a>
             Contact: @Helltar https://helltar.com
             Source Code:
-        """.trimIndent(), disableWebPagePreview = false)
+        """.trimIndent(), true)
     }
 }

@@ -17,14 +17,25 @@ object Strings {
     const val command_not_available = "Command <b>%s</b> not available: %s"
     const val command_not_supported_in_chat = "Command is not supported in this chat \uD83D\uDE48" // 🙈
     const val command_temporary_disabled = "Command temporary disabled \uD83D\uDC40" // 👀
-    const val empty_args = "Please write a description of what you want to receive \uD83D\uDE42" // 🙂
+    const val empty_args = "Please write a description of what you want to receive:\n\n<code>/dalle photo realistic portrait of young woman</code>"
     const val error_delete_lock_file = "❌ Error when delete lock file: <code>%s</code>"
     const val list_is_empty = "◻️ List is empty"
     const val many_characters = "Max <b>%d</b> characters \uD83D\uDC40" // 👀
     const val many_request = "Wait, let me deal with the last request \uD83E\uDD16" // 🤖
     const val stable_diffusion_empty_args = "Please write a description of what you want to receive:\n\n<code>/sdif photo realistic portrait of young woman</code>"
+
     const val user_already_banned = "✅ User already banned"
     const val user_banned = "❌ User banned"
     const val user_not_banned = "✅ User not banned"
     const val user_unbanned = "✅ User unbanned"
+
+    const val admin_added = "✅ Admin added"
+    const val admin_exists = "✅ Admin already exists"
+    const val admin_removed = "✅ Admin has been removed"
+    const val admin_not_exists = "❌ Admin does not exist"
+
+    const val chat_added = "✅ Chat added"
+    const val chat_exists = "✅ Chat already exists"
+    const val chat_removed = "✅ Chat has been removed"
+    const val chat_not_exists = "❌ Chat does not exist"
 }

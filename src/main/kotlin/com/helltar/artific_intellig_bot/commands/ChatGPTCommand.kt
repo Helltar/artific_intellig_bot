@@ -1,12 +1,11 @@
 package com.helltar.artific_intellig_bot.commands
 
+import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.core.isSuccessful
 import com.github.kittinunf.fuel.httpPost
-import com.github.kotlintelegrambot.Bot
-import com.github.kotlintelegrambot.entities.Message
 import com.helltar.artific_intellig_bot.DIR_DB
-import com.helltar.artific_intellig_bot.DIR_TEXT_TO_SPEECH
+import com.helltar.artific_intellig_bot.DIR_OUT_TEXT_TO_SPEECH
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.Utils
 import com.helltar.artific_intellig_bot.Utils.detectLangCode
@@ -18,50 +17,40 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.*
 
-private val chatDialogContext = hashMapOf<Long, String>()
-
-class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotCommand(bot, message, args) {
+class ChatGPTCommand(ctx: MessageContext, args: List<String> = listOf()) : BotCommand(ctx, args) {
 
     companion object {
         private const val MAX_MESSAGE_TEXT_LENGTH = 300
-        private const val MAX_DIALOG_CONTEXT_LENGTH = 256
-        private const val DELIMITER = "\\n"
     }
 
     private val log = LoggerFactory.getLogger(javaClass)
 
     override fun run() {
         if (args.isEmpty()) {
-            sendMessage(Strings.chat_hello)
+            replyToMessage(Strings.chat_hello)
             return
         }
 
-        val text = message.text ?: return
+        val text = ctx.message().text ?: return
 
-        if (isNotAdmin())
-            if (text.length > MAX_MESSAGE_TEXT_LENGTH) {
-                sendMessage(String.format(Strings.many_characters, MAX_MESSAGE_TEXT_LENGTH))
-                return
-            }
+        val textLength =
+            if (isNotAdmin())
+                MAX_MESSAGE_TEXT_LENGTH
+            else
+                1024
 
-        if (chatDialogContext.containsKey(userId)) {
-            if (chatDialogContext[userId]!!.length > MAX_DIALOG_CONTEXT_LENGTH) {
-                chatDialogContext[userId] = chatDialogContext[userId]!!.substringAfter(DELIMITER)
-            }
+        if (text.length > textLength) {
+            replyToMessage(String.format(Strings.many_characters, textLength))
+            return
+        }
 
-            chatDialogContext[userId] += "Human: $text$DELIMITER"
-        } else
-            chatDialogContext[userId] = "Human: $text$DELIMITER"
-
-        val prompt = chatDialogContext[userId] ?: return
         val json: String
 
-        sendPrompt(prompt).run {
+        sendPrompt(text).run {
             if (second.isSuccessful)
                 json = third.get()
             else {
-                chatDialogContext[userId] = ""
-                sendMessage(Strings.chat_exception)
+                replyToMessage(Strings.chat_exception)
                 log.error(third.component2()?.message)
                 return
             }
@@ -72,18 +61,17 @@ class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotComman
                 JSONObject(json)
                     .getJSONArray("choices")
                     .getJSONObject(0)
-                    .getString("text")
-                    .substringAfter(":")
-
-            chatDialogContext[userId] += "AI: $answer$DELIMITER"
+                    .getJSONObject("message")
+                    .getString("content")
 
             if (!File(DIR_DB + cmdChatAsVoice).exists())
-                sendMessage(Utils.escapeHtml(answer))
+                replyToMessage(answer, markdown = true)
             else {
                 textToSpeech(answer, detectLangCode(answer))?.let {
                     sendVoice(it)
+                    it.delete()
                 }
-                    ?: sendMessage(Strings.chat_exception)
+                    ?: replyToMessage(Strings.chat_exception)
             }
         } catch (e: JSONException) {
             log.error(e.message)
@@ -93,12 +81,12 @@ class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotComman
     private fun sendPrompt(prompt: String) =
         sendPrompt(
             ReqData(
-                "https://api.openai.com/v1/completions",
+                "https://api.openai.com/v1/chat/completions",
                 "Bearer $openaiKey", getJsonChatGPT(), prompt
             )
         )
 
-    private fun textToSpeech(text: String, languageCode: String): ByteArray? {
+    private fun textToSpeech(text: String, languageCode: String): File? {
         var json: String
 
         "https://texttospeech.googleapis.com/v1/text:synthesize?fields=audioContent&key=$googleCloudKey"
@@ -116,11 +104,12 @@ class ChatGPTCommand(bot: Bot, message: Message, args: List<String>) : BotComman
             }
 
         return try {
-            val audioBytes = Base64.getDecoder().decode(JSONObject(json).getString("audioContent"))
-            File("$DIR_TEXT_TO_SPEECH${userId}_${Utils.randomUUID()}.ogg").writeBytes(audioBytes)
-            audioBytes
+            File("$DIR_OUT_TEXT_TO_SPEECH${userId}_${Utils.randomUUID()}.ogg").run {
+                writeBytes(Base64.getDecoder().decode(JSONObject(json).getString("audioContent")))
+                this
+            }
         } catch (e: Exception) {
-            sendMessage(Strings.chat_exception)
+            replyToMessage(Strings.chat_exception)
             log.error(e.message)
             null
         }

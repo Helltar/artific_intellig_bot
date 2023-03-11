@@ -1,7 +1,6 @@
 package com.helltar.artific_intellig_bot.commands.admin
 
-import com.github.kotlintelegrambot.Bot
-import com.github.kotlintelegrambot.entities.Message
+import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.artific_intellig_bot.DIR_DB
 import com.helltar.artific_intellig_bot.EXT_DISABLED
 import com.helltar.artific_intellig_bot.Strings
@@ -11,15 +10,18 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
 
-class DisableCommand(bot: Bot, message: Message, args: List<String>) : BotCommand(bot, message, args) {
+class DisableCommand(ctx: MessageContext,args: List<String>) : BotCommand(ctx,args) {
 
     override fun run() {
-        if (args.isEmpty()) return
+        if (args.isEmpty()) {
+            replyToMessage(Commands.disalableCmdsList.toString())
+            return
+        }
 
         val commandName = args[0]
 
         if (!Commands.disalableCmdsList.contains(commandName)) {
-            sendMessage(String.format(Strings.command_not_available, commandName, Commands.disalableCmdsList))
+            replyToMessage(String.format(Strings.command_not_available, commandName, Commands.disalableCmdsList))
             return
         }
 
@@ -27,13 +29,13 @@ class DisableCommand(bot: Bot, message: Message, args: List<String>) : BotComman
             if (!exists())
                 try {
                     createNewFile()
-                    sendMessage(String.format(Strings.command_disabled, commandName))
+                    replyToMessage(String.format(Strings.command_disabled, commandName))
                 } catch (e: IOException) {
-                    sendMessage("❌ <code>${e.message}</code>")
+                    replyToMessage("❌ <code>${e.message}</code>")
                     LoggerFactory.getLogger(javaClass).error(e.message)
                 }
             else
-                sendMessage(String.format(Strings.command_already_disabled, commandName))
+                replyToMessage(String.format(Strings.command_already_disabled, commandName))
         }
     }
 }

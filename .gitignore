@@ -3,9 +3,11 @@
 
 build/
 scripts/
+test/
+
 stable_diffusion/
 text_to_speech/
-test/
+dalle2_variations/
 
 /db/
 

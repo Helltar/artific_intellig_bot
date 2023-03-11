@@ -1,18 +1,12 @@
 package com.helltar.artific_intellig_bot.commands
 
-import com.github.kotlintelegrambot.Bot
-import com.github.kotlintelegrambot.entities.Message
+import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.db.Database
 
-class BanListCommand(bot: Bot, message: Message) : BotCommand(bot, message) {
+class BanListCommand(ctx: MessageContext) : BotCommand(ctx) {
 
     override fun run() {
-        val list = Database.banListTable.getList().joinToString("\n")
-
-        if (list.isNotEmpty())
-            sendMessage(list)
-        else
-            sendMessage(Strings.list_is_empty)
+        replyToMessage(Database.banList.getList().ifEmpty { Strings.list_is_empty })
     }
 }

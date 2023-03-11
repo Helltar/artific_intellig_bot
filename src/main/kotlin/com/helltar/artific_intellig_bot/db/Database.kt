@@ -1,6 +1,6 @@
 package com.helltar.artific_intellig_bot.db
 
-import com.helltar.artific_intellig_bot.DATABASE_FILE
+import com.helltar.artific_intellig_bot.FILE_DATABASE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -12,11 +12,13 @@ import org.jetbrains.exposed.sql.Database as SQLDatabase
 
 object Database {
 
-    val banListTable = BanListTable()
+    val banList = BanList()
+    val sudoers = Sudoers()
+    val chatWhiteList = ChatWhiteList()
 
     fun init() {
-        transaction(SQLDatabase.connect("jdbc:sqlite:$DATABASE_FILE", "org.sqlite.JDBC")) {
-            SchemaUtils.create(BanList)
+        transaction(SQLDatabase.connect("jdbc:sqlite:$FILE_DATABASE", "org.sqlite.JDBC")) {
+            SchemaUtils.create(BanListTable, SudoersTable, ChatWhiteListTable)
         }
     }
 

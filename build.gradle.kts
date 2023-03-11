@@ -1,29 +1,27 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+    id("com.github.johnrengelman.shadow") version ("7.1.2")
     kotlin("jvm") version "1.7.21"
     application
 }
 
 group = "com.helltar"
-version = "0.1.0"
+version = "0.5.0"
 
 repositories {
     mavenCentral()
-    maven(url = "https://jitpack.io")
 }
 
 dependencies {
-    implementation("io.github.kotlin-telegram-bot.kotlin-telegram-bot:telegram:6.0.7")
-
+    implementation("com.annimon:tgbots-module:6.5.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
 
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.0")
     implementation("com.github.kittinunf.fuel:fuel:2.3.1")
-    implementation("com.squareup.okhttp3:okhttp:4.10.0")
-
-    implementation("org.json:json:20220924")
-    implementation("com.github.kittinunf.fuel:fuel-gson:2.3.1")
     implementation("com.googlecode.json-simple:json-simple:1.1.1")
+    implementation("org.imgscalr:imgscalr-lib:4.2")
+    implementation("org.json:json:20220924")
 
     implementation("org.xerial:sqlite-jdbc:3.40.0.0")
     implementation("org.jetbrains.exposed:exposed-core:0.40.1")
@@ -31,7 +29,6 @@ dependencies {
 
     implementation("org.slf4j:slf4j-api:2.0.6")
     implementation("ch.qos.logback:logback-classic:1.4.5")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
 
     testImplementation(kotlin("test"))
 }
@@ -45,5 +42,5 @@ tasks.withType<KotlinCompile> {
 }
 
 application {
-    mainClass.set("com.helltar.artific_intellig_bot.MainKt")
+    mainClass.set("com.helltar.artific_intellig_bot.ArtificIntelligBot")
 }

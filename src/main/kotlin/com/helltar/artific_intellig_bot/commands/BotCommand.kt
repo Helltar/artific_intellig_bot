@@ -1,61 +1,71 @@
 package com.helltar.artific_intellig_bot.commands
 
+import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.httpPost
-import com.github.kotlintelegrambot.Bot
-import com.github.kotlintelegrambot.entities.*
 import com.helltar.artific_intellig_bot.BotConfig
 import com.helltar.artific_intellig_bot.DIR_DB
 import com.helltar.artific_intellig_bot.EXT_DISABLED
 import com.helltar.artific_intellig_bot.db.Database
 import org.json.simple.JSONValue
+import org.telegram.telegrambots.meta.api.methods.ParseMode
+import org.telegram.telegrambots.meta.api.objects.InputFile
+import org.telegram.telegrambots.meta.api.objects.Message
 import java.io.File
 
-abstract class BotCommand(val bot: Bot, val message: Message, val args: List<String> = listOf()) : BotConfig() {
+abstract class BotCommand(val ctx: MessageContext, val args: List<String> = listOf()) : BotConfig() {
 
-    protected val userId = message.from!!.id
-    private val chatId = ChatId.fromId(message.chat.id)
-    private val replyToMessageId = message.messageId
+    protected val userId = ctx.user().id
 
     abstract fun run()
 
     fun isCommandDisabled(commandName: String) =
         File(DIR_DB + commandName + EXT_DISABLED).exists()
 
-    fun isChatInWhiteList(): Boolean {
-        val whiteList = getChatsWhiteList().ifEmpty { return true }
-        return whiteList.contains(chatId.id.toString())
-    }
+    fun isChatInWhiteList() =
+        Database.chatWhiteList.isChatExists(ctx.chatId())
 
     fun isUserBanned(userId: Long) =
-        Database.banListTable.isUserBanned(userId)
+        Database.banList.isUserBanned(userId)
 
     fun isNotAdmin() =
-        !getSudoers().contains(userId.toString())
+        !Database.sudoers.isAdmin(userId)
 
-    fun sendMessage(
-        text: String, replyTo: Long = replyToMessageId,
-        disableWebPagePreview: Boolean = true, replyMarkup: ReplyMarkup? = null
-    ) =
-        bot.sendMessage(
-            chatId, text, ParseMode.HTML, disableWebPagePreview,
-            replyToMessageId = replyTo, allowSendingWithoutReply = true,
-            replyMarkup = replyMarkup
-        ).get().messageId
+    fun isAdmin() =
+        !isNotAdmin()
 
-    protected fun sendPhoto(photo: TelegramFile, caption: String, replyTo: Long = replyToMessageId) =
-        bot.sendPhoto(
-            chatId, photo, caption, replyToMessageId = replyTo, allowSendingWithoutReply = true
-        )
+    fun isCreator(userId: Long = this.userId) =
+        Database.sudoers.isCreator(userId)
 
-    protected fun sendVoice(audio: ByteArray) =
-        bot.sendVoice(
-            chatId, TelegramFile.ByByteArray(audio),
-            replyToMessageId = replyToMessageId, allowSendingWithoutReply = true
-        )
+    fun replyToMessage(text: String, enableWebPagePreview: Boolean = false, markdown: Boolean = false): Int =
+        ctx.replyToMessage(text)
+            .setParseMode(if (!markdown) ParseMode.HTML else ParseMode.MARKDOWN)
+            .setWebPagePreviewEnabled(enableWebPagePreview)
+            .call(ctx.sender)
+            .messageId
 
-    protected fun deleteMessage(messageId: Long) =
-        bot.deleteMessage(chatId, messageId)
+    protected fun replyToMessageWithPhoto(file: File, caption: String): Message =
+        ctx.replyToMessageWithPhoto()
+            .setFile(file)
+            .setCaption(caption)
+            .setParseMode(ParseMode.HTML)
+            .call(ctx.sender)
+
+    protected fun replyToMessageWithPhoto(url: String, caption: String = "", messageId: Int = ctx.messageId()): Message =
+        ctx.replyToMessageWithPhoto()
+            .setFile(InputFile(url))
+            .setCaption(caption)
+            .setReplyToMessageId(messageId)
+            .setParseMode(ParseMode.HTML)
+            .call(ctx.sender)
+
+    protected fun sendVoice(file: File): Message =
+        ctx.replyToMessageWithAudio()
+            .setFile(file)
+            .call(ctx.sender)
+
+    protected fun deleteMessage(messageId: Int) =
+        ctx.deleteMessage().setMessageId(messageId).callAsync(ctx.sender)
 
     protected data class ReqData(
         val url: String,

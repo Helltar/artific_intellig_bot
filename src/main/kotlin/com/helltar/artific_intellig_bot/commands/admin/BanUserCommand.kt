@@ -1,21 +1,27 @@
 package com.helltar.artific_intellig_bot.commands.admin
 
-import com.github.kotlintelegrambot.Bot
-import com.github.kotlintelegrambot.entities.Message
+import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.commands.BotCommand
 import com.helltar.artific_intellig_bot.db.Database
+import java.util.concurrent.TimeUnit
 
-class BanUserCommand(bot: Bot, message: Message, args: List<String>) : BotCommand(bot, message, args) {
+class BanUserCommand(ctx: MessageContext, args: List<String> = listOf()) : BotCommand(ctx, args) {
 
     override fun run() {
-        val user = message.replyToMessage?.from ?: return
+        val user = ctx.message().replyToMessage?.from ?: return
 
         val reason = args.joinToString(" ")
 
-        if (Database.banListTable.banUser(user, reason).insertedCount > 0)
-            sendMessage(Strings.user_banned)
-        else
-            sendMessage(Strings.user_already_banned)
+        val messageId =
+            if (Database.banList.banUser(user, reason))
+                replyToMessage(Strings.user_banned)
+            else
+                replyToMessage(Strings.user_already_banned)
+
+        if (ctx.message().chat.type != "private") {
+            TimeUnit.SECONDS.sleep(3)
+            deleteMessage(messageId)
+        }
     }
 }
