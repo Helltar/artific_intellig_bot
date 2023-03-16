@@ -54,13 +54,13 @@ Admin commands
 - /**chatasvoice** (ChatGPT answers as voice, Google Text-to-Speech)
 <br>
 
-- /**ban** (use as reply to user message)
+- /**ban** (use as reply to user message, example: _/ban reason_)
 - /**unban** (use as reply to user message or by user ID)
 - /**banlist** (view banned users list)
 <br>
 
-- /**addadmin** (add admin) (creator-only command)
-- /**rmadmin** (remove admin)
+- /**addadmin** (add admin by ID, example: _/addadmin 123456789 username_) (creator-only command)
+- /**rmadmin** (remove admin by ID)
 - /**sudoers** (view admin list)
 <br>
 
