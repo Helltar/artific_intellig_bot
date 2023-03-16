@@ -39,9 +39,11 @@ Commands
 - /**chat** - ChatGPT
 - /**dalle** - DALL·E 2
 - /**sdif** - Stable Diffusion
-- /**dallevariations** - DALL·E 2 Variations (this is not a typical command in use, use as a reply to an image with text: "@")
+- /**dallevariations** - DALL·E 2 Variations
 - /**uptime**
 - /**about**
+
+NOTE: /**dallevariations** - is not a typical command in use, run it as a reply to an image with text: "**@**"
 
 Admin commands
 --------------
