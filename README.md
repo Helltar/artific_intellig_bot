@@ -39,7 +39,7 @@ Commands
 - /**chat** - ChatGPT
 - /**dalle** - DALL·E 2
 - /**sdif** - Stable Diffusion
-- /**dallevariations** - DALL·E 2 Variations (reply to image with text: "@")
+- /**dallevariations** - DALL·E 2 Variations (this is not a typical command in use, use as a reply to an image with text: "@")
 - /**uptime**
 - /**about**
 
