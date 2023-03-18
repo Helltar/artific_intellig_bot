@@ -30,6 +30,8 @@ import com.helltar.artific_intellig_bot.commands.admin.*
 import com.helltar.artific_intellig_bot.db.Database
 import org.slf4j.LoggerFactory
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
+import org.telegram.telegrambots.meta.api.objects.EntityType
+import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 
 class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandler(botConfig.token) {
@@ -67,6 +69,13 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
         botConfig.username
 
     override fun onUpdate(update: Update): BotApiMethod<*>? {
+
+        fun hasMentions(message: Message) =
+            message.entities.stream().anyMatch { e -> setOf(EntityType.MENTION, EntityType.TEXTMENTION).contains(e.type) }
+
+        fun runChatGPT(update: Update) =
+            runCommand(ChatGPTCommand(MessageContext(this, update, ""), listOf("reply")), cmdChat)
+
         if (update.hasMessage() && update.message.isReply) {
             val message = update.message
             val replyToMessage = message.replyToMessage
@@ -77,8 +86,13 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
                     if (text == "@")
                         runCommand(DalleVariationsCommand(MessageContext(this, update, "")), cmdDalleVariations)
                 } else
-                    if ((replyToMessage.from.id == me.id) && !text.startsWith("/"))
-                        runCommand(ChatGPTCommand(MessageContext(this, update, ""), listOf("reply")), cmdChat)
+                    if ((replyToMessage.from.id == me.id) && !text.startsWith("/")) {
+                        if (!message.hasEntities())
+                            runChatGPT(update)
+                        else
+                            if (!hasMentions(message))
+                                runChatGPT(update)
+                    }
             }
         }
 
