@@ -39,9 +39,11 @@ Commands
 - /**chat** - ChatGPT
 - /**dalle** - DALL·E 2
 - /**sdif** - Stable Diffusion
-- /**dallevariations** - DALL·E 2 Variations (reply to image with text: "@")
+- /**dallevariations** - DALL·E 2 Variations
 - /**uptime**
 - /**about**
+
+NOTE: /**dallevariations** - is not a typical command in use, run it as a reply to an image with text: "**@**"
 
 Admin commands
 --------------
@@ -54,13 +56,13 @@ Admin commands
 - /**chatasvoice** (ChatGPT answers as voice, Google Text-to-Speech)
 <br>
 
-- /**ban** (use as reply to user message)
+- /**ban** (use as reply to user message, example: _/ban reason_)
 - /**unban** (use as reply to user message or by user ID)
 - /**banlist** (view banned users list)
 <br>
 
-- /**addadmin** (add admin) (creator-only command)
-- /**rmadmin** (remove admin)
+- /**addadmin** (add admin by ID, example: _/addadmin 123456789 username_) (creator-only command)
+- /**rmadmin** (remove admin by ID)
 - /**sudoers** (view admin list)
 <br>
 
