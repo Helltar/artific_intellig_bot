@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.helltar"
-version = "0.5.0"
+version = "0.6.0"
 
 repositories {
     mavenCentral()
@@ -18,19 +18,19 @@ dependencies {
     implementation("com.annimon:tgbots-module:6.5.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2")
     implementation("com.github.kittinunf.fuel:fuel:2.3.1")
     implementation("com.googlecode.json-simple:json-simple:1.1.1")
     implementation("org.imgscalr:imgscalr-lib:4.2")
-    implementation("org.json:json:20220924")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
+    implementation("org.json:json:20230227")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
 
-    implementation("org.xerial:sqlite-jdbc:3.40.0.0")
+    implementation("org.xerial:sqlite-jdbc:3.40.1.0")
     implementation("org.jetbrains.exposed:exposed-core:0.40.1")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.40.1")
 
     implementation("org.slf4j:slf4j-api:2.0.6")
-    implementation("ch.qos.logback:logback-classic:1.4.5")
+    implementation("ch.qos.logback:logback-classic:1.4.6")
 
     testImplementation(kotlin("test"))
 }
