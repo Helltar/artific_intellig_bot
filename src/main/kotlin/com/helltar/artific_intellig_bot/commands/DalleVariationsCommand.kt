@@ -13,6 +13,7 @@ import java.awt.Image
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
 class DalleVariationsCommand(ctx: MessageContext) : BotCommand(ctx) {
@@ -78,7 +79,7 @@ class DalleVariationsCommand(ctx: MessageContext) : BotCommand(ctx) {
         return resized
     }
 
-    // todo: okhttp
+    // todo: repl. okhttp
     private fun postImage(filename: String): String? {
         val requestBody =
             MultipartBody.Builder()
@@ -99,7 +100,17 @@ class DalleVariationsCommand(ctx: MessageContext) : BotCommand(ctx) {
                 .post(requestBody).build()
 
         return try {
-            OkHttpClient().newCall(request).execute().body()?.string()
+            OkHttpClient().newBuilder()
+                .connectTimeout(25, TimeUnit.SECONDS)
+                .readTimeout(25, TimeUnit.SECONDS)
+                .writeTimeout(25, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(true)
+                .followRedirects(true)
+                .followSslRedirects(true)
+                .build()
+                .newCall(request)
+                .execute()
+                .body()?.string()
         } catch (e: IOException) {
             log.error(e.message)
             null
