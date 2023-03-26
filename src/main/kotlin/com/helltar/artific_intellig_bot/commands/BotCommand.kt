@@ -37,8 +37,9 @@ abstract class BotCommand(val ctx: MessageContext, val args: List<String> = list
     fun isCreator(userId: Long = this.userId) =
         Database.sudoers.isCreator(userId)
 
-    fun replyToMessage(text: String, enableWebPagePreview: Boolean = false, markdown: Boolean = false): Int =
+    fun replyToMessage(text: String, messageId: Int = ctx.messageId(), enableWebPagePreview: Boolean = false, markdown: Boolean = false): Int =
         ctx.replyToMessage(text)
+            .setReplyToMessageId(messageId)
             .setParseMode(if (!markdown) ParseMode.HTML else ParseMode.MARKDOWN)
             .setWebPagePreviewEnabled(enableWebPagePreview)
             .call(ctx.sender)
@@ -59,9 +60,10 @@ abstract class BotCommand(val ctx: MessageContext, val args: List<String> = list
             .setParseMode(ParseMode.HTML)
             .call(ctx.sender)
 
-    protected fun sendVoice(file: File): Message =
+    protected fun sendVoice(file: File,messageId: Int = ctx.messageId()): Message =
         ctx.replyToMessageWithAudio()
             .setFile(file)
+            .setReplyToMessageId(messageId)
             .call(ctx.sender)
 
     protected fun deleteMessage(messageId: Int) =

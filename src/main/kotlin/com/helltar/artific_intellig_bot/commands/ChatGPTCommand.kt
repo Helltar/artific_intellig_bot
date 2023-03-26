@@ -1,6 +1,7 @@
 package com.helltar.artific_intellig_bot.commands
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
+import com.github.kittinunf.fuel.core.ResponseResultOf
 import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.core.isSuccessful
 import com.github.kittinunf.fuel.httpPost
@@ -10,6 +11,9 @@ import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.Utils
 import com.helltar.artific_intellig_bot.Utils.detectLangCode
 import com.helltar.artific_intellig_bot.commands.Commands.cmdChatAsVoice
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.json.JSONException
 import org.json.JSONObject
 import org.json.simple.JSONValue
@@ -17,41 +21,109 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.*
 
-class ChatGPTCommand(ctx: MessageContext, args: List<String> = listOf()) : BotCommand(ctx, args) {
+@Serializable
+private data class Chat(val model: String, val messages: List<ChatMessage>)
 
-    companion object {
-        private const val MAX_MESSAGE_TEXT_LENGTH = 300
-    }
+@Serializable
+private data class ChatMessage(val role: String, val content: String)
+
+private val userContext = hashMapOf<Long, LinkedList<ChatMessage>>()
+
+class ChatGPTCommand(ctx: MessageContext, args: List<String> = listOf()) : BotCommand(ctx, args) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
+    private companion object {
+        const val MAX_USER_MESSAGE_TEXT_LENGTH = 300
+        const val MAX_ADMIN_MESSAGE_TEXT_LENGTH = 1024
+        const val CHAT_GPT_MODEL = "gpt-3.5-turbo"
+        const val CHAT_GPT_SYSTEM_MESSAGE = "I'm in a chat room: %s. Your name is %s, your Telegram ID is %d."
+        const val DIALOG_CONTEXT_SIZE = 10
+    }
+
+    /* todo: refact. */
+
     override fun run() {
-        if (args.isEmpty()) {
-            replyToMessage(Strings.chat_hello)
-            return
+        val message = ctx.message()
+        var text = message.text ?: return
+        var messageId = ctx.messageId()
+        val isReply = message.isReply
+
+        if (!isReply) {
+            if (args.isEmpty()) {
+                replyToMessage(Strings.chat_hello)
+                return
+            }
+        } else {
+            if (message.replyToMessage.from.id != ctx.sender.me.id) {
+                text = message.replyToMessage.text ?: return
+                messageId = message.replyToMessage.messageId
+            }
         }
 
-        val text = ctx.message().text ?: return
+        if (args.isNotEmpty())
+            when (args[0]) {
+                "rm" -> { // remove dialog context (/chat rm)
+                    if (userContext.containsKey(userId))
+                        userContext[userId]?.clear()
+
+                    replyToMessage(Strings.context_removed)
+
+                    return
+                }
+
+                "ctx" -> { // show dialog context (/chat ctx)
+                    var userId = this.userId
+
+                    if (isReply)
+                        userId = message.replyToMessage.from.id
+
+                    var msg = ""
+
+                    if (userContext.containsKey(userId)) {
+                        userContext[userId]?.forEachIndexed { index, chatMessage ->
+                            if (chatMessage.role == "user")
+                                msg += "*$index*: " + chatMessage.content + "\n"
+                        }
+                    }
+
+                    if (msg.isEmpty())
+                        msg = "empty"
+
+                    replyToMessage(msg, markdown = true)
+
+                    return
+                }
+            }
+
+        val username = message.from.firstName
+        val chatTitle = message.chat.title ?: username
 
         val textLength =
             if (isNotAdmin())
-                MAX_MESSAGE_TEXT_LENGTH
+                MAX_USER_MESSAGE_TEXT_LENGTH
             else
-                1024
+                MAX_ADMIN_MESSAGE_TEXT_LENGTH
 
         if (text.length > textLength) {
             replyToMessage(String.format(Strings.many_characters, textLength))
             return
         }
 
+        if (userContext.containsKey(userId))
+            userContext[userId]?.add(ChatMessage("user", text))
+        else
+            userContext[userId] = LinkedList(listOf(ChatMessage("user", text)))
+
         val json: String
 
-        sendPrompt(text).run {
+        sendPrompt(username, chatTitle).run {
             if (second.isSuccessful)
                 json = third.get()
             else {
                 replyToMessage(Strings.chat_exception)
                 log.error(third.component2()?.message)
+                userContext[userId]?.removeLast()
                 return
             }
         }
@@ -64,11 +136,13 @@ class ChatGPTCommand(ctx: MessageContext, args: List<String> = listOf()) : BotCo
                     .getJSONObject("message")
                     .getString("content")
 
-            if (!File(DIR_DB + cmdChatAsVoice).exists())
-                replyToMessage(answer, markdown = true)
-            else {
+            userContext[userId]?.add(ChatMessage("assistant", answer))
+
+            if (!File(DIR_DB + cmdChatAsVoice).exists()) {
+                replyToMessage(answer, messageId, markdown = true)
+            } else {
                 textToSpeech(answer, detectLangCode(answer))?.let {
-                    sendVoice(it)
+                    sendVoice(it, messageId)
                     it.delete()
                 }
                     ?: replyToMessage(Strings.chat_exception)
@@ -78,19 +152,28 @@ class ChatGPTCommand(ctx: MessageContext, args: List<String> = listOf()) : BotCo
         }
     }
 
-    private fun sendPrompt(prompt: String) =
-        sendPrompt(
-            ReqData(
-                "https://api.openai.com/v1/chat/completions",
-                "Bearer $openaiKey", getJsonChatGPT(), prompt
-            )
-        )
+    private fun sendPrompt(username: String, chatName: String): ResponseResultOf<String> {
+        val messages = arrayListOf(ChatMessage("system", String.format(CHAT_GPT_SYSTEM_MESSAGE, chatName, username, userId)))
+
+        if (userContext[userId]!!.size > DIALOG_CONTEXT_SIZE) {
+            userContext[userId]?.removeFirst()
+            userContext[userId]?.removeFirst()
+        }
+
+        messages.addAll(userContext[userId]!!)
+
+        return "https://api.openai.com/v1/chat/completions".httpPost()
+            .header("Content-Type", "application/json")
+            .header("Authorization", "Bearer $openaiKey")
+            .timeout(60000).timeoutRead(60000)
+            .jsonBody(Json.encodeToString(Chat(CHAT_GPT_MODEL, messages)))
+            .responseString()
+    }
 
     private fun textToSpeech(text: String, languageCode: String): File? {
         var json: String
 
-        "https://texttospeech.googleapis.com/v1/text:synthesize?fields=audioContent&key=$googleCloudKey"
-            .httpPost()
+        "https://texttospeech.googleapis.com/v1/text:synthesize?fields=audioContent&key=$googleCloudKey".httpPost()
             .header("Content-Type", "application/json; charset=utf-8")
             .jsonBody(String.format(getJsonTextToSpeech(), JSONValue.escape(text), languageCode))
             .responseString().run {

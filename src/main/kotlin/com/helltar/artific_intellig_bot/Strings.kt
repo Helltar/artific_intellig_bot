@@ -10,6 +10,7 @@ object Strings {
     const val chat_as_voice_ok = "✅ ChatAsVoice"
     const val chat_exception = "Something is broken \uD83D\uDE48" // 🙈
     const val chat_hello = "\uD83D\uDC4B Hello, please ask your questions as replying to my messages" // 👋
+    const val context_removed = "Context has been removed \uD83D\uDC4C" // 👌
     const val command_already_disabled = "✅ Command <b>%s</b> already disabled"
     const val command_already_enabled = "✅ Command <b>%s</b> already enabled"
     const val command_disabled = "✅ Command <b>%s</b> disabled"

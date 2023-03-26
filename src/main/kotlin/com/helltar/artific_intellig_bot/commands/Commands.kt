@@ -10,16 +10,19 @@ object Commands {
     const val cmdAbout = "/about"
     const val cmdUptime = "/uptime"
 
-    const val cmdAddAdmin = "/addadmin"
-    const val cmdAdminList = "/sudoers"
-    const val cmdBanList = "/banlist"
-    const val cmdBanUser = "/ban"
     const val cmdChatAsText = "/chatastext"
     const val cmdChatAsVoice = "/chatasvoice"
+
+    const val cmdAddAdmin = "/addadmin"
+    const val cmdRmAdmin = "/rmadmin"
+    const val cmdAdminList = "/sudoers"
+
+    const val cmdBanUser = "/ban"
+    const val cmdUnbanUser = "/unban"
+    const val cmdBanList = "/banlist"
+
     const val cmdDisable = "/disable"
     const val cmdEnable = "/enable"
-    const val cmdRmAdmin = "/rmadmin"
-    const val cmdUnbanUser = "/unban"
 
     const val cmdChatWhiteList = "/chats"
     const val cmdAddChat = "/addchat"

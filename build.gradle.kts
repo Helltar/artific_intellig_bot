@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("com.github.johnrengelman.shadow") version ("7.1.2")
     kotlin("jvm") version "1.7.21"
+    kotlin("plugin.serialization") version "1.6.21"
     application
 }
 
@@ -22,6 +23,7 @@ dependencies {
     implementation("com.googlecode.json-simple:json-simple:1.1.1")
     implementation("org.imgscalr:imgscalr-lib:4.2")
     implementation("org.json:json:20220924")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
 
     implementation("org.xerial:sqlite-jdbc:3.40.0.0")
     implementation("org.jetbrains.exposed:exposed-core:0.40.1")
