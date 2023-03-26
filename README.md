@@ -7,7 +7,7 @@ Demo: https://t.me/+siikRmY3uyE5YTBi
 Download
 --------
 
-- [artific_intellig_bot-0.5.0.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.5.0/artific_intellig_bot-0.5.0.zip) (35.3 MB)
+- [artific_intellig_bot-0.6.0.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.6.0/artific_intellig_bot-0.6.0.zip) (36 MB)
 
 Installation
 ------------
@@ -29,8 +29,8 @@ Installation
 <br>
 
 ```
-unzip artific_intellig_bot-0.5.0.zip && cd artific_intellig_bot-0.5.0
-java -jar artific_intellig_bot-0.5.0-all.jar
+unzip artific_intellig_bot-0.6.0.zip && cd artific_intellig_bot-0.6.0
+java -jar artific_intellig_bot-0.6.0-all.jar
 ```
 
 Commands
@@ -80,7 +80,6 @@ Docs
 
 ./_config/json/_
 
-- **ChatGPT**.json : [OpenAI Chat](https://platform.openai.com/docs/api-reference/chat)
 - **DallE2**.json : [OpenAI Image generation](https://beta.openai.com/docs/guides/images/usage?lang=curl)
 - **StableDiffusion**.json : [Stable Diffusion text-to-image](https://api.stability.ai/docs#tag/v1alphageneration/operation/v1alpha/generation#textToImage)
 - **TextToSpeech**.json : [Cloud Text-to-Speech](https://cloud.google.com/text-to-speech/docs/reference/rest/v1/text/synthesize)
