@@ -2,6 +2,7 @@ package com.helltar.artific_intellig_bot.commands
 
 object Commands {
 
+    const val cmdStart = "/start"
     const val cmdChat = "/chat"
     const val cmdDalle = "/dalle"
     const val cmdSDiff = "/sdif"

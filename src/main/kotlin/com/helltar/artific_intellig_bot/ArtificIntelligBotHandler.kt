@@ -24,6 +24,7 @@ import com.helltar.artific_intellig_bot.commands.Commands.cmdEnable
 import com.helltar.artific_intellig_bot.commands.Commands.cmdRmAdmin
 import com.helltar.artific_intellig_bot.commands.Commands.cmdRmChat
 import com.helltar.artific_intellig_bot.commands.Commands.cmdSDiff
+import com.helltar.artific_intellig_bot.commands.Commands.cmdStart
 import com.helltar.artific_intellig_bot.commands.Commands.cmdUnbanUser
 import com.helltar.artific_intellig_bot.commands.Commands.cmdUptime
 import com.helltar.artific_intellig_bot.commands.admin.*
@@ -41,6 +42,8 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
 
     init {
         commands.run {
+            register(SimpleCommand(cmdStart) { runCommand(StartCommand(it), cmdStart) })
+
             register(SimpleCommand(cmdChat) { runCommand(ChatGPTCommand(it, it.arguments().toList()), cmdChat) })
             register(SimpleCommand(cmdDalle) { runCommand(DallE2Command(it, it.arguments().toList()), cmdDalle) })
             register(SimpleCommand(cmdSDiff) { runCommand(StableDiffusionCommand(it, it.arguments().toList()), cmdSDiff) })
@@ -110,6 +113,9 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
             .info("$commandName: ${chat.id} $userId ${user.userName} ${user.firstName} ${chat.title} : ${botCommand.args}")
 
         botCommand.run {
+            if (commandName == cmdStart)
+                return@run
+
             if (isCreatorCommand && !isCreator())
                 return
 
