@@ -33,14 +33,8 @@ open class BotConfig {
     val openaiKey: String
     val stableDiffusionKey: String
 
-    fun getJsonChatGPT() =
-        getTextFromFile("$DIR_JSON/ChatGPT.json")
-
     fun getJsonDalle2() =
         getTextFromFile("$DIR_JSON/DallE2.json")
-
-    fun getJsonDallE2Variations() =
-        getTextFromFile("$DIR_JSON/DallE2Variations.json")
 
     fun getJsonStableDiffusion() =
         getTextFromFile("$DIR_JSON/StableDiffusion.json")
