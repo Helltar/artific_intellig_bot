@@ -44,7 +44,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
         commands.run {
             register(SimpleCommand(cmdStart) { runCommand(StartCommand(it), cmdStart) })
 
-            register(SimpleCommand(cmdChat) { runCommand(ChatGPTCommand(it, it.arguments().toList()), cmdChat) })
+            register(SimpleCommand(cmdChat) { runCommand(ChatGPTCommand(it, it.arguments().toList(), botConfig.chatGptSystemMessage), cmdChat) })
             register(SimpleCommand(cmdDalle) { runCommand(DallE2Command(it, it.arguments().toList()), cmdDalle) })
             register(SimpleCommand(cmdSDiff) { runCommand(StableDiffusionCommand(it, it.arguments().toList()), cmdSDiff) })
             register(SimpleCommand(cmdBanList) { runCommand(BanListCommand(it), cmdBanList) })
@@ -77,7 +77,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
             message.entities.stream().anyMatch { e -> setOf(EntityType.MENTION, EntityType.TEXTMENTION).contains(e.type) }
 
         fun runChatGPT(update: Update) =
-            runCommand(ChatGPTCommand(MessageContext(this, update, ""), listOf("reply")), cmdChat)
+            runCommand(ChatGPTCommand(MessageContext(this, update, ""), listOf("reply"), botConfig.chatGptSystemMessage), cmdChat)
 
         if (update.hasMessage() && update.message.isReply) {
             val message = update.message

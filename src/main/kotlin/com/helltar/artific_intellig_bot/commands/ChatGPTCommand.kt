@@ -29,7 +29,7 @@ private data class ChatMessage(val role: String, val content: String)
 
 private val userContext = hashMapOf<Long, LinkedList<ChatMessage>>()
 
-class ChatGPTCommand(ctx: MessageContext, args: List<String> = listOf()) : BotCommand(ctx, args) {
+class ChatGPTCommand(ctx: MessageContext, args: List<String> = listOf(), private val chatSystemMessage: String) : BotCommand(ctx, args) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -37,8 +37,7 @@ class ChatGPTCommand(ctx: MessageContext, args: List<String> = listOf()) : BotCo
         const val MAX_USER_MESSAGE_TEXT_LENGTH = 300
         const val MAX_ADMIN_MESSAGE_TEXT_LENGTH = 1024
         const val CHAT_GPT_MODEL = "gpt-3.5-turbo"
-        const val CHAT_GPT_SYSTEM_MESSAGE = "I'm in a chat room: %s. Your name is %s, your Telegram ID is %d."
-        const val DIALOG_CONTEXT_SIZE = 10
+        const val DIALOG_CONTEXT_SIZE = 15
     }
 
     /* todo: refact. */
@@ -153,7 +152,7 @@ class ChatGPTCommand(ctx: MessageContext, args: List<String> = listOf()) : BotCo
     }
 
     private fun sendPrompt(username: String, chatName: String): ResponseResultOf<String> {
-        val messages = arrayListOf(ChatMessage("system", String.format(CHAT_GPT_SYSTEM_MESSAGE, chatName, username, userId)))
+        val messages = arrayListOf(ChatMessage("system", String.format(chatSystemMessage, chatName, username, userId)))
 
         if (userContext[userId]!!.size > DIALOG_CONTEXT_SIZE) {
             userContext[userId]?.removeFirst()

@@ -24,7 +24,10 @@ data class BotMainConfig(
     val username: String,
 
     @JsonProperty(required = true)
-    val creatorId: Long
+    val creatorId: Long,
+
+    @JsonProperty(required = true)
+    val chatGptSystemMessage: String
 )
 
 open class BotConfig {
