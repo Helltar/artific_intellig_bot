@@ -23,7 +23,7 @@ Installation
 **api_keys.ini**:
 
 - openai_key [OpenAI API Key](https://beta.openai.com/account/api-keys)
-- stable_diffusion_key [Stable Diffusion API Key](https://beta.dreamstudio.ai/membership?tab=apiKeys)
+- stable_diffusion_key [Stable Diffusion API Key](https://beta.dreamstudio.ai/account)
 - google_cloud_key [Google Cloud API Key](https://console.cloud.google.com/apis/credentials)
 
 <br>
