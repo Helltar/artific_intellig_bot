@@ -87,7 +87,7 @@ class ChatGPTCommand(ctx: MessageContext, args: List<String> = listOf(), private
                     }
 
                     if (msg.isEmpty())
-                        msg = "empty"
+                        msg = "▫\uFE0F Empty"
 
                     replyToMessage(msg, markdown = true)
 
