@@ -34,8 +34,6 @@ class ArtificIntelligBot : BotModule {
 
             Database.init()
 
-            File(DIR_OUT_STABLE_DIFFUSION).mkdir()
-
             LoggerFactory.getLogger(ArtificIntelligBot::class.java).info("start ...")
         }
 

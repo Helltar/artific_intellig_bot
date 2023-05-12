@@ -5,8 +5,6 @@ build/
 scripts/
 test/
 
-stable_diffusion/
-
 /db/
 
 logback.log
