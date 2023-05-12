@@ -119,9 +119,14 @@ class ChatGPTCommand(ctx: MessageContext, args: List<String> = listOf(), private
 
             if (!File(DIR_DB + cmdChatAsVoice).exists())
                 replyToMessage(answer, messageId, markdown = true)
-            else
-                textToSpeech(answer, detectLangCode(answer))?.let { ogg -> sendVoice(ogg, messageId) }
+            else {
+                textToSpeech(answer, detectLangCode(answer))?.let { oggBytes ->
+                    // todo: tempFile
+                    val voice = File.createTempFile("tmp", ".ogg").apply { writeBytes(oggBytes) }
+                    sendVoice(voice, messageId)
+                }
                     ?: replyToMessage(Strings.chat_exception)
+            }
         } catch (e: JSONException) {
             log.error(e.message)
         }
