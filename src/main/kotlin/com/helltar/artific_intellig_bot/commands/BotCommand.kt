@@ -60,9 +60,10 @@ abstract class BotCommand(val ctx: MessageContext, val args: List<String> = list
             .setParseMode(ParseMode.HTML)
             .call(ctx.sender)
 
-    protected fun sendVoice(file: File,messageId: Int = ctx.messageId()): Message =
+    protected fun sendVoice(byteArray: ByteArray, messageId: Int = ctx.messageId()): Message =
         ctx.replyToMessageWithAudio()
-            .setFile(file)
+            // todo: tempFile
+            .setFile(File.createTempFile("tmp", ".ogg").apply { writeBytes(byteArray) })
             .setReplyToMessageId(messageId)
             .call(ctx.sender)
 

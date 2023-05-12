@@ -6,9 +6,7 @@ import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.core.isSuccessful
 import com.github.kittinunf.fuel.httpPost
 import com.helltar.artific_intellig_bot.DIR_DB
-import com.helltar.artific_intellig_bot.DIR_OUT_TEXT_TO_SPEECH
 import com.helltar.artific_intellig_bot.Strings
-import com.helltar.artific_intellig_bot.Utils
 import com.helltar.artific_intellig_bot.Utils.detectLangCode
 import com.helltar.artific_intellig_bot.commands.Commands.cmdChatAsVoice
 import kotlinx.serialization.Serializable
@@ -18,6 +16,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import org.json.simple.JSONValue
 import org.slf4j.LoggerFactory
+import org.telegram.telegrambots.meta.api.objects.Message
 import java.io.File
 import java.util.*
 
@@ -40,13 +39,15 @@ class ChatGPTCommand(ctx: MessageContext, args: List<String> = listOf(), private
         const val DIALOG_CONTEXT_SIZE = 15
     }
 
-    /* todo: refact. */
-
     override fun run() {
         val message = ctx.message()
-        var text = message.text ?: return
-        var messageId = ctx.messageId()
         val isReply = message.isReply
+        var messageId = ctx.messageId()
+        var text = ctx.argumentsAsString() ?: return
+
+        // todo: temp. fix. ._.
+        if (text.isEmpty())
+            text = message.text
 
         if (!isReply) {
             if (args.isEmpty()) {
@@ -60,40 +61,19 @@ class ChatGPTCommand(ctx: MessageContext, args: List<String> = listOf(), private
             }
         }
 
-        if (args.isNotEmpty())
+        if (args.isNotEmpty()) {
             when (args[0]) {
-                "rm" -> { // remove dialog context (/chat rm)
-                    if (userContext.containsKey(userId))
-                        userContext[userId]?.clear()
-
-                    replyToMessage(Strings.context_removed)
-
+                "rm" -> {
+                    clearUserContext()
                     return
                 }
 
-                "ctx" -> { // show dialog context (/chat ctx)
-                    var userId = this.userId
-
-                    if (isReply)
-                        userId = message.replyToMessage.from.id
-
-                    var msg = ""
-
-                    if (userContext.containsKey(userId)) {
-                        userContext[userId]?.forEachIndexed { index, chatMessage ->
-                            if (chatMessage.role == "user")
-                                msg += "*$index*: " + chatMessage.content + "\n"
-                        }
-                    }
-
-                    if (msg.isEmpty())
-                        msg = "▫\uFE0F Empty"
-
-                    replyToMessage(msg, markdown = true)
-
+                "ctx" -> {
+                    printUserContext(message, isReply)
                     return
                 }
             }
+        }
 
         val username = message.from.firstName
         val chatTitle = message.chat.title ?: username
@@ -137,18 +117,43 @@ class ChatGPTCommand(ctx: MessageContext, args: List<String> = listOf(), private
 
             userContext[userId]?.add(ChatMessage("assistant", answer))
 
-            if (!File(DIR_DB + cmdChatAsVoice).exists()) {
+            if (!File(DIR_DB + cmdChatAsVoice).exists())
                 replyToMessage(answer, messageId, markdown = true)
-            } else {
-                textToSpeech(answer, detectLangCode(answer))?.let {
-                    sendVoice(it, messageId)
-                    it.delete()
-                }
+            else
+                textToSpeech(answer, detectLangCode(answer))?.let { ogg -> sendVoice(ogg, messageId) }
                     ?: replyToMessage(Strings.chat_exception)
-            }
         } catch (e: JSONException) {
             log.error(e.message)
         }
+    }
+
+    private fun clearUserContext() {
+        if (userContext.containsKey(userId))
+            userContext[userId]?.clear()
+
+        replyToMessage(Strings.context_removed)
+    }
+
+    private fun printUserContext(message: Message, isReply: Boolean) {
+        val userId =
+            if (!isReply)
+                this.userId
+            else
+                message.replyToMessage.from.id
+
+        var text = ""
+
+        if (userContext.containsKey(userId)) {
+            userContext[userId]?.forEachIndexed { index, chatMessage ->
+                if (chatMessage.role == "user")
+                    text += "*$index*: " + chatMessage.content + "\n"
+            }
+        }
+
+        if (text.isEmpty())
+            text = "▫\uFE0F Empty"
+
+        replyToMessage(text, markdown = true)
     }
 
     private fun sendPrompt(username: String, chatName: String): ResponseResultOf<String> {
@@ -169,7 +174,7 @@ class ChatGPTCommand(ctx: MessageContext, args: List<String> = listOf(), private
             .responseString()
     }
 
-    private fun textToSpeech(text: String, languageCode: String): File? {
+    private fun textToSpeech(text: String, languageCode: String): ByteArray? {
         var json: String
 
         "https://texttospeech.googleapis.com/v1/text:synthesize?fields=audioContent&key=$googleCloudKey".httpPost()
@@ -186,12 +191,8 @@ class ChatGPTCommand(ctx: MessageContext, args: List<String> = listOf(), private
             }
 
         return try {
-            File("$DIR_OUT_TEXT_TO_SPEECH${userId}_${Utils.randomUUID()}.ogg").run {
-                writeBytes(Base64.getDecoder().decode(JSONObject(json).getString("audioContent")))
-                this
-            }
-        } catch (e: Exception) {
-            replyToMessage(Strings.chat_exception)
+            Base64.getDecoder().decode(JSONObject(json).getString("audioContent"))
+        } catch (e: JSONException) {
             log.error(e.message)
             null
         }

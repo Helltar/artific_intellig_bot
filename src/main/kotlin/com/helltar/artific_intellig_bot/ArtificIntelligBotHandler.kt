@@ -76,26 +76,28 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
         fun hasMentions(message: Message) =
             message.entities.stream().anyMatch { e -> setOf(EntityType.MENTION, EntityType.TEXTMENTION).contains(e.type) }
 
-        fun runChatGPT(update: Update) =
-            runCommand(ChatGPTCommand(MessageContext(this, update, ""), listOf("reply"), botConfig.chatGptSystemMessage), cmdChat)
+        fun runChatGPT(ctx: MessageContext) =
+            runCommand(ChatGPTCommand(ctx, chatSystemMessage = botConfig.chatGptSystemMessage), cmdChat)
 
         if (update.hasMessage() && update.message.isReply) {
             val message = update.message
-            val replyToMessage = message.replyToMessage
-            val text = message.text
 
             if (message.hasText()) {
-                if (replyToMessage.hasPhoto()) {
-                    if (text == "@")
-                        runCommand(DalleVariationsCommand(MessageContext(this, update, "")), cmdDalleVariations)
-                } else
-                    if ((replyToMessage.from.id == me.id) && !text.startsWith("/")) {
+                val text = message.text
+                val replyToMessage = message.replyToMessage
+                val ctx = MessageContext(this, update, "")
+
+                if (!replyToMessage.hasPhoto()) {
+                    if (replyToMessage.from.id == me.id && !text.startsWith("/")) {
                         if (!message.hasEntities())
-                            runChatGPT(update)
+                            runChatGPT(ctx)
                         else
                             if (!hasMentions(message))
-                                runChatGPT(update)
+                                runChatGPT(ctx)
                     }
+                } else
+                    if (text == "@")
+                        runCommand(DalleVariationsCommand(ctx), cmdDalleVariations)
             }
         }
 
