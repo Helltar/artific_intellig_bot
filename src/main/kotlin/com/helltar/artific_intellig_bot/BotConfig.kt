@@ -10,7 +10,6 @@ private const val DIR_JSON = "$DIR_CONFIG/json"
 
 const val DIR_DB = "db/"
 const val DIR_OUT_STABLE_DIFFUSION = "stable_diffusion/"
-const val DIR_OUT_TEXT_TO_SPEECH = "text_to_speech/"
 const val EXT_DISABLED = ".disabled"
 const val FILE_BOT_CONFIG = "$DIR_CONFIG/bot_config"
 const val FILE_DATABASE = DIR_DB + "database.db"

@@ -35,7 +35,6 @@ class ArtificIntelligBot : BotModule {
             Database.init()
 
             File(DIR_OUT_STABLE_DIFFUSION).mkdir()
-            File(DIR_OUT_TEXT_TO_SPEECH).mkdir()
 
             LoggerFactory.getLogger(ArtificIntelligBot::class.java).info("start ...")
         }
