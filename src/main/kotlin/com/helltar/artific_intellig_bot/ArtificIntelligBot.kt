@@ -36,7 +36,6 @@ class ArtificIntelligBot : BotModule {
 
             File(DIR_OUT_STABLE_DIFFUSION).mkdir()
             File(DIR_OUT_TEXT_TO_SPEECH).mkdir()
-            File(DIR_OUT_DALLE2_VARIATIONS).mkdir()
 
             LoggerFactory.getLogger(ArtificIntelligBot::class.java).info("start ...")
         }

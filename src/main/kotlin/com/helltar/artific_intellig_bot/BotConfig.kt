@@ -9,7 +9,6 @@ private const val DIR_CONFIG = "config"
 private const val DIR_JSON = "$DIR_CONFIG/json"
 
 const val DIR_DB = "db/"
-const val DIR_OUT_DALLE2_VARIATIONS = "dalle2_variations/"
 const val DIR_OUT_STABLE_DIFFUSION = "stable_diffusion/"
 const val DIR_OUT_TEXT_TO_SPEECH = "text_to_speech/"
 const val EXT_DISABLED = ".disabled"

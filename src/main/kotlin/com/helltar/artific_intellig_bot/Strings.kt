@@ -24,6 +24,7 @@ object Strings {
     const val many_characters = "Max <b>%d</b> characters \uD83D\uDC40" // 👀
     const val many_request = "Wait, let me deal with the last request \uD83E\uDD16" // 🤖
     const val stable_diffusion_empty_args = "Please write a description of what you want to receive:\n\n<code>/sdif photo realistic portrait of young woman</code>"
+    const val image_must_be_less_than = "Image must be less than %s 😥" // 😥
 
     const val user_already_banned = "✅ User already banned"
     const val user_banned = "❌ User banned"
