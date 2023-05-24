@@ -60,7 +60,7 @@ class DalleVariationsCommand(ctx: MessageContext) : BotCommand(ctx) {
                 JSONObject(json)
                     .getJSONArray("data")
                     .getJSONObject(0)
-                    .getString("url")
+                    .getString("url"), messageId = ctx.message().replyToMessage.messageId
             )
         } catch (e: JSONException) {
             try {
