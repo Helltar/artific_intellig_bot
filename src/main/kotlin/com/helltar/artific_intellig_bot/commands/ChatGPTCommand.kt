@@ -144,7 +144,10 @@ class ChatGPTCommand(ctx: MessageContext, args: List<String> = listOf(), private
             if (!isReply)
                 this.userId
             else
-                message.replyToMessage.from.id
+                if (isAdmin())
+                    message.replyToMessage.from.id
+                else
+                    return
 
         var text = ""
 
