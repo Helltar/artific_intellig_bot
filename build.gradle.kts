@@ -31,6 +31,7 @@ dependencies {
 
     implementation("org.slf4j:slf4j-api:2.0.6")
     implementation("ch.qos.logback:logback-classic:1.4.6")
+    implementation("com.google.code.gson:gson:2.10.1")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.8.20-RC")
 }
