@@ -44,27 +44,27 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
         commands.run {
             register(SimpleCommand(cmdStart) { runCommand(StartCommand(it), cmdStart) })
 
-            register(SimpleCommand(cmdChat) { runCommand(ChatGPTCommand(it, it.arguments().toList(), botConfig.chatGptSystemMessage), cmdChat) })
-            register(SimpleCommand(cmdDalle) { runCommand(DallE2Command(it, it.arguments().toList()), cmdDalle) })
-            register(SimpleCommand(cmdSDiff) { runCommand(StableDiffusionCommand(it, it.arguments().toList()), cmdSDiff) })
+            register(SimpleCommand(cmdChat) { runCommand(ChatGPTCommand(it, botConfig.chatGptSystemMessage), cmdChat) })
+            register(SimpleCommand(cmdDalle) { runCommand(DallE2Command(it), cmdDalle) })
+            register(SimpleCommand(cmdSDiff) { runCommand(StableDiffusionCommand(it), cmdSDiff) })
             register(SimpleCommand(cmdBanList) { runCommand(BanListCommand(it), cmdBanList) })
             register(SimpleCommand(cmdAbout) { runCommand(AboutCommand(it), cmdAbout) })
             register(SimpleCommand(cmdUptime) { runCommand(UptimeCommand(it), cmdUptime) })
 
-            register(SimpleCommand(cmdEnable) { runCommand(EnableCommand(it, it.arguments().toList()), cmdEnable, true) })
-            register(SimpleCommand(cmdDisable) { runCommand(DisableCommand(it, it.arguments().toList()), cmdDisable, true) })
+            register(SimpleCommand(cmdEnable) { runCommand(EnableCommand(it), cmdEnable, true) })
+            register(SimpleCommand(cmdDisable) { runCommand(DisableCommand(it), cmdDisable, true) })
             register(SimpleCommand(cmdChatAsText) { runCommand(ChatAsTextCommand(it), cmdChatAsText, true) })
             register(SimpleCommand(cmdChatAsVoice) { runCommand(ChatAsVoiceCommand(it), cmdChatAsVoice, true) })
-            register(SimpleCommand(cmdBanUser) { runCommand(BanUserCommand(it, it.arguments().toList()), cmdBanUser, true) })
-            register(SimpleCommand(cmdUnbanUser) { runCommand(UnbanUserCommand(it, it.arguments().toList()), cmdUnbanUser, true) })
+            register(SimpleCommand(cmdBanUser) { runCommand(BanUserCommand(it), cmdBanUser, true) })
+            register(SimpleCommand(cmdUnbanUser) { runCommand(UnbanUserCommand(it), cmdUnbanUser, true) })
 
-            register(SimpleCommand(cmdAddAdmin) { runCommand(AddAdminCommand(it, it.arguments().toList()), cmdAddAdmin, isCreatorCommand = true) })
-            register(SimpleCommand(cmdRmAdmin) { runCommand(RemoveAdminCommand(it, it.arguments().toList()), cmdRmAdmin, true) })
+            register(SimpleCommand(cmdAddAdmin) { runCommand(AddAdminCommand(it), cmdAddAdmin, isCreatorCommand = true) })
+            register(SimpleCommand(cmdRmAdmin) { runCommand(RemoveAdminCommand(it), cmdRmAdmin, true) })
             register(SimpleCommand(cmdAdminList) { runCommand(AdminListCommand(it), cmdAdminList, true) })
 
             register(SimpleCommand(cmdChatWhiteList) { runCommand(ChatWhiteListCommand(it), cmdChatWhiteList, true) })
-            register(SimpleCommand(cmdAddChat) { runCommand(AddChatCommand(it, it.arguments().toList()), cmdAddChat, isCreatorCommand = true) })
-            register(SimpleCommand(cmdRmChat) { runCommand(RemoveChatCommand(it, it.arguments().toList()), cmdRmChat, true) })
+            register(SimpleCommand(cmdAddChat) { runCommand(AddChatCommand(it), cmdAddChat, isCreatorCommand = true) })
+            register(SimpleCommand(cmdRmChat) { runCommand(RemoveChatCommand(it), cmdRmChat, true) })
         }
     }
 
@@ -112,7 +112,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
         val chat = botCommand.ctx.message().chat
 
         LoggerFactory.getLogger(javaClass)
-            .info("$commandName: ${chat.id} $userId ${user.userName} ${user.firstName} ${chat.title} : ${botCommand.args}")
+            .info("$commandName: ${chat.id} $userId ${user.userName} ${user.firstName} ${chat.title} : ${botCommand.ctx.argumentsAsString()}")
 
         botCommand.run {
             if (commandName == cmdStart)

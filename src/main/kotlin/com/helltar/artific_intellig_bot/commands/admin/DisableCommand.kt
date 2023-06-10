@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
 
-class DisableCommand(ctx: MessageContext,args: List<String>) : BotCommand(ctx,args) {
+class DisableCommand(ctx: MessageContext) : BotCommand(ctx) {
 
     override fun run() {
         if (args.isEmpty()) {

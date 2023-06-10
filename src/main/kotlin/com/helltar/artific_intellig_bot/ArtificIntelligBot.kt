@@ -47,7 +47,7 @@ class ArtificIntelligBot : BotModule {
                     return
                 }
 
-            requestList[requestKey] = CoroutineScope(Dispatchers.Default).launch { func() }
+            requestList[requestKey] = CoroutineScope(Dispatchers.IO).launch { func() }
         }
     }
 

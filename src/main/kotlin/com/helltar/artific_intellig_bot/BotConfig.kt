@@ -1,12 +1,10 @@
 package com.helltar.artific_intellig_bot
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.helltar.artific_intellig_bot.Utils.getTextFromFile
 import java.io.FileReader
 import java.util.*
 
 private const val DIR_CONFIG = "config"
-private const val DIR_JSON = "$DIR_CONFIG/json"
 
 const val DIR_DB = "db/"
 const val EXT_DISABLED = ".disabled"
@@ -32,15 +30,6 @@ open class BotConfig {
     val googleCloudKey: String
     val openaiKey: String
     val stableDiffusionKey: String
-
-    fun getJsonDalle2() =
-        getTextFromFile("$DIR_JSON/DallE2.json")
-
-    fun getJsonStableDiffusion() =
-        getTextFromFile("$DIR_JSON/StableDiffusion.json")
-
-    fun getJsonTextToSpeech() =
-        getTextFromFile("$DIR_JSON/TextToSpeech.json")
 
     init {
         val filename = "$DIR_CONFIG/api_keys.ini"

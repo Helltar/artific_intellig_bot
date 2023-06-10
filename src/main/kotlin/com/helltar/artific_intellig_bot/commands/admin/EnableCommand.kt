@@ -8,7 +8,7 @@ import com.helltar.artific_intellig_bot.commands.BotCommand
 import com.helltar.artific_intellig_bot.commands.Commands
 import java.io.File
 
-class EnableCommand(ctx: MessageContext, args: List<String>) : BotCommand(ctx, args) {
+class EnableCommand(ctx: MessageContext) : BotCommand(ctx) {
 
     override fun run() {
         if (args.isEmpty()) {

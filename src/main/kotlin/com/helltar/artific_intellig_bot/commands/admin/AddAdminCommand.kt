@@ -5,7 +5,7 @@ import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.commands.BotCommand
 import com.helltar.artific_intellig_bot.db.Database
 
-class AddAdminCommand(ctx: MessageContext, args: List<String> = listOf()) : BotCommand(ctx, args) {
+class AddAdminCommand(ctx: MessageContext) : BotCommand(ctx) {
 
     override fun run() {
         val userId =

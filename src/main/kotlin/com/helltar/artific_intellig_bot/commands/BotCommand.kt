@@ -1,21 +1,20 @@
 package com.helltar.artific_intellig_bot.commands
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.github.kittinunf.fuel.core.extensions.jsonBody
-import com.github.kittinunf.fuel.httpPost
 import com.helltar.artific_intellig_bot.BotConfig
 import com.helltar.artific_intellig_bot.DIR_DB
 import com.helltar.artific_intellig_bot.EXT_DISABLED
 import com.helltar.artific_intellig_bot.db.Database
-import org.json.simple.JSONValue
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.InputFile
 import org.telegram.telegrambots.meta.api.objects.Message
 import java.io.File
 
-abstract class BotCommand(val ctx: MessageContext, val args: List<String> = listOf()) : BotConfig() {
+abstract class BotCommand(val ctx: MessageContext) : BotConfig() {
 
     protected val userId = ctx.user().id
+    protected val args: Array<String> = ctx.arguments()
+    protected val argsText: String = ctx.argumentsAsString()
 
     abstract fun run()
 
@@ -68,24 +67,4 @@ abstract class BotCommand(val ctx: MessageContext, val args: List<String> = list
 
     protected fun deleteMessage(messageId: Int) =
         ctx.deleteMessage().setMessageId(messageId).callAsync(ctx.sender)
-
-    protected data class ReqData(
-        val url: String,
-        val apiKey: String,
-        val json: String,
-        val prompt: String,
-        val additionHeader: Map<String, String> = mapOf()
-    )
-
-    protected fun sendPrompt(reqData: ReqData) =
-        reqData.run {
-            url.httpPost()
-                .header("Content-Type", "application/json")
-                .header("Authorization", apiKey)
-                .header(additionHeader)
-                .timeout(60000)
-                .timeoutRead(60000)
-                .jsonBody(String.format(json, JSONValue.escape(prompt)))
-                .responseString()
-        }
 }

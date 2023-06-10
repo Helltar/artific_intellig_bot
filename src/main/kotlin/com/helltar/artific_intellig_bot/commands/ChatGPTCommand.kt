@@ -5,20 +5,20 @@ import com.github.kittinunf.fuel.core.ResponseResultOf
 import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.core.isSuccessful
 import com.github.kittinunf.fuel.httpPost
+import com.google.gson.Gson
 import com.helltar.artific_intellig_bot.DIR_DB
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.Utils.detectLangCode
 import com.helltar.artific_intellig_bot.commands.Commands.cmdChatAsVoice
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.json.JSONException
 import org.json.JSONObject
-import org.json.simple.JSONValue
 import org.slf4j.LoggerFactory
 import org.telegram.telegrambots.meta.api.objects.Message
 import java.io.File
 import java.util.*
+
+/* todo: refact. */
 
 @Serializable
 private data class Chat(val model: String, val messages: List<ChatMessage>)
@@ -28,7 +28,7 @@ private data class ChatMessage(val role: String, val content: String)
 
 private val userContext = hashMapOf<Long, LinkedList<ChatMessage>>()
 
-class ChatGPTCommand(ctx: MessageContext, args: List<String> = listOf(), private val chatSystemMessage: String) : BotCommand(ctx, args) {
+class ChatGPTCommand(ctx: MessageContext, private val chatSystemMessage: String) : BotCommand(ctx) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -43,7 +43,7 @@ class ChatGPTCommand(ctx: MessageContext, args: List<String> = listOf(), private
         val message = ctx.message()
         val isReply = message.isReply
         var messageId = ctx.messageId()
-        var text = ctx.argumentsAsString() ?: return
+        var text = argsText
 
         // todo: temp. fix. ._.
         if (text.isEmpty())
@@ -177,17 +177,38 @@ class ChatGPTCommand(ctx: MessageContext, args: List<String> = listOf(), private
         return "https://api.openai.com/v1/chat/completions".httpPost()
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer $openaiKey")
-            .timeout(60000).timeoutRead(60000)
-            .jsonBody(Json.encodeToString(Chat(CHAT_GPT_MODEL, messages)))
+            .jsonBody(Gson().toJson(Chat(CHAT_GPT_MODEL, messages)))
             .responseString()
     }
 
+    /* https://cloud.google.com/text-to-speech/docs/reference/rest/v1/text/synthesize */
+
+    private data class InputData(
+        val text: String
+    )
+
+    private data class VoiceData(
+        val languageCode: String,
+        val ssmlGender: String = "FEMALE"
+    )
+
+    private data class AudioConfigData(
+        val audioEncoding: String = "OGG_OPUS",
+        val speakingRate: Float = 1.0f
+    )
+
+    private data class TextToSpeechJsonData(
+        val input: InputData,
+        val voice: VoiceData,
+        val audioConfig: AudioConfigData
+    )
+
     private fun textToSpeech(text: String, languageCode: String): ByteArray? {
-        var json: String
+        var json = Gson().toJson(TextToSpeechJsonData(InputData(text), VoiceData(languageCode), AudioConfigData()))
 
         "https://texttospeech.googleapis.com/v1/text:synthesize?fields=audioContent&key=$googleCloudKey".httpPost()
             .header("Content-Type", "application/json; charset=utf-8")
-            .jsonBody(String.format(getJsonTextToSpeech(), JSONValue.escape(text), languageCode))
+            .jsonBody(json)
             .responseString().run {
                 json =
                     if (second.isSuccessful)

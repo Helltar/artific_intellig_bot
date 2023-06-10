@@ -6,12 +6,11 @@ import com.helltar.artific_intellig_bot.commands.BotCommand
 import com.helltar.artific_intellig_bot.db.Database
 import java.util.concurrent.TimeUnit
 
-class BanUserCommand(ctx: MessageContext, args: List<String> = listOf()) : BotCommand(ctx, args) {
+class BanUserCommand(ctx: MessageContext) : BotCommand(ctx) {
 
     override fun run() {
         val user = ctx.message().replyToMessage?.from ?: return
-
-        val reason = args.joinToString(" ")
+        val reason = argsText
 
         val messageId =
             if (Database.banList.banUser(user, reason))
@@ -19,7 +18,7 @@ class BanUserCommand(ctx: MessageContext, args: List<String> = listOf()) : BotCo
             else
                 replyToMessage(Strings.user_already_banned)
 
-        if (ctx.message().chat.type != "private") {
+        if (!ctx.message().chat.isUserChat) {
             TimeUnit.SECONDS.sleep(3)
             deleteMessage(messageId)
         }

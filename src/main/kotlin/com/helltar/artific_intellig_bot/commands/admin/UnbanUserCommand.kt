@@ -6,7 +6,7 @@ import com.helltar.artific_intellig_bot.commands.BotCommand
 import com.helltar.artific_intellig_bot.db.Database
 import java.util.concurrent.TimeUnit
 
-class UnbanUserCommand(ctx: MessageContext, args: List<String> = listOf()) : BotCommand(ctx, args) {
+class UnbanUserCommand(ctx: MessageContext) : BotCommand(ctx) {
 
     override fun run() {
         val userId =
