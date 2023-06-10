@@ -1,43 +1,10 @@
 package com.helltar.artific_intellig_bot
 
-import org.slf4j.LoggerFactory
-import java.io.File
-import java.io.FileReader
-import java.io.IOException
 import java.lang.management.ManagementFactory
-import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 object Utils {
-
-    private val log = LoggerFactory.getLogger(javaClass)
-
-    fun randomUUID() = UUID.randomUUID().toString()
-
-    fun runProcess(command: String, workDir: File? = null) =
-        try {
-            ProcessBuilder(command.split(" "))
-                .directory(workDir)
-                .redirectOutput(ProcessBuilder.Redirect.PIPE)
-                .redirectError(ProcessBuilder.Redirect.PIPE)
-                .start().run {
-                    waitFor(30, TimeUnit.SECONDS)
-                    inputStream.bufferedReader().readText()
-                }
-        } catch (e: Exception) {
-            log.error(e.message, e)
-            ""
-        }
-
-    fun getTextFromFile(filename: String): String =
-        try {
-            File(filename).run { if (!exists()) createNewFile() }
-            FileReader(filename).readText()
-        } catch (e: IOException) {
-            log.error(e.message, e)
-            ""
-        }
 
     fun detectLangCode(text: String): String {
 
