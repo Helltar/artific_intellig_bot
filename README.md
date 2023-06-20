@@ -74,3 +74,6 @@ Admin commands
 - /**addchat** (add chat to white list, use in chat or by ID) (creator-only command)
 - /**rmchat** (remove chat from white list, use in chat or by ID)
 - /**chats** (view chats list)
+
+<br>
+<a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA.png" alt="IntelliJ IDEA logo." width="32%"></a>
