@@ -56,6 +56,8 @@ class StableDiffusionCommand(ctx: MessageContext) : BotCommand(ctx) {
             .header("Content-Type", "application/json")
             .header("Authorization", stableDiffusionKey)
             .header("Accept", "image/png")
+            .timeout(FUEL_TIMEOUT)
+            .timeoutRead(FUEL_TIMEOUT)
             .jsonBody(Gson().toJson(StableDiffusionJsonData(text_prompts = listOf(TextPromptData(prompt)))))
             .response()
 }

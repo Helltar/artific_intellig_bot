@@ -177,6 +177,8 @@ class ChatGPTCommand(ctx: MessageContext, private val chatSystemMessage: String)
         return "https://api.openai.com/v1/chat/completions".httpPost()
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer $openaiKey")
+            .timeout(FUEL_TIMEOUT)
+            .timeoutRead(FUEL_TIMEOUT)
             .jsonBody(Gson().toJson(Chat(CHAT_GPT_MODEL, messages)))
             .responseString()
     }

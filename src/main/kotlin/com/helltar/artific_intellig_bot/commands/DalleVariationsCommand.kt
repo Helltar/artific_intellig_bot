@@ -96,6 +96,8 @@ class DalleVariationsCommand(ctx: MessageContext) : BotCommand(ctx) {
         return Fuel.upload("https://api.openai.com/v1/images/variations", Method.POST, parameters)
             .add(FileDataPart(file, "image"))
             .header("Authorization", "Bearer $openaiKey")
+            .timeout(FUEL_TIMEOUT)
+            .timeoutRead(FUEL_TIMEOUT)
             .responseString().third.get()
     }
 }
