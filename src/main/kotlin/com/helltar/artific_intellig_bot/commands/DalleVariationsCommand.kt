@@ -98,6 +98,6 @@ class DalleVariationsCommand(ctx: MessageContext) : BotCommand(ctx) {
             .header("Authorization", "Bearer $openaiKey")
             .timeout(FUEL_TIMEOUT)
             .timeoutRead(FUEL_TIMEOUT)
-            .responseString().third.get()
+            .response().second.data.decodeToString()
     }
 }
