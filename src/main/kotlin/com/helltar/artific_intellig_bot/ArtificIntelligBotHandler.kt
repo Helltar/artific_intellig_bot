@@ -16,6 +16,8 @@ import com.helltar.artific_intellig_bot.commands.Commands.cmdBanUser
 import com.helltar.artific_intellig_bot.commands.Commands.cmdChat
 import com.helltar.artific_intellig_bot.commands.Commands.cmdChatAsText
 import com.helltar.artific_intellig_bot.commands.Commands.cmdChatAsVoice
+import com.helltar.artific_intellig_bot.commands.Commands.cmdChatCtx
+import com.helltar.artific_intellig_bot.commands.Commands.cmdChatCtxRemove
 import com.helltar.artific_intellig_bot.commands.Commands.cmdChatWhiteList
 import com.helltar.artific_intellig_bot.commands.Commands.cmdDalle
 import com.helltar.artific_intellig_bot.commands.Commands.cmdDalleVariations
@@ -28,6 +30,9 @@ import com.helltar.artific_intellig_bot.commands.Commands.cmdStart
 import com.helltar.artific_intellig_bot.commands.Commands.cmdUnbanUser
 import com.helltar.artific_intellig_bot.commands.Commands.cmdUptime
 import com.helltar.artific_intellig_bot.commands.admin.*
+import com.helltar.artific_intellig_bot.commands.chat.ChatCtxCommand
+import com.helltar.artific_intellig_bot.commands.chat.ChatCtxRemoveCommand
+import com.helltar.artific_intellig_bot.commands.chat.ChatGPTCommand
 import com.helltar.artific_intellig_bot.db.Database
 import org.slf4j.LoggerFactory
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
@@ -40,11 +45,16 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
     private val authority = SimpleAuthority(botConfig.creatorId)
     private val commands = CommandRegistry(botConfig.username, authority)
 
+    private val log = LoggerFactory.getLogger(javaClass)
+
     init {
         commands.run {
             register(SimpleCommand(cmdStart) { runCommand(StartCommand(it), cmdStart) })
 
             register(SimpleCommand(cmdChat) { runCommand(ChatGPTCommand(it, botConfig.chatGptSystemMessage), cmdChat) })
+            register(SimpleCommand(cmdChatCtx) { runCommand(ChatCtxCommand(it), cmdChatCtx) })
+            register(SimpleCommand(cmdChatCtxRemove) { runCommand(ChatCtxRemoveCommand(it), cmdChatCtxRemove) })
+
             register(SimpleCommand(cmdDalle) { runCommand(DallE2Command(it), cmdDalle) })
             register(SimpleCommand(cmdSDiff) { runCommand(StableDiffusionCommand(it), cmdSDiff) })
             register(SimpleCommand(cmdBanList) { runCommand(BanListCommand(it), cmdBanList) })
@@ -77,7 +87,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
             message.entities.stream().anyMatch { e -> setOf(EntityType.MENTION, EntityType.TEXTMENTION).contains(e.type) }
 
         fun runChatGPT(ctx: MessageContext) =
-            runCommand(ChatGPTCommand(ctx, chatSystemMessage = botConfig.chatGptSystemMessage), cmdChat)
+            runCommand(ChatGPTCommand(ctx, botConfig.chatGptSystemMessage), cmdChat)
 
         if (update.hasMessage() && update.message.isReply) {
             val message = update.message
@@ -106,13 +116,18 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
         return null
     }
 
-    private fun runCommand(botCommand: BotCommand, commandName: String, isAdminCommand: Boolean = false, isCreatorCommand: Boolean = false) {
+    private fun runCommand(
+        botCommand: BotCommand,
+        commandName: String,
+        isAdminCommand: Boolean = false,
+        isCreatorCommand: Boolean = false
+    ) {
+
         val user = botCommand.ctx.user()
         val userId = user.id
         val chat = botCommand.ctx.message().chat
 
-        LoggerFactory.getLogger(javaClass)
-            .info("$commandName: ${chat.id} $userId ${user.userName} ${user.firstName} ${chat.title} : ${botCommand.ctx.argumentsAsString()}")
+        log.info("$commandName: ${chat.id} $userId ${user.userName} ${user.firstName} ${chat.title} : ${botCommand.ctx.argumentsAsString()}")
 
         botCommand.run {
             if (commandName == cmdStart)

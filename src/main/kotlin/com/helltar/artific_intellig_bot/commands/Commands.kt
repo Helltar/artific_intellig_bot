@@ -2,8 +2,11 @@ package com.helltar.artific_intellig_bot.commands
 
 object Commands {
 
-    const val cmdStart = "/start"
     const val cmdChat = "/chat"
+    const val cmdChatCtx = "/chatctx" // dialog context
+    const val cmdChatCtxRemove = "/chatrm" // remove context
+
+    const val cmdStart = "/start"
     const val cmdDalle = "/dalle"
     const val cmdSDiff = "/sdif"
     const val cmdDalleVariations = "/dallevariations"
