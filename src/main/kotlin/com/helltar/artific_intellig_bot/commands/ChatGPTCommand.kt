@@ -33,7 +33,7 @@ class ChatGPTCommand(ctx: MessageContext, private val chatSystemMessage: String)
     private val log = LoggerFactory.getLogger(javaClass)
 
     private companion object {
-        const val MAX_USER_MESSAGE_TEXT_LENGTH = 300
+        const val MAX_USER_MESSAGE_TEXT_LENGTH = 512
         const val MAX_ADMIN_MESSAGE_TEXT_LENGTH = 1024
         const val CHAT_GPT_MODEL = "gpt-3.5-turbo"
         const val DIALOG_CONTEXT_SIZE = 15
