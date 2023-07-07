@@ -45,8 +45,8 @@ Commands
 
 Additional chat commands:
 
-- /chat **rm** - remove dialogue context
-- /chat **ctx** - show context
+- /**chatctx** - show context
+- /**chatrm** - remove dialogue context
 
 NOTE: /**dallevariations** - is not a typical command in use, run it as a reply to an image with text: "**@**"
 
