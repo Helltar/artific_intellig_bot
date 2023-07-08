@@ -1,4 +1,4 @@
-package com.helltar.artific_intellig_bot.commands.chat
+package com.helltar.artific_intellig_bot.commands.user.chat
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.artific_intellig_bot.Strings

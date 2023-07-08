@@ -1,10 +1,11 @@
-package com.helltar.artific_intellig_bot.commands
+package com.helltar.artific_intellig_bot.commands.user
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.httpPost
 import com.google.gson.Gson
 import com.helltar.artific_intellig_bot.Strings
+import com.helltar.artific_intellig_bot.commands.BotCommand
 import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
@@ -38,7 +39,8 @@ class DallE2Command(ctx: MessageContext) : BotCommand(ctx) {
         }
     }
 
-    // https://beta.openai.com/docs/guides/images/usage?lang=curl
+    /* https://beta.openai.com/docs/guides/images/usage?lang=curl */
+
     private data class DalleJsonData(
         val prompt: String,
         val n: Int,

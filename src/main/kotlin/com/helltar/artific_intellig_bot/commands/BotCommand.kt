@@ -1,5 +1,6 @@
 package com.helltar.artific_intellig_bot.commands
 
+import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.artific_intellig_bot.BotConfig
 import com.helltar.artific_intellig_bot.DIR_DB
@@ -8,7 +9,9 @@ import com.helltar.artific_intellig_bot.db.Database
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.InputFile
 import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import java.io.File
+import java.io.Serializable
 
 abstract class BotCommand(val ctx: MessageContext) : BotConfig() {
 
@@ -47,6 +50,18 @@ abstract class BotCommand(val ctx: MessageContext) : BotConfig() {
             .setWebPagePreviewEnabled(enableWebPagePreview)
             .call(ctx.sender)
             .messageId
+
+    protected fun replyToMessageWithMarkup(text: String, replyMarkup: InlineKeyboardMarkup): Int =
+        ctx.replyToMessage(text)
+            .setReplyMarkup(replyMarkup)
+            .setReplyToMessageId(ctx.messageId())
+            .call(ctx.sender)
+            .messageId
+
+    protected fun editMessageText(text: String, messageId: Int, replyMarkup: InlineKeyboardMarkup): Serializable =
+        Methods.editMessageText(ctx.chatId(), messageId, text)
+            .setReplyMarkup(replyMarkup)
+            .call(ctx.sender)
 
     protected fun replyToMessageWithPhoto(file: File, caption: String): Message =
         ctx.replyToMessageWithPhoto()

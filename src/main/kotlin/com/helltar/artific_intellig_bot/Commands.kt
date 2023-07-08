@@ -1,10 +1,12 @@
-package com.helltar.artific_intellig_bot.commands
+package com.helltar.artific_intellig_bot
 
 object Commands {
 
     const val cmdChat = "/chat"
     const val cmdChatCtx = "/chatctx" // dialog context
     const val cmdChatCtxRemove = "/chatrm" // remove context
+    const val cmdChatAsText = "/chatastext"
+    const val cmdChatAsVoice = "/chatasvoice"
 
     const val cmdStart = "/start"
     const val cmdDalle = "/dalle"
@@ -13,9 +15,6 @@ object Commands {
 
     const val cmdAbout = "/about"
     const val cmdUptime = "/uptime"
-
-    const val cmdChatAsText = "/chatastext"
-    const val cmdChatAsVoice = "/chatasvoice"
 
     const val cmdAddAdmin = "/addadmin"
     const val cmdRmAdmin = "/rmadmin"
@@ -32,5 +31,12 @@ object Commands {
     const val cmdAddChat = "/addchat"
     const val cmdRmChat = "/rmchat"
 
-    val disalableCmdsList = listOf(cmdChat, cmdDalle, cmdSDiff, cmdDalleVariations)
+    // todo: substring
+    val disalableCmdsList =
+        listOf(
+            cmdChat.substring(1),
+            cmdDalle.substring(1),
+            cmdSDiff.substring(1),
+            cmdDalleVariations.substring(1)
+        )
 }

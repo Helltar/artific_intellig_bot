@@ -15,11 +15,11 @@ import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 import java.io.File
 
-private val requestList = hashMapOf<String, Job>()
-
 class ArtificIntelligBot : BotModule {
 
     companion object {
+        private val requestList = hashMapOf<String, Job>()
+
         @JvmStatic
         fun main(args: Array<String>) {
             init()

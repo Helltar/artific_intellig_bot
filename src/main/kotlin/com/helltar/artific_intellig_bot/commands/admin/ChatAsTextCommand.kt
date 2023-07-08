@@ -1,11 +1,11 @@
 package com.helltar.artific_intellig_bot.commands.admin
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
+import com.helltar.artific_intellig_bot.Commands.cmdChatAsText
+import com.helltar.artific_intellig_bot.Commands.cmdChatAsVoice
 import com.helltar.artific_intellig_bot.DIR_DB
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.commands.BotCommand
-import com.helltar.artific_intellig_bot.commands.Commands.cmdChatAsText
-import com.helltar.artific_intellig_bot.commands.Commands.cmdChatAsVoice
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException

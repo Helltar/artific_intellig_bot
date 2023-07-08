@@ -6,33 +6,34 @@ import com.annimon.tgbotsmodule.commands.SimpleCommand
 import com.annimon.tgbotsmodule.commands.authority.SimpleAuthority
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.artific_intellig_bot.ArtificIntelligBot.Companion.addRequest
-import com.helltar.artific_intellig_bot.commands.*
-import com.helltar.artific_intellig_bot.commands.Commands.cmdAbout
-import com.helltar.artific_intellig_bot.commands.Commands.cmdAddAdmin
-import com.helltar.artific_intellig_bot.commands.Commands.cmdAddChat
-import com.helltar.artific_intellig_bot.commands.Commands.cmdAdminList
-import com.helltar.artific_intellig_bot.commands.Commands.cmdBanList
-import com.helltar.artific_intellig_bot.commands.Commands.cmdBanUser
-import com.helltar.artific_intellig_bot.commands.Commands.cmdChat
-import com.helltar.artific_intellig_bot.commands.Commands.cmdChatAsText
-import com.helltar.artific_intellig_bot.commands.Commands.cmdChatAsVoice
-import com.helltar.artific_intellig_bot.commands.Commands.cmdChatCtx
-import com.helltar.artific_intellig_bot.commands.Commands.cmdChatCtxRemove
-import com.helltar.artific_intellig_bot.commands.Commands.cmdChatWhiteList
-import com.helltar.artific_intellig_bot.commands.Commands.cmdDalle
-import com.helltar.artific_intellig_bot.commands.Commands.cmdDalleVariations
-import com.helltar.artific_intellig_bot.commands.Commands.cmdDisable
-import com.helltar.artific_intellig_bot.commands.Commands.cmdEnable
-import com.helltar.artific_intellig_bot.commands.Commands.cmdRmAdmin
-import com.helltar.artific_intellig_bot.commands.Commands.cmdRmChat
-import com.helltar.artific_intellig_bot.commands.Commands.cmdSDiff
-import com.helltar.artific_intellig_bot.commands.Commands.cmdStart
-import com.helltar.artific_intellig_bot.commands.Commands.cmdUnbanUser
-import com.helltar.artific_intellig_bot.commands.Commands.cmdUptime
+import com.helltar.artific_intellig_bot.Commands.cmdAbout
+import com.helltar.artific_intellig_bot.Commands.cmdAddAdmin
+import com.helltar.artific_intellig_bot.Commands.cmdAddChat
+import com.helltar.artific_intellig_bot.Commands.cmdAdminList
+import com.helltar.artific_intellig_bot.Commands.cmdBanList
+import com.helltar.artific_intellig_bot.Commands.cmdBanUser
+import com.helltar.artific_intellig_bot.Commands.cmdChat
+import com.helltar.artific_intellig_bot.Commands.cmdChatAsText
+import com.helltar.artific_intellig_bot.Commands.cmdChatAsVoice
+import com.helltar.artific_intellig_bot.Commands.cmdChatCtx
+import com.helltar.artific_intellig_bot.Commands.cmdChatCtxRemove
+import com.helltar.artific_intellig_bot.Commands.cmdChatWhiteList
+import com.helltar.artific_intellig_bot.Commands.cmdDalle
+import com.helltar.artific_intellig_bot.Commands.cmdDalleVariations
+import com.helltar.artific_intellig_bot.Commands.cmdDisable
+import com.helltar.artific_intellig_bot.Commands.cmdEnable
+import com.helltar.artific_intellig_bot.Commands.cmdRmAdmin
+import com.helltar.artific_intellig_bot.Commands.cmdRmChat
+import com.helltar.artific_intellig_bot.Commands.cmdSDiff
+import com.helltar.artific_intellig_bot.Commands.cmdStart
+import com.helltar.artific_intellig_bot.Commands.cmdUnbanUser
+import com.helltar.artific_intellig_bot.Commands.cmdUptime
+import com.helltar.artific_intellig_bot.commands.BotCommand
 import com.helltar.artific_intellig_bot.commands.admin.*
-import com.helltar.artific_intellig_bot.commands.chat.ChatCtxCommand
-import com.helltar.artific_intellig_bot.commands.chat.ChatCtxRemoveCommand
-import com.helltar.artific_intellig_bot.commands.chat.ChatGPTCommand
+import com.helltar.artific_intellig_bot.commands.user.*
+import com.helltar.artific_intellig_bot.commands.user.chat.ChatCtxCommand
+import com.helltar.artific_intellig_bot.commands.user.chat.ChatCtxRemoveCommand
+import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTCommand
 import com.helltar.artific_intellig_bot.db.Database
 import org.slf4j.LoggerFactory
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
@@ -61,8 +62,8 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
             register(SimpleCommand(cmdAbout) { runCommand(AboutCommand(it), cmdAbout) })
             register(SimpleCommand(cmdUptime) { runCommand(UptimeCommand(it), cmdUptime) })
 
-            register(SimpleCommand(cmdEnable) { runCommand(EnableCommand(it), cmdEnable, true) })
-            register(SimpleCommand(cmdDisable) { runCommand(DisableCommand(it), cmdDisable, true) })
+            register(SimpleCommand(cmdEnable) { runCommand(ChangeStateCommand(it), cmdEnable, true) })
+            register(SimpleCommand(cmdDisable) { runCommand(ChangeStateCommand(it, true), cmdDisable, true) })
             register(SimpleCommand(cmdChatAsText) { runCommand(ChatAsTextCommand(it), cmdChatAsText, true) })
             register(SimpleCommand(cmdChatAsVoice) { runCommand(ChatAsVoiceCommand(it), cmdChatAsVoice, true) })
             register(SimpleCommand(cmdBanUser) { runCommand(BanUserCommand(it), cmdBanUser, true) })

@@ -1,4 +1,4 @@
-package com.helltar.artific_intellig_bot.commands
+package com.helltar.artific_intellig_bot.commands.user
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.extensions.jsonBody
@@ -6,6 +6,7 @@ import com.github.kittinunf.fuel.core.isSuccessful
 import com.github.kittinunf.fuel.httpPost
 import com.google.gson.Gson
 import com.helltar.artific_intellig_bot.Strings
+import com.helltar.artific_intellig_bot.commands.BotCommand
 import org.slf4j.LoggerFactory
 import java.io.File
 

@@ -1,11 +1,9 @@
-package com.helltar.artific_intellig_bot.commands.chat
+package com.helltar.artific_intellig_bot.commands.user.chat
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.artific_intellig_bot.Strings
-import com.helltar.artific_intellig_bot.commands.BotCommand
-import com.helltar.artific_intellig_bot.commands.chat.ChatGPTCommand.Companion.userContext
 
-class ChatCtxCommand(ctx: MessageContext) : BotCommand(ctx) {
+class ChatCtxCommand(ctx: MessageContext) : ChatGPTCommand(ctx) {
 
     override fun run() {
         val message = ctx.message()
