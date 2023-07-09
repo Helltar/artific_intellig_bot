@@ -11,10 +11,6 @@ import com.helltar.artific_intellig_bot.DIR_DB
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.Utils.detectLangCode
 import com.helltar.artific_intellig_bot.commands.BotCommand
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
@@ -88,8 +84,6 @@ open class ChatGPTCommand(ctx: MessageContext, private val chatSystemMessage: St
             userContext[userId] = LinkedList(listOf(ChatMessageData("user", text)))
 
         val waitMessageId = replyToMessageWithMarkup("...", createWaitButton())
-
-        updateWaitMessage(waitMessageId)
 
         val json: String
 
@@ -207,22 +201,4 @@ open class ChatGPTCommand(ctx: MessageContext, private val chatSystemMessage: St
                     .build()
             )
         ).build()
-
-    // todo: !
-    private fun updateWaitMessage(messageId: Int) {
-        CoroutineScope(Dispatchers.Default).launch {
-            try {
-                repeat(FUEL_TIMEOUT / 3000) {
-                    editMessageText(".", messageId, createWaitButton())
-                    delay(1000)
-                    editMessageText("..", messageId, createWaitButton())
-                    delay(1000)
-                    editMessageText("...", messageId, createWaitButton())
-                    delay(1000)
-                }
-            } catch (e: Exception) {
-                // todo
-            }
-        }
-    }
 }
