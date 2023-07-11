@@ -7,7 +7,7 @@ Demo: https://t.me/+siikRmY3uyE5YTBi
 Download
 --------
 
-- [artific_intellig_bot-0.6.0.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.6.0/artific_intellig_bot-0.6.0.zip) (36 MB)
+- [artific_intellig_bot-0.7.0.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.7.0/artific_intellig_bot-0.7.0.zip) (36 MB)
 
 Installation
 ------------
@@ -22,15 +22,15 @@ Installation
 
 **api_keys.ini**:
 
-- openai_key [OpenAI API Key](https://beta.openai.com/account/api-keys)
-- stable_diffusion_key [Stable Diffusion API Key](https://beta.dreamstudio.ai/account)
-- google_cloud_key [Google Cloud API Key](https://console.cloud.google.com/apis/credentials)
+- openai_key [OpenAI API Key](https://platform.openai.com/account/api-keys)
+- stable_diffusion_key [Stable Diffusion API Key](https://beta.dreamstudio.ai/account) (for /**sdif**)
+- google_cloud_key [Google Cloud API Key](https://console.cloud.google.com/apis/credentials) (for Text-to-Speech)
 
 <br>
 
 ```
-unzip artific_intellig_bot-0.6.0.zip && cd artific_intellig_bot-0.6.0
-java -jar artific_intellig_bot-0.6.0-all.jar
+unzip artific_intellig_bot-0.7.0.zip && cd artific_intellig_bot-0.7.0
+java -jar artific_intellig_bot-0.7.0-all.jar
 ```
 
 Commands
@@ -45,16 +45,16 @@ Commands
 
 Additional chat commands:
 
-- /**chatctx** - show context
-- /**chatrm** - remove dialogue context
+- /**chatctx** - view dialogue history
+- /**chatrm** - clear history
 
 NOTE: /**dallevariations** - is not a typical command in use, run it as a reply to an image with text: "**@**"
 
 Admin commands
 --------------
 
-- /**enable** _commandName_ (example: _/enable /chat_)
-- /**disable** _commandName_ (example: _/disable /dalle_)
+- /**enable** _commandName_ (example: _/enable chat_)
+- /**disable** _commandName_ (example: _/disable dalle_)
 <br>
 
 - /**chatastext** (ChatGPT answers as text, default)
