@@ -43,12 +43,18 @@ Commands
 - /**uptime**
 - /**about**
 
+NOTE: /**dallevariations** - is not a typical command in use, run it as a reply to an image with text: "**@**"
+
 Additional chat commands:
 
 - /**chatctx** - view dialogue history
 - /**chatrm** - clear history
 
-NOTE: /**dallevariations** - is not a typical command in use, run it as a reply to an image with text: "**@**"
+For audio responses, add the **#voice** tag to your message, for example:
+
+`Hello, how are you? #voice`
+
+...or use the /**chatasvoice** command to globally set bot replies as voice
 
 Admin commands
 --------------
