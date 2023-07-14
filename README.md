@@ -12,6 +12,10 @@ Download
 Installation
 ------------
 
+```
+unzip artific_intellig_bot-0.7.0.zip && cd artific_intellig_bot-0.7.0
+```
+
 ./_config/_
 
 **bot_config.yaml**:
@@ -25,11 +29,9 @@ Installation
 - openai_key [OpenAI API Key](https://platform.openai.com/account/api-keys)
 - stable_diffusion_key [Stable Diffusion API Key](https://beta.dreamstudio.ai/account) (for /**sdif**)
 - google_cloud_key [Google Cloud API Key](https://console.cloud.google.com/apis/credentials) (for Text-to-Speech, audio replies)
-
-<br>
+  <br>
 
 ```
-unzip artific_intellig_bot-0.7.0.zip && cd artific_intellig_bot-0.7.0
 java -jar artific_intellig_bot-0.7.0-all.jar
 ```
 
