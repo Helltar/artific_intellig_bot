@@ -121,8 +121,6 @@ open class ChatGPTCommand(ctx: MessageContext, private val chatSystemMessage: St
             else
                 sendVoice(answer, messageId)
 
-            println(userContextMap[userId])
-
         } catch (e: JSONException) {
             log.error(e.message)
             replyToMessage(Strings.chat_exception)
