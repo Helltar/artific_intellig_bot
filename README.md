@@ -7,13 +7,13 @@ Demo: https://t.me/+siikRmY3uyE5YTBi
 Download
 --------
 
-- [artific_intellig_bot-0.7.0.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.7.0/artific_intellig_bot-0.7.0.zip) (36 MB)
+- [artific_intellig_bot-0.8.0.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.8.0/artific_intellig_bot-0.8.0.zip) (35 MB)
 
 Installation
 ------------
 
 ```
-unzip artific_intellig_bot-0.7.0.zip && cd artific_intellig_bot-0.7.0
+unzip artific_intellig_bot-0.8.0.zip && cd artific_intellig_bot-0.8.0
 ```
 
 ./_config/_
@@ -33,7 +33,7 @@ unzip artific_intellig_bot-0.7.0.zip && cd artific_intellig_bot-0.7.0
 <br>
 
 ```
-java -jar artific_intellig_bot-0.7.0-all.jar
+java -jar artific_intellig_bot-0.8.0-all.jar
 ```
 
 Commands
