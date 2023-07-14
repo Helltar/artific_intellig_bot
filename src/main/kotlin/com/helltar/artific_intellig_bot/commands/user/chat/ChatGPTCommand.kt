@@ -1,7 +1,6 @@
 package com.helltar.artific_intellig_bot.commands.user.chat
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.github.kittinunf.fuel.core.ResponseResultOf
 import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.core.isSuccessful
 import com.github.kittinunf.fuel.httpPost
@@ -11,6 +10,16 @@ import com.helltar.artific_intellig_bot.DIR_DB
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.Utils.detectLangCode
 import com.helltar.artific_intellig_bot.commands.BotCommand
+import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.CHAT_GPT_MODEL
+import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.CHAT_ROLE_ASSISTANT
+import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.CHAT_ROLE_SYSTEM
+import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.CHAT_ROLE_USER
+import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.ChatData
+import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.ChatMessageData
+import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.TextToSpeechJsonData
+import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.TtsAudioConfigData
+import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.TtsInputData
+import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.TtsVoiceData
 import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
@@ -19,53 +28,33 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import java.io.File
 import java.util.*
 
-/* todo: refact. */
-
 open class ChatGPTCommand(ctx: MessageContext, private val chatSystemMessage: String = "") : BotCommand(ctx) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    private data class ChatData(
-        val model: String,
-        val messages: List<ChatMessageData>
-    )
-
-    data class ChatMessageData(
-        val role: String,
-        val content: String
-    )
-
     companion object {
-        val userContext = hashMapOf<Long, LinkedList<ChatMessageData>>()
+        val userContextMap = hashMapOf<Long, LinkedList<ChatMessageData>>()
         private const val MAX_USER_MESSAGE_TEXT_LENGTH = 512
         private const val MAX_ADMIN_MESSAGE_TEXT_LENGTH = 1024
-        private const val CHAT_GPT_MODEL = "gpt-3.5-turbo"
-        private const val DIALOG_CONTEXT_SIZE = 15
+        private const val DIALOG_CONTEXT_SIZE = 25
+        private const val VOICE_OUT_TEXT_TAG = "#voice"
     }
 
     override fun run() {
-        val message = ctx.message()
         var messageId = ctx.messageId()
         var text = argsText
 
-        // todo: temp. fix. ._.
-        if (text.isEmpty())
-            text = message.text
-
-        if (!message.isReply) {
-            if (args.isEmpty()) {
-                replyToMessage(Strings.chat_hello)
-                return
-            }
-        } else {
+        if (message.isReply) {
             if (message.replyToMessage.from.id != ctx.sender.me.id) {
                 text = message.replyToMessage.text ?: return
                 messageId = message.replyToMessage.messageId
+            } else
+                text = message.text
+        } else
+            if (argsText.isEmpty()) {
+                replyToMessage(Strings.chat_hello)
+                return
             }
-        }
-
-        val username = message.from.firstName
-        val chatTitle = message.chat.title ?: username
 
         val textLength =
             if (isNotAdmin())
@@ -78,25 +67,36 @@ open class ChatGPTCommand(ctx: MessageContext, private val chatSystemMessage: St
             return
         }
 
-        if (userContext.containsKey(userId))
-            userContext[userId]?.add(ChatMessageData("user", text))
-        else
-            userContext[userId] = LinkedList(listOf(ChatMessageData("user", text)))
+        val username = message.from.firstName
+        val chatTitle = message.chat.title ?: username
+        val isVoiceOut = text.contains(VOICE_OUT_TEXT_TAG)
+
+        if (isVoiceOut)
+            text = text.replace(VOICE_OUT_TEXT_TAG, "").trim()
+
+        if (!userContextMap.containsKey(userId))
+            userContextMap[userId] =
+                LinkedList(listOf(ChatMessageData(CHAT_ROLE_SYSTEM, String.format(chatSystemMessage, chatTitle, username, userId))))
+
+        userContextMap[userId]?.add(ChatMessageData(CHAT_ROLE_USER, text))
+
+        if (userContextMap[userId]!!.size > DIALOG_CONTEXT_SIZE) {
+            userContextMap[userId]?.removeAt(1) // user
+            userContextMap[userId]?.removeAt(1) // assistant
+        }
 
         val waitMessageId = replyToMessageWithMarkup("...", createWaitButton())
-
+        val (_, response, resultString) = sendPrompt(userContextMap[userId]!!)
         val json: String
 
-        sendPrompt(username, chatTitle).run {
-            if (second.isSuccessful)
-                json = third.get()
-            else {
-                deleteMessage(waitMessageId)
-                replyToMessage(Strings.chat_exception)
-                log.error(third.component2()?.message)
-                userContext[userId]?.removeLast()
-                return
-            }
+        if (response.isSuccessful)
+            json = resultString.get()
+        else {
+            deleteMessage(waitMessageId)
+            replyToMessage(Strings.chat_exception)
+            log.error(resultString.component2()?.message)
+            userContextMap[userId]?.removeLast()
+            return
         }
 
         try {
@@ -107,65 +107,45 @@ open class ChatGPTCommand(ctx: MessageContext, private val chatSystemMessage: St
                     .getJSONObject("message")
                     .getString("content")
 
-            userContext[userId]?.add(ChatMessageData("assistant", answer))
+            userContextMap[userId]?.add(ChatMessageData(CHAT_ROLE_ASSISTANT, answer))
+
+            deleteMessage(waitMessageId)
+
+            if (isVoiceOut) {
+                sendVoice(answer, messageId)
+                return
+            }
 
             if (!File(DIR_DB + cmdChatAsVoice).exists())
                 replyToMessage(answer, messageId, markdown = true)
-            else {
-                textToSpeech(answer, detectLangCode(answer))?.let { oggBytes ->
-                    // todo: tempFile
-                    val voice = File.createTempFile("tmp", ".ogg").apply { writeBytes(oggBytes) }
-                    sendVoice(voice, messageId)
-                }
-                    ?: replyToMessage(Strings.chat_exception)
-            }
+            else
+                sendVoice(answer, messageId)
+
+            println(userContextMap[userId])
+
         } catch (e: JSONException) {
             log.error(e.message)
+            replyToMessage(Strings.chat_exception)
         }
-
-        deleteMessage(waitMessageId)
     }
 
-    private fun sendPrompt(username: String, chatName: String): ResponseResultOf<String> {
-        val messages = arrayListOf(ChatMessageData("system", String.format(chatSystemMessage, chatName, username, userId)))
-
-        if (userContext[userId]!!.size > DIALOG_CONTEXT_SIZE) {
-            userContext[userId]?.removeFirst()
-            userContext[userId]?.removeFirst()
+    private fun sendVoice(text: String, messageId: Int) {
+        textToSpeech(text, detectLangCode(text))?.let { oggBytes ->
+            // todo: tempFile
+            val voice = File.createTempFile("tmp", ".ogg").apply { writeBytes(oggBytes) }
+            sendVoice(voice, messageId)
         }
+            ?: replyToMessage(Strings.chat_exception)
+    }
 
-        messages.addAll(userContext[userId]!!)
-
-        return "https://api.openai.com/v1/chat/completions".httpPost()
+    private fun sendPrompt(messages: List<ChatMessageData>) =
+        "https://api.openai.com/v1/chat/completions".httpPost()
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer $openaiKey")
             .timeout(FUEL_TIMEOUT)
             .timeoutRead(FUEL_TIMEOUT)
             .jsonBody(Gson().toJson(ChatData(CHAT_GPT_MODEL, messages)))
             .responseString()
-    }
-
-    /* https://cloud.google.com/text-to-speech/docs/reference/rest/v1/text/synthesize */
-
-    private data class TtsInputData(
-        val text: String
-    )
-
-    private data class TtsVoiceData(
-        val languageCode: String,
-        val ssmlGender: String = "FEMALE"
-    )
-
-    private data class TtsAudioConfigData(
-        val audioEncoding: String = "OGG_OPUS",
-        val speakingRate: Float = 1.0f
-    )
-
-    private data class TextToSpeechJsonData(
-        val input: TtsInputData,
-        val voice: TtsVoiceData,
-        val audioConfig: TtsAudioConfigData
-    )
 
     private fun textToSpeech(text: String, languageCode: String): ByteArray? {
         var json = Gson().toJson(TextToSpeechJsonData(TtsInputData(text), TtsVoiceData(languageCode), TtsAudioConfigData()))

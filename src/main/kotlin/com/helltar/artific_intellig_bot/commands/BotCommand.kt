@@ -15,11 +15,12 @@ import java.io.Serializable
 
 abstract class BotCommand(val ctx: MessageContext) : BotConfig() {
 
-    protected companion object{
+    protected companion object {
         const val FUEL_TIMEOUT = 60000
     }
 
     protected val userId = ctx.user().id
+    protected val message = ctx.message()
     protected val args: Array<String> = ctx.arguments()
     protected val argsText: String = ctx.argumentsAsString()
 
@@ -43,7 +44,12 @@ abstract class BotCommand(val ctx: MessageContext) : BotConfig() {
     fun isCreator(userId: Long = this.userId) =
         Database.sudoers.isCreator(userId)
 
-    fun replyToMessage(text: String, messageId: Int = ctx.messageId(), enableWebPagePreview: Boolean = false, markdown: Boolean = false): Int =
+    fun replyToMessage(
+        text: String,
+        messageId: Int = ctx.messageId(),
+        enableWebPagePreview: Boolean = false,
+        markdown: Boolean = false
+    ): Int =
         ctx.replyToMessage(text)
             .setReplyToMessageId(messageId)
             .setParseMode(if (!markdown) ParseMode.HTML else ParseMode.MARKDOWN)
@@ -78,7 +84,7 @@ abstract class BotCommand(val ctx: MessageContext) : BotConfig() {
             .setParseMode(ParseMode.HTML)
             .call(ctx.sender)
 
-    protected fun sendVoice(file: File, messageId: Int = ctx.messageId()): Message =
+    protected fun sendVoice(file: File, messageId: Int): Message =
         ctx.replyToMessageWithAudio()
             .setFile(file)
             .setReplyToMessageId(messageId)

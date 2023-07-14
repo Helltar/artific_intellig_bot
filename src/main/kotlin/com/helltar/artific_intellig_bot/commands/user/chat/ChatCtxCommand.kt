@@ -19,8 +19,8 @@ class ChatCtxCommand(ctx: MessageContext) : ChatGPTCommand(ctx) {
 
         var text = ""
 
-        if (userContext.containsKey(userId)) {
-            userContext[userId]?.forEachIndexed { index, chatMessage ->
+        if (userContextMap.containsKey(userId)) {
+            userContextMap[userId]?.forEachIndexed { index, chatMessage ->
                 if (chatMessage.role == "user")
                     text += "*$index*: " + chatMessage.content + "\n"
             }
