@@ -24,7 +24,7 @@ Installation
 
 - openai_key [OpenAI API Key](https://platform.openai.com/account/api-keys)
 - stable_diffusion_key [Stable Diffusion API Key](https://beta.dreamstudio.ai/account) (for /**sdif**)
-- google_cloud_key [Google Cloud API Key](https://console.cloud.google.com/apis/credentials) (for Text-to-Speech)
+- google_cloud_key [Google Cloud API Key](https://console.cloud.google.com/apis/credentials) (for Text-to-Speech, audio replies)
 
 <br>
 
