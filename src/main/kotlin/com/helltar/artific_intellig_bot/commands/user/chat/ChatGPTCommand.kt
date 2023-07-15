@@ -5,10 +5,10 @@ import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.core.isSuccessful
 import com.github.kittinunf.fuel.httpPost
 import com.google.gson.Gson
+import com.helltar.artific_intellig_bot.BotMainConfig
 import com.helltar.artific_intellig_bot.Commands.cmdChatAsVoice
 import com.helltar.artific_intellig_bot.DIR_DB
 import com.helltar.artific_intellig_bot.Strings
-import com.helltar.artific_intellig_bot.Utils.detectLangCode
 import com.helltar.artific_intellig_bot.commands.BotCommand
 import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.CHAT_GPT_MODEL
 import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.CHAT_ROLE_ASSISTANT
@@ -20,15 +20,15 @@ import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.TextToSpe
 import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.TtsAudioConfigData
 import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.TtsInputData
 import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.TtsVoiceData
+import com.helltar.artific_intellig_bot.localizedString
+import com.helltar.artific_intellig_bot.utils.Utils.detectLangCode
 import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 import java.io.File
 import java.util.*
 
-open class ChatGPTCommand(ctx: MessageContext, private val chatSystemMessage: String = "") : BotCommand(ctx) {
+open class ChatGPTCommand(ctx: MessageContext, private val botConfig: BotMainConfig) : BotCommand(ctx) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -38,6 +38,7 @@ open class ChatGPTCommand(ctx: MessageContext, private val chatSystemMessage: St
         private const val MAX_ADMIN_MESSAGE_TEXT_LENGTH = 1024
         private const val DIALOG_CONTEXT_SIZE = 25
         private const val VOICE_OUT_TEXT_TAG = "#voice"
+        private const val DEFAULT_LANG_CODE = "en"
     }
 
     override fun run() {
@@ -74,6 +75,9 @@ open class ChatGPTCommand(ctx: MessageContext, private val chatSystemMessage: St
         if (isVoiceOut)
             text = text.replace(VOICE_OUT_TEXT_TAG, "").trim()
 
+        val userLanguageCode = ctx.user().languageCode ?: DEFAULT_LANG_CODE
+        val chatSystemMessage = localizedString(Strings.chat_gpt_system_message, userLanguageCode)
+
         if (!userContextMap.containsKey(userId))
             userContextMap[userId] =
                 LinkedList(listOf(ChatMessageData(CHAT_ROLE_SYSTEM, String.format(chatSystemMessage, chatTitle, username, userId))))
@@ -85,7 +89,12 @@ open class ChatGPTCommand(ctx: MessageContext, private val chatSystemMessage: St
             userContextMap[userId]?.removeAt(1) // assistant
         }
 
-        val waitMessageId = replyToMessageWithMarkup("...", createWaitButton())
+        val waitMessageId =
+            replyToMessageWithDocument(
+                botConfig.fileIdGifChatLoading,
+                localizedString(Strings.chat_wait_message, userLanguageCode)
+            )
+
         val (_, response, resultString) = sendPrompt(userContextMap[userId]!!)
         val json: String
 
@@ -168,15 +177,4 @@ open class ChatGPTCommand(ctx: MessageContext, private val chatSystemMessage: St
             null
         }
     }
-
-    private fun createWaitButton() =
-        InlineKeyboardMarkup.builder().keyboardRow(
-            listOf(
-                InlineKeyboardButton
-                    .builder()
-                    .callbackData("waitButton")
-                    .text("\uD83D\uDD04") // 🔄
-                    .build()
-            )
-        ).build()
 }

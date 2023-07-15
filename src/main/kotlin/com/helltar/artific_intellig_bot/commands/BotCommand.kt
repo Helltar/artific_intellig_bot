@@ -27,7 +27,7 @@ abstract class BotCommand(val ctx: MessageContext) : BotConfig() {
     abstract fun run()
 
     fun isCommandDisabled(commandName: String) =
-        File(DIR_DB + commandName + EXT_DISABLED).exists()
+        File("$DIR_DB/commandName$EXT_DISABLED").exists()
 
     fun isChatInWhiteList() =
         Database.chatWhiteList.isChatExists(ctx.chatId())
@@ -83,6 +83,14 @@ abstract class BotCommand(val ctx: MessageContext) : BotConfig() {
             .setReplyToMessageId(messageId)
             .setParseMode(ParseMode.HTML)
             .call(ctx.sender)
+
+    protected fun replyToMessageWithDocument(fileId: String, caption: String): Int =
+        ctx.replyWithDocument()
+            .setFile(fileId)
+            .setCaption(caption)
+            .setReplyToMessageId(ctx.messageId())
+            .call(ctx.sender)
+            .messageId
 
     protected fun sendVoice(file: File, messageId: Int): Message =
         ctx.replyToMessageWithAudio()

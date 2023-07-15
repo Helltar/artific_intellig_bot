@@ -33,7 +33,7 @@ class ChangeStateCommand(ctx: MessageContext, private val disable: Boolean = fal
             return
         }
 
-        val lockFile = File(DIR_DB + commandName + EXT_DISABLED)
+        val lockFile = File("$DIR_DB/$commandName$EXT_DISABLED")
 
         if (!disable)
             enable(lockFile, commandName)

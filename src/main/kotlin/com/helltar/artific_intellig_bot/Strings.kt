@@ -1,5 +1,10 @@
 package com.helltar.artific_intellig_bot
 
+import com.helltar.artific_intellig_bot.utils.Utils.getFirstRegexGroup
+import org.slf4j.LoggerFactory
+import java.io.File
+import java.io.FileReader
+
 object Strings {
 
     const val bad_request = "<code>Bad Request</code> \uD83D\uDE10" // 😐
@@ -41,4 +46,24 @@ object Strings {
     const val chat_exists = "✅ Chat already exists"
     const val chat_removed = "✅ Chat has been removed"
     const val chat_not_exists = "❌ Chat does not exist"
+
+    const val chat_gpt_system_message = "chat_gpt_system_message"
+    const val chat_wait_message = "chat_wait_message"
+}
+
+private val log = LoggerFactory.getLogger(Strings.javaClass)
+
+fun localizedString(key: String, languageCode: String): String {
+    return try {
+        var filename = "$DIR_LOCALE/${languageCode.lowercase()}.xml"
+
+        if (!File(filename).exists())
+            filename = "$DIR_LOCALE/en.xml"
+
+        val regex = """<string name="$key">(\X*?)<\/string>"""
+        getFirstRegexGroup(FileReader(filename).readText(), regex).trimIndent().ifEmpty { key }
+    } catch (e: Exception) {
+        log.error(e.message)
+        key
+    }
 }

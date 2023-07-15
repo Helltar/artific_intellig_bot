@@ -1,0 +1,4 @@
+<resources>
+    <string name="chat_gpt_system_message">Я знаходжусь в чаті: %s. Тебе звати %s, твій ID в телеграмі %d.</string>
+    <string name="chat_wait_message">Будь ласка, почекайте ...</string>
+</resources>
