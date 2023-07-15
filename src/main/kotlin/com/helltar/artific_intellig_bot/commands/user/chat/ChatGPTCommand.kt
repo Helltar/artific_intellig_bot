@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.*
 
-open class ChatGPTCommand(ctx: MessageContext, private val botConfig: BotMainConfig) : BotCommand(ctx) {
+open class ChatGPTCommand(ctx: MessageContext, private val botConfig: BotMainConfig? = null) : BotCommand(ctx) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -91,7 +91,7 @@ open class ChatGPTCommand(ctx: MessageContext, private val botConfig: BotMainCon
 
         val waitMessageId =
             replyToMessageWithDocument(
-                botConfig.fileIdGifChatLoading,
+                botConfig!!.fileIdGifChatLoading,
                 localizedString(Strings.chat_wait_message, userLanguageCode)
             )
 
@@ -129,6 +129,8 @@ open class ChatGPTCommand(ctx: MessageContext, private val botConfig: BotMainCon
                 replyToMessage(answer, messageId, markdown = true)
             else
                 sendVoice(answer, messageId)
+
+            println(userContextMap[userId])
 
         } catch (e: JSONException) {
             log.error(e.message)
