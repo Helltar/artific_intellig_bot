@@ -1,4 +1,4 @@
-package com.helltar.artific_intellig_bot
+package com.helltar.artific_intellig_bot.utils
 
 import java.lang.management.ManagementFactory
 import java.util.concurrent.TimeUnit
@@ -24,6 +24,14 @@ object Utils {
 
     fun getSysStat() =
         "<code>Threads: ${ManagementFactory.getThreadMXBean().threadCount}\n${getMemUsage()}\n${getJVMUptime()}</code>"
+
+    fun getFirstRegexGroup(text: String, regex: String): String {
+        val m = Pattern.compile(regex).matcher(text)
+
+        return if (m.find()) {
+            if (m.groupCount() >= 1) m.group(1) else ""
+        } else ""
+    }
 
     private fun getJVMUptime() =
         ManagementFactory.getRuntimeMXBean().run {
