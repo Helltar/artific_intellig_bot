@@ -7,7 +7,7 @@ class ChatCtxRemoveCommand(ctx: MessageContext) : ChatGPTCommand(ctx) {
 
     override fun run() {
         if (userContextMap.containsKey(userId))
-            userContextMap[userId]?.clear()
+            userContextMap.remove(userId)
 
         replyToMessage(Strings.chat_context_removed)
     }
