@@ -27,7 +27,7 @@ abstract class BotCommand(val ctx: MessageContext) : BotConfig() {
     abstract fun run()
 
     fun isCommandDisabled(commandName: String) =
-        File("$DIR_DB/commandName$EXT_DISABLED").exists()
+        File("$DIR_DB/$commandName$EXT_DISABLED").exists()
 
     fun isChatInWhiteList() =
         Database.chatWhiteList.isChatExists(ctx.chatId())
