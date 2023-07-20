@@ -16,7 +16,7 @@ import java.io.Serializable
 abstract class BotCommand(val ctx: MessageContext) : BotConfig() {
 
     protected companion object {
-        const val FUEL_TIMEOUT = 60000
+        const val FUEL_TIMEOUT = 120000
     }
 
     protected val userId = ctx.user().id
