@@ -16,6 +16,9 @@ object Utils {
         if (find("[ёЁэЭъЪыЫ]"))
             return "ru-RU"
 
+        if (find("[ĄąĆćĘęŁłŃńÓóŚśŹźŻż]"))
+            return "pl-PL"
+
         if (find("\\w"))
             return "en-US"
 
