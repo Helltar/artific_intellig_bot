@@ -34,6 +34,7 @@ open class ChatGPTCommand(ctx: MessageContext, private val botConfig: BotMainCon
 
     companion object {
         val userContextMap = hashMapOf<Long, LinkedList<ChatMessageData>>()
+        val userUsageTokens = hashMapOf<Long, Int>()
         private const val MAX_USER_MESSAGE_TEXT_LENGTH = 512
         private const val MAX_ADMIN_MESSAGE_TEXT_LENGTH = 1024
         private const val DIALOG_CONTEXT_SIZE = 25
@@ -44,10 +45,12 @@ open class ChatGPTCommand(ctx: MessageContext, private val botConfig: BotMainCon
     override fun run() {
         var messageId = ctx.messageId()
         var text = argsText
+        var isVoiceOut = false
 
         if (message.isReply) {
             if (message.replyToMessage.from.id != ctx.sender.me.id) {
                 text = message.replyToMessage.text ?: return
+                isVoiceOut = argsText == VOICE_OUT_TEXT_TAG
                 messageId = message.replyToMessage.messageId
             } else
                 text = message.text
@@ -70,21 +73,27 @@ open class ChatGPTCommand(ctx: MessageContext, private val botConfig: BotMainCon
 
         val username = message.from.firstName
         val chatTitle = message.chat.title ?: username
-        val isVoiceOut = text.contains(VOICE_OUT_TEXT_TAG)
 
-        if (isVoiceOut)
-            text = text.replace(VOICE_OUT_TEXT_TAG, "").trim()
+        // todo: isVoiceOut
+        if (!isVoiceOut) {
+            isVoiceOut = text.contains(VOICE_OUT_TEXT_TAG)
+
+            if (isVoiceOut)
+                text = text.replace(VOICE_OUT_TEXT_TAG, "").trim()
+        }
 
         val userLanguageCode = ctx.user().languageCode ?: DEFAULT_LANG_CODE
         val chatSystemMessage = localizedString(Strings.chat_gpt_system_message, userLanguageCode)
 
-        if (!userContextMap.containsKey(userId))
-            userContextMap[userId] =
-                LinkedList(listOf(ChatMessageData(CHAT_ROLE_SYSTEM, String.format(chatSystemMessage, chatTitle, username, userId))))
+        if (!userContextMap.containsKey(userId)) {
+            userContextMap[userId] = LinkedList(listOf(ChatMessageData(CHAT_ROLE_SYSTEM, String.format(chatSystemMessage, chatTitle, username, userId))))
+            userUsageTokens[userId] = 0
+        }
 
         userContextMap[userId]?.add(ChatMessageData(CHAT_ROLE_USER, text))
 
-        if (userContextMap[userId]!!.size > DIALOG_CONTEXT_SIZE) {
+        // todo: userUsageTokens
+        if (userContextMap[userId]!!.size > DIALOG_CONTEXT_SIZE || userUsageTokens[userId]!! > 4000) {
             userContextMap[userId]?.removeAt(1) // user
             userContextMap[userId]?.removeAt(1) // assistant
         }
@@ -116,6 +125,12 @@ open class ChatGPTCommand(ctx: MessageContext, private val botConfig: BotMainCon
                     .getJSONObject("message")
                     .getString("content")
 
+            val usageTotalTokens =
+                JSONObject(json)
+                    .getJSONObject("usage")
+                    .getInt("total_tokens")
+
+            userUsageTokens[userId] = userUsageTokens[userId]!! + usageTotalTokens
             userContextMap[userId]?.add(ChatMessageData(CHAT_ROLE_ASSISTANT, answer))
 
             deleteMessage(waitMessageId)
@@ -159,6 +174,8 @@ open class ChatGPTCommand(ctx: MessageContext, private val botConfig: BotMainCon
 
         "https://texttospeech.googleapis.com/v1/text:synthesize?fields=audioContent&key=$googleCloudKey".httpPost()
             .header("Content-Type", "application/json; charset=utf-8")
+            .timeout(FUEL_TIMEOUT)
+            .timeoutRead(FUEL_TIMEOUT)
             .jsonBody(json)
             .responseString().run {
                 json =
