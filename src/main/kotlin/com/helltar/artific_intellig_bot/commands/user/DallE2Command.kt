@@ -51,8 +51,8 @@ class DallE2Command(ctx: MessageContext) : BotCommand(ctx) {
         "https://api.openai.com/v1/images/generations".httpPost()
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer $openaiKey")
-            .timeout(60000)
-            .timeoutRead(60000)
+            .timeout(FUEL_TIMEOUT)
+            .timeoutRead(FUEL_TIMEOUT)
             .jsonBody(Gson().toJson(DalleJsonData(prompt, 1)))
             .response().second.data.decodeToString()
 }
