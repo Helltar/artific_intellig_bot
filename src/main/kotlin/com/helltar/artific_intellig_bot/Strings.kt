@@ -50,7 +50,7 @@ object Strings {
     const val chat_gpt_system_message = "chat_gpt_system_message"
     const val chat_wait_message = "chat_wait_message"
 
-    const val creator_only_command = "You cannot use this command like this (creator-only) ✋" // ✋
+    const val creator_only_command = "You cannot use this command like this (admin-only) ✋" // ✋
 }
 
 private val log = LoggerFactory.getLogger(Strings.javaClass)
