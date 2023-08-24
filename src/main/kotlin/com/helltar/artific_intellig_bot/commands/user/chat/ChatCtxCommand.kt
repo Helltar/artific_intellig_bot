@@ -15,8 +15,10 @@ class ChatCtxCommand(ctx: MessageContext) : ChatGPTCommand(ctx) {
             else
                 if (isAdmin())
                     message.replyToMessage.from.id
-                else
+                else {
+                    replyToMessage(Strings.creator_only_command)
                     return
+                }
 
         var text = ""
 
