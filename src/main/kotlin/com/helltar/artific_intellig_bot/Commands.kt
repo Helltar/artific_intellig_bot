@@ -19,6 +19,7 @@ object Commands {
 
     const val cmdAbout = "/about"
     const val cmdUptime = "/uptime"
+    const val cmdMyId = "/myid"
 
     const val cmdAddAdmin = "/addadmin"
     const val cmdRmAdmin = "/rmadmin"

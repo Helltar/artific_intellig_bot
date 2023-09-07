@@ -22,6 +22,7 @@ import com.helltar.artific_intellig_bot.Commands.cmdDalle
 import com.helltar.artific_intellig_bot.Commands.cmdDalleVariations
 import com.helltar.artific_intellig_bot.Commands.cmdDisable
 import com.helltar.artific_intellig_bot.Commands.cmdEnable
+import com.helltar.artific_intellig_bot.Commands.cmdMyId
 import com.helltar.artific_intellig_bot.Commands.cmdRmAdmin
 import com.helltar.artific_intellig_bot.Commands.cmdRmChat
 import com.helltar.artific_intellig_bot.Commands.cmdSDiff
@@ -50,7 +51,9 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
 
     init {
         commands.run {
-            register(SimpleCommand(cmdStart) { runCommand(StartCommand(it), cmdStart) })
+            register(SimpleCommand(cmdStart) { runCommand(StartCommand(it), cmdStart, checkRights = false) })
+            register(SimpleCommand(cmdMyId) { runCommand(MyIdCommand(it), cmdMyId, checkRights = false) })
+            register(SimpleCommand(cmdAbout) { runCommand(AboutCommand(it), cmdAbout, checkRights = false) })
 
             register(SimpleCommand(cmdChat) { runCommand(ChatGPTCommand(it), cmdChat) })
             register(SimpleCommand(cmdChatCtx) { runCommand(ChatCtxCommand(it), cmdChatCtx) })
@@ -59,7 +62,6 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
             register(SimpleCommand(cmdDalle) { runCommand(DallE2Command(it), cmdDalle) })
             register(SimpleCommand(cmdSDiff) { runCommand(StableDiffusionCommand(it), cmdSDiff) })
             register(SimpleCommand(cmdBanList) { runCommand(BanListCommand(it), cmdBanList) })
-            register(SimpleCommand(cmdAbout) { runCommand(AboutCommand(it), cmdAbout) })
             register(SimpleCommand(cmdUptime) { runCommand(UptimeCommand(it), cmdUptime) })
 
             register(SimpleCommand(cmdEnable) { runCommand(ChangeStateCommand(it), cmdEnable, true) })
@@ -121,7 +123,8 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
         botCommand: BotCommand,
         commandName: String,
         isAdminCommand: Boolean = false,
-        isCreatorCommand: Boolean = false
+        isCreatorCommand: Boolean = false,
+        checkRights: Boolean = true
     ) {
 
         val user = botCommand.ctx.user()
@@ -131,7 +134,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
         log.info("$commandName: ${chat.id} $userId ${user.userName} ${user.firstName} ${chat.title} : ${botCommand.ctx.argumentsAsString()}")
 
         botCommand.run {
-            if (commandName == cmdStart)
+            if (!checkRights)
                 return@run
 
             if (isCreatorCommand && !isCreator())
