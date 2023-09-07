@@ -3,7 +3,7 @@ package com.helltar.artific_intellig_bot.commands.admin
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.commands.BotCommand
-import com.helltar.artific_intellig_bot.db.Database
+import com.helltar.artific_intellig_bot.dao.DatabaseFactory
 
 class RemoveAdminCommand(ctx: MessageContext) : BotCommand(ctx) {
 
@@ -17,7 +17,7 @@ class RemoveAdminCommand(ctx: MessageContext) : BotCommand(ctx) {
         if (isCreator(userId))
             return
 
-        if (Database.sudoers.remove(userId))
+        if (DatabaseFactory.sudoers.remove(userId))
             replyToMessage(Strings.admin_removed)
         else
             replyToMessage(Strings.admin_not_exists)

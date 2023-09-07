@@ -3,7 +3,7 @@ package com.helltar.artific_intellig_bot.commands.admin
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.commands.BotCommand
-import com.helltar.artific_intellig_bot.db.Database
+import com.helltar.artific_intellig_bot.dao.DatabaseFactory
 
 class UnbanUserCommand(ctx: MessageContext) : BotCommand(ctx) {
 
@@ -14,7 +14,7 @@ class UnbanUserCommand(ctx: MessageContext) : BotCommand(ctx) {
             else
                 ctx.message().replyToMessage?.from?.id
 
-        if (Database.banList.unbanUser(userId ?: return))
+        if (DatabaseFactory.banList.unbanUser(userId ?: return))
             replyToMessage(Strings.user_unbanned)
         else
             replyToMessage(Strings.user_not_banned)

@@ -1,18 +1,20 @@
-package com.helltar.artific_intellig_bot.db
+package com.helltar.artific_intellig_bot.dao
 
-import com.helltar.artific_intellig_bot.db.Database.dbQuery
+import com.helltar.artific_intellig_bot.dao.DatabaseFactory.dbQuery
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
+import java.time.LocalDateTime
 
 class Sudoers {
 
-    fun add(userId: Long, username: String = "") = dbQuery {
+    fun add(userId: Long, username: String?) = dbQuery {
         SudoersTable.insertIgnore {
             it[this.userId] = userId
             it[this.username] = username
+            it[datetime] = LocalDateTime.now()
         }
     }
         .insertedCount > 0
@@ -22,13 +24,7 @@ class Sudoers {
     }
 
     fun getList() = dbQuery {
-        var text = ""
-
-        SudoersTable.selectAll().forEach {
-            text += "<code>${it[SudoersTable.userId]}</code> <b>${it[SudoersTable.username]}</b>\n"
-        }
-
-        return@dbQuery text
+        SudoersTable.selectAll().toList()
     }
 
     fun isAdmin(userId: Long) = dbQuery {
@@ -36,6 +32,6 @@ class Sudoers {
     }
 
     fun isCreator(userId: Long) = dbQuery {
-        return@dbQuery userId == SudoersTable.selectAll().limit(1).single()[SudoersTable.userId]
+        return@dbQuery userId == SudoersTable.selectAll().first()[SudoersTable.userId]
     }
 }

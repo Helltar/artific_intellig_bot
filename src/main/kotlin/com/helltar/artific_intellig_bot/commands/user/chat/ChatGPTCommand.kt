@@ -5,10 +5,8 @@ import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.core.isSuccessful
 import com.github.kittinunf.fuel.httpPost
 import com.google.gson.Gson
-import com.helltar.artific_intellig_bot.BotMainConfig
-import com.helltar.artific_intellig_bot.Commands.cmdChatAsVoice
-import com.helltar.artific_intellig_bot.DIR_DB
-import com.helltar.artific_intellig_bot.Strings
+import com.helltar.artific_intellig_bot.*
+import com.helltar.artific_intellig_bot.Commands.cmdChatAsVoiceName
 import com.helltar.artific_intellig_bot.commands.BotCommand
 import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.CHAT_GPT_MODEL
 import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.CHAT_ROLE_ASSISTANT
@@ -20,7 +18,7 @@ import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.TextToSpe
 import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.TtsAudioConfigData
 import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.TtsInputData
 import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.TtsVoiceData
-import com.helltar.artific_intellig_bot.localizedString
+import com.helltar.artific_intellig_bot.dao.DatabaseFactory
 import com.helltar.artific_intellig_bot.utils.Utils.detectLangCode
 import org.json.JSONException
 import org.json.JSONObject
@@ -98,11 +96,7 @@ open class ChatGPTCommand(ctx: MessageContext, private val botConfig: BotMainCon
             userContextMap[userId]?.removeAt(1) // assistant
         }
 
-        val waitMessageId =
-            replyToMessageWithDocument(
-                botConfig!!.fileIdGifChatLoading,
-                localizedString(Strings.chat_wait_message, userLanguageCode)
-            )
+        val waitMessageId = replyToMessageWithDocument(getLoadingGifFileId(), localizedString(Strings.chat_wait_message, userLanguageCode))
 
         val (_, response, resultString) = sendPrompt(userContextMap[userId]!!)
         val json: String
@@ -140,7 +134,7 @@ open class ChatGPTCommand(ctx: MessageContext, private val botConfig: BotMainCon
                 return
             }
 
-            if (!File(DIR_DB + cmdChatAsVoice).exists())
+            if (isCommandDisabled(cmdChatAsVoiceName))
                 replyToMessage(answer, messageId, markdown = true)
             else
                 sendVoice(answer, messageId)
@@ -193,5 +187,18 @@ open class ChatGPTCommand(ctx: MessageContext, private val botConfig: BotMainCon
             log.error(e.message)
             null
         }
+    }
+
+    private fun getLoadingGifFileId(): String {
+        if (DatabaseFactory.filesIds.exists(FILE_NAME_LOADING_GIF))
+            return DatabaseFactory.filesIds.getFileId(FILE_NAME_LOADING_GIF)
+
+        val message = sendDocument(File("$DIR_FILES/$FILE_NAME_LOADING_GIF"))
+        val fileId = message.document.fileId
+        deleteMessage(message.messageId)
+
+        DatabaseFactory.filesIds.add(FILE_NAME_LOADING_GIF, fileId)
+
+        return fileId
     }
 }

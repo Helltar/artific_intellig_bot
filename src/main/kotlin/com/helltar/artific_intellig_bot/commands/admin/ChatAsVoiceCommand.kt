@@ -1,38 +1,21 @@
 package com.helltar.artific_intellig_bot.commands.admin
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.artific_intellig_bot.Commands.cmdChatAsText
-import com.helltar.artific_intellig_bot.Commands.cmdChatAsVoice
-import com.helltar.artific_intellig_bot.DIR_DB
+import com.helltar.artific_intellig_bot.Commands.cmdChatAsTextName
+import com.helltar.artific_intellig_bot.Commands.cmdChatAsVoiceName
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.commands.BotCommand
-import org.slf4j.LoggerFactory
-import java.io.File
-import java.io.IOException
+import com.helltar.artific_intellig_bot.dao.DatabaseFactory
 
 class ChatAsVoiceCommand(ctx: MessageContext) : BotCommand(ctx) {
 
     override fun run() {
-        File(DIR_DB + cmdChatAsText).run {
-            if (exists()) {
-                delete()
-                createChatAsVoiceLockFile()
-            } else {
-                if (File(DIR_DB + cmdChatAsVoice).exists())
-                    replyToMessage(Strings.chat_as_voice_already_enabled)
-                else
-                    createChatAsVoiceLockFile()
-            }
-        }
-    }
-
-    private fun createChatAsVoiceLockFile() {
-        try {
-            File(DIR_DB + cmdChatAsVoice).createNewFile()
+        if (!DatabaseFactory.commandsState.isDisabled(cmdChatAsVoiceName))
+            replyToMessage(Strings.chat_as_voice_already_enabled)
+        else {
+            DatabaseFactory.commandsState.changeState(cmdChatAsTextName, true)
+            DatabaseFactory.commandsState.changeState(cmdChatAsVoiceName, false)
             replyToMessage(Strings.chat_as_voice_ok)
-        } catch (e: IOException) {
-            replyToMessage("❌ <code>${e.message}</code>")
-            LoggerFactory.getLogger(javaClass).error(e.message)
         }
     }
 }

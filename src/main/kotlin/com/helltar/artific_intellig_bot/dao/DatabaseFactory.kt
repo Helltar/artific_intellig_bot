@@ -1,24 +1,30 @@
-package com.helltar.artific_intellig_bot.db
+package com.helltar.artific_intellig_bot.dao
 
 import com.helltar.artific_intellig_bot.FILE_DATABASE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.Database as SQLDatabase
 
-object Database {
+object DatabaseFactory {
 
     val banList = BanList()
     val sudoers = Sudoers()
     val chatWhiteList = ChatWhiteList()
+    val filesIds = FilesIds()
+    val commandsState = CommandsState()
 
     fun init() {
-        transaction(SQLDatabase.connect("jdbc:sqlite:$FILE_DATABASE", "org.sqlite.JDBC")) {
-            SchemaUtils.create(BanListTable, SudoersTable, ChatWhiteListTable)
+        val driver = "org.sqlite.JDBC"
+        val url = "jdbc:sqlite:$FILE_DATABASE"
+        val database = Database.connect(url, driver)
+
+        transaction(database) {
+            SchemaUtils.create(BanListTable, SudoersTable, ChatWhiteListTable, FilesIdsTable, CommandsStateTable)
         }
     }
 

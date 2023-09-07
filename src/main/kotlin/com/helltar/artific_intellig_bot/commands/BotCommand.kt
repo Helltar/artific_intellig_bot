@@ -3,9 +3,7 @@ package com.helltar.artific_intellig_bot.commands
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.artific_intellig_bot.BotConfig
-import com.helltar.artific_intellig_bot.DIR_DB
-import com.helltar.artific_intellig_bot.EXT_DISABLED
-import com.helltar.artific_intellig_bot.db.Database
+import com.helltar.artific_intellig_bot.dao.DatabaseFactory
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.InputFile
 import org.telegram.telegrambots.meta.api.objects.Message
@@ -27,22 +25,22 @@ abstract class BotCommand(val ctx: MessageContext) : BotConfig() {
     abstract fun run()
 
     fun isCommandDisabled(commandName: String) =
-        File("$DIR_DB/$commandName$EXT_DISABLED").exists()
+        DatabaseFactory.commandsState.isDisabled(commandName)
 
     fun isChatInWhiteList() =
-        Database.chatWhiteList.isChatExists(ctx.chatId())
+        DatabaseFactory.chatWhiteList.isChatExists(ctx.chatId())
 
     fun isUserBanned(userId: Long) =
-        Database.banList.isUserBanned(userId)
+        DatabaseFactory.banList.isUserBanned(userId)
 
     fun isNotAdmin() =
-        !Database.sudoers.isAdmin(userId)
+        !DatabaseFactory.sudoers.isAdmin(userId)
 
     fun isAdmin() =
         !isNotAdmin()
 
     fun isCreator(userId: Long = this.userId) =
-        Database.sudoers.isCreator(userId)
+        DatabaseFactory.sudoers.isCreator(userId)
 
     fun replyToMessage(
         text: String,
@@ -91,6 +89,11 @@ abstract class BotCommand(val ctx: MessageContext) : BotConfig() {
             .setReplyToMessageId(ctx.messageId())
             .call(ctx.sender)
             .messageId
+
+    protected fun sendDocument(file: File): Message =
+        ctx.replyWithDocument()
+            .setFile(file)
+            .call(ctx.sender)
 
     protected fun sendVoice(file: File, messageId: Int): Message =
         ctx.replyToMessageWithAudio()

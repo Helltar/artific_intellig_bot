@@ -3,7 +3,7 @@ package com.helltar.artific_intellig_bot.commands.admin
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.commands.BotCommand
-import com.helltar.artific_intellig_bot.db.Database
+import com.helltar.artific_intellig_bot.dao.DatabaseFactory
 
 class AddAdminCommand(ctx: MessageContext) : BotCommand(ctx) {
 
@@ -14,9 +14,9 @@ class AddAdminCommand(ctx: MessageContext) : BotCommand(ctx) {
             else
                 return
 
-        val username = if (args.size >= 2) args[1] else ""
+        val username = if (args.size >= 2) args[1] else null
 
-        if (Database.sudoers.add(userId, username))
+        if (DatabaseFactory.sudoers.add(userId, username))
             replyToMessage(Strings.admin_added)
         else
             replyToMessage(Strings.admin_exists)

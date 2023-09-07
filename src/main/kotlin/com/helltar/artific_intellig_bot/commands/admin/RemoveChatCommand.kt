@@ -3,7 +3,7 @@ package com.helltar.artific_intellig_bot.commands.admin
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.commands.BotCommand
-import com.helltar.artific_intellig_bot.db.Database
+import com.helltar.artific_intellig_bot.dao.DatabaseFactory
 
 class RemoveChatCommand(ctx: MessageContext) : BotCommand(ctx) {
 
@@ -14,7 +14,7 @@ class RemoveChatCommand(ctx: MessageContext) : BotCommand(ctx) {
             else
                 ctx.chatId()
 
-        if (Database.chatWhiteList.remove(chatId))
+        if (DatabaseFactory.chatWhiteList.remove(chatId))
             replyToMessage(Strings.chat_removed)
         else
             replyToMessage(Strings.chat_not_exists)

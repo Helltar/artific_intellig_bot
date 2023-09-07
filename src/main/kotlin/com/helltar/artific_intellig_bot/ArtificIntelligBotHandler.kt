@@ -34,7 +34,7 @@ import com.helltar.artific_intellig_bot.commands.user.*
 import com.helltar.artific_intellig_bot.commands.user.chat.ChatCtxCommand
 import com.helltar.artific_intellig_bot.commands.user.chat.ChatCtxRemoveCommand
 import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTCommand
-import com.helltar.artific_intellig_bot.db.Database
+import com.helltar.artific_intellig_bot.dao.DatabaseFactory
 import org.slf4j.LoggerFactory
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.EntityType
@@ -144,7 +144,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
                 return@run
 
             if (isUserBanned(userId)) {
-                val reason = Database.banList.getReason(userId).ifEmpty { "\uD83E\uDD37\u200D♂️" } // 🤷‍♂️
+                val reason = DatabaseFactory.banList.getReason(userId)?.let { "\uD83E\uDD37\u200D♂️" } // 🤷‍♂️
                 replyToMessage(String.format(Strings.ban_and_reason, reason))
                 return
             }

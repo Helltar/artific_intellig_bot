@@ -2,11 +2,15 @@ package com.helltar.artific_intellig_bot
 
 object Commands {
 
+    // todo: refact.
+    const val cmdChatAsVoiceName = "chatasvoice"
+    const val cmdChatAsTextName = "chatastext"
+
     const val cmdChat = "/chat"
     const val cmdChatCtx = "/chatctx" // dialog context
     const val cmdChatCtxRemove = "/chatrm" // remove context
-    const val cmdChatAsText = "/chatastext"
-    const val cmdChatAsVoice = "/chatasvoice"
+    const val cmdChatAsText = "/$cmdChatAsTextName"
+    const val cmdChatAsVoice = "/$cmdChatAsVoiceName"
 
     const val cmdStart = "/start"
     const val cmdDalle = "/dalle"

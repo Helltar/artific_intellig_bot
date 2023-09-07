@@ -6,12 +6,14 @@ import java.util.*
 
 private const val DIR_CONFIG = "config"
 
-const val DIR_DB = "db"
+const val DIR_DB = "database"
 const val DIR_LOCALE = "locale"
+const val DIR_FILES = "files"
 
 const val FILE_BOT_CONFIG = "$DIR_CONFIG/bot_config"
 const val FILE_DATABASE = "$DIR_DB/database.db"
-const val EXT_DISABLED = ".disabled"
+
+const val FILE_NAME_LOADING_GIF = "loading.gif"
 
 data class BotMainConfig(
     @JsonProperty(required = true)
@@ -21,10 +23,7 @@ data class BotMainConfig(
     val username: String,
 
     @JsonProperty(required = true)
-    val creatorId: Long,
-
-    @JsonProperty(required = true)
-    val fileIdGifChatLoading: String
+    val creatorId: Long
 )
 
 open class BotConfig {

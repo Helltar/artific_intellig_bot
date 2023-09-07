@@ -7,7 +7,10 @@ import com.annimon.tgbotsmodule.beans.Config
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.annimon.tgbotsmodule.services.YamlConfigLoaderService
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.helltar.artific_intellig_bot.db.Database
+import com.helltar.artific_intellig_bot.Commands.cmdChatAsTextName
+import com.helltar.artific_intellig_bot.Commands.cmdChatAsVoiceName
+import com.helltar.artific_intellig_bot.Commands.disalableCmdsList
+import com.helltar.artific_intellig_bot.dao.DatabaseFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -32,7 +35,12 @@ class ArtificIntelligBot : BotModule {
             if (!databaseDir.exists() && !databaseDir.mkdir())
                 throw RuntimeException("Error when create dir: $DIR_DB")
 
-            Database.init()
+            DatabaseFactory.init()
+
+            // todo: refact.
+            disalableCmdsList.forEach { commandName -> DatabaseFactory.commandsState.add(commandName) }
+            DatabaseFactory.commandsState.add(cmdChatAsTextName)
+            DatabaseFactory.commandsState.add(cmdChatAsVoiceName, true)
 
             LoggerFactory.getLogger(ArtificIntelligBot::class.java).info("start ...")
         }
@@ -58,7 +66,7 @@ class ArtificIntelligBot : BotModule {
             it.registerModule(KotlinModule.Builder().build())
         }
 
-        Database.sudoers.add(botConfig.creatorId, "Owner")
+        DatabaseFactory.sudoers.add(botConfig.creatorId, "Owner")
 
         return ArtificIntelligBotHandler(botConfig)
     }

@@ -1,22 +1,24 @@
-package com.helltar.artific_intellig_bot.db
+package com.helltar.artific_intellig_bot.dao
 
-import com.helltar.artific_intellig_bot.db.BanListTable.reason
-import com.helltar.artific_intellig_bot.db.Database.dbQuery
+import com.helltar.artific_intellig_bot.dao.BanListTable.reason
+import com.helltar.artific_intellig_bot.dao.DatabaseFactory.dbQuery
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.telegram.telegrambots.meta.api.objects.User
+import java.time.LocalDateTime
 
 class BanList {
 
-    fun banUser(user: User, reason: String) = dbQuery {
+    fun banUser(user: User, reason: String?) = dbQuery {
         BanListTable.insertIgnore {
             it[userId] = user.id
-            it[username] = user.userName ?: ""
+            it[username] = user.userName
             it[firstName] = user.firstName
             it[this.reason] = reason
+            it[datetime] = LocalDateTime.now()
         }
             .insertedCount > 0
     }
@@ -34,14 +36,6 @@ class BanList {
     }
 
     fun getList() = dbQuery {
-        var text = ""
-
-        BanListTable.selectAll().forEach {
-            val username = it[BanListTable.username].ifEmpty { it[BanListTable.firstName] }
-            val reason = it[reason].run { if (isNotEmpty()) "<i>($this)</i>" else "" }
-            text += "<code>${it[BanListTable.userId]}</code> <b>$username</b> $reason\n"
-        }
-
-        return@dbQuery text
+        BanListTable.selectAll().toList()
     }
 }
