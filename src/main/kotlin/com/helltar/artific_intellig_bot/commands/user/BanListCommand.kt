@@ -14,7 +14,7 @@ class BanListCommand(ctx: MessageContext) : BotCommand(ctx) {
 
         DatabaseFactory.banList.getList().forEach {
             val username = it[BanListTable.username] ?: it[BanListTable.firstName]
-            val reason = it[reason]?.let { "<i>($this)</i>" } ?: ""
+            val reason = it[reason]?.let { reason -> "<i>($reason)</i>" } ?: ""
             list += "<code>${it[BanListTable.userId]}</code> <b>$username</b> $reason <i>(${it[BanListTable.datetime]})</i>\n"
         }
 

@@ -12,7 +12,7 @@ class ChatWhiteListCommand(ctx: MessageContext) : BotCommand(ctx) {
         var text = ""
 
         DatabaseFactory.chatWhiteList.getList().forEach {
-            val title = it[ChatWhiteListTable.title]?.let { "<i>($this)</i>" } ?: "null"
+            val title = it[ChatWhiteListTable.title]?.let { title -> "<i>($title)</i>" } ?: "null"
             text += "<code>${it[ChatWhiteListTable.chatId]}</code> $title <i>(${it[ChatWhiteListTable.datetime]})</i>\n"
         }
 
