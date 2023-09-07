@@ -1,13 +1,11 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     id("com.github.johnrengelman.shadow") version ("7.1.2")
-    kotlin("jvm") version "1.7.21"
+    kotlin("jvm") version "1.9.10"
     application
 }
 
 group = "com.helltar"
-version = "0.8.0"
+version = "0.9.0"
 
 repositories {
     mavenCentral()
@@ -24,21 +22,12 @@ dependencies {
     implementation("org.json:json:20230227")
 
     implementation("org.xerial:sqlite-jdbc:3.40.1.0")
-    implementation("org.jetbrains.exposed:exposed-core:0.40.1")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.40.1")
+    implementation("org.jetbrains.exposed:exposed-core:0.41.1")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.41.1")
+    implementation("org.jetbrains.exposed:exposed-java-time:0.41.1")
 
     implementation("org.slf4j:slf4j-api:2.0.6")
-    implementation("ch.qos.logback:logback-classic:1.4.6")
-
-    testImplementation("org.jetbrains.kotlin:kotlin-test:1.8.20-RC")
-}
-
-tasks.test {
-    useJUnitPlatform()
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+    implementation("ch.qos.logback:logback-classic:1.4.7")
 }
 
 application {
