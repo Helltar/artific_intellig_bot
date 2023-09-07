@@ -5,6 +5,6 @@ build/
 deploy/
 test/
 
-/db/
+/database/
 
 logback.log
