@@ -7,13 +7,13 @@ Demo: https://t.me/+siikRmY3uyE5YTBi
 Download
 --------
 
-- [artific_intellig_bot-0.8.0.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.8.0/artific_intellig_bot-0.8.0.zip) (35 MB)
+- [artific_intellig_bot-0.9.0.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.9.0/artific_intellig_bot-0.9.0.zip) (35.7 MB)
 
 Installation
 ------------
 
 ```
-unzip artific_intellig_bot-0.8.0.zip && cd artific_intellig_bot-0.8.0
+unzip artific_intellig_bot-0.9.0.zip && cd artific_intellig_bot-0.9.0
 ```
 
 ./_config/_
@@ -22,7 +22,9 @@ unzip artific_intellig_bot-0.8.0.zip && cd artific_intellig_bot-0.8.0
 
 - token: 123:xxx ([BotFather](https://t.me/BotFather))
 - username: bot_username ([BotFather](https://t.me/BotFather))
-- creatorId: 1234567890 (your Telegram user-ID, to get it, open [@artific_intellig_bot](https://t.me/artific_intellig_bot) and run the command /**myid**)
+- creatorId: 1234567890 (your Telegram user-ID)
+
+NOTE: to get your telegram id, open [@artific_intellig_bot](https://t.me/artific_intellig_bot) and run the command /**myid**
 
 **api_keys.ini**:
 
