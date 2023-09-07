@@ -22,7 +22,7 @@ unzip artific_intellig_bot-0.8.0.zip && cd artific_intellig_bot-0.8.0
 
 - token: 123:xxx ([BotFather](https://t.me/BotFather))
 - username: bot_username ([BotFather](https://t.me/BotFather))
-- creatorId: 1234567890 (your Telegram user-ID, your can get it as run command /**myid**)
+- creatorId: 1234567890 (your Telegram user-ID, to get it, open [@artific_intellig_bot](https://t.me/artific_intellig_bot) and run the command /**myid**)
 
 **api_keys.ini**:
 
