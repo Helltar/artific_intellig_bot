@@ -35,7 +35,7 @@ NOTE: to get your telegram id, open [@artific_intellig_bot](https://t.me/artific
 <br>
 
 ```
-java -jar artific_intellig_bot-0.8.0-all.jar
+java -jar artific_intellig_bot-0.9.0-all.jar
 ```
 
 Commands
