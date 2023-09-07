@@ -52,7 +52,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
         commands.run {
             register(SimpleCommand(cmdStart) { runCommand(StartCommand(it), cmdStart) })
 
-            register(SimpleCommand(cmdChat) { runCommand(ChatGPTCommand(it, botConfig), cmdChat) })
+            register(SimpleCommand(cmdChat) { runCommand(ChatGPTCommand(it), cmdChat) })
             register(SimpleCommand(cmdChatCtx) { runCommand(ChatCtxCommand(it), cmdChatCtx) })
             register(SimpleCommand(cmdChatCtxRemove) { runCommand(ChatCtxRemoveCommand(it), cmdChatCtxRemove) })
 
@@ -88,7 +88,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
             message.entities.stream().anyMatch { e -> setOf(EntityType.MENTION, EntityType.TEXTMENTION).contains(e.type) }
 
         fun runChatGPT(ctx: MessageContext) =
-            runCommand(ChatGPTCommand(ctx, botConfig), cmdChat)
+            runCommand(ChatGPTCommand(ctx), cmdChat)
 
         if (update.hasMessage() && update.message.isReply) {
             val message = update.message
