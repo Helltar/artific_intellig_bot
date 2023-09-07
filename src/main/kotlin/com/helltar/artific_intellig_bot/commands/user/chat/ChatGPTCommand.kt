@@ -5,7 +5,7 @@ import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.core.isSuccessful
 import com.github.kittinunf.fuel.httpPost
 import com.google.gson.Gson
-import com.helltar.artific_intellig_bot.Commands.cmdChatAsVoiceName
+import com.helltar.artific_intellig_bot.Commands.cmdChatAsVoice
 import com.helltar.artific_intellig_bot.DIR_FILES
 import com.helltar.artific_intellig_bot.FILE_NAME_LOADING_GIF
 import com.helltar.artific_intellig_bot.Strings
@@ -137,7 +137,7 @@ open class ChatGPTCommand(ctx: MessageContext) : BotCommand(ctx) {
                 return
             }
 
-            if (isCommandDisabled(cmdChatAsVoiceName))
+            if (isCommandDisabled(cmdChatAsVoice))
                 replyToMessage(answer, messageId, markdown = true)
             else
                 sendVoice(answer, messageId)

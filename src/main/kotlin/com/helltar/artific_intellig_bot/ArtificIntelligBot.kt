@@ -7,8 +7,8 @@ import com.annimon.tgbotsmodule.beans.Config
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.annimon.tgbotsmodule.services.YamlConfigLoaderService
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.helltar.artific_intellig_bot.Commands.cmdChatAsTextName
-import com.helltar.artific_intellig_bot.Commands.cmdChatAsVoiceName
+import com.helltar.artific_intellig_bot.Commands.cmdChatAsText
+import com.helltar.artific_intellig_bot.Commands.cmdChatAsVoice
 import com.helltar.artific_intellig_bot.Commands.disalableCmdsList
 import com.helltar.artific_intellig_bot.dao.DatabaseFactory
 import kotlinx.coroutines.CoroutineScope
@@ -37,10 +37,9 @@ class ArtificIntelligBot : BotModule {
 
             DatabaseFactory.init()
 
-            // todo: refact.
-            disalableCmdsList.forEach { commandName -> DatabaseFactory.commandsState.add(commandName) }
-            DatabaseFactory.commandsState.add(cmdChatAsTextName)
-            DatabaseFactory.commandsState.add(cmdChatAsVoiceName, true)
+            disalableCmdsList.forEach { command -> DatabaseFactory.commandsState.add(command) }
+            DatabaseFactory.commandsState.add(cmdChatAsText)
+            DatabaseFactory.commandsState.add(cmdChatAsVoice, true)
 
             LoggerFactory.getLogger(ArtificIntelligBot::class.java).info("start ...")
         }

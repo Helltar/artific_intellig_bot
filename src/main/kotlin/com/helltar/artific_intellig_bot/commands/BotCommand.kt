@@ -24,8 +24,8 @@ abstract class BotCommand(val ctx: MessageContext) : BotConfig() {
 
     abstract fun run()
 
-    fun isCommandDisabled(commandName: String) =
-        DatabaseFactory.commandsState.isDisabled(commandName)
+    fun isCommandDisabled(command: String) =
+        DatabaseFactory.commandsState.isDisabled(command)
 
     fun isChatInWhiteList() =
         DatabaseFactory.chatWhiteList.isChatExists(ctx.chatId())

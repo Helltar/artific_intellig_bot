@@ -41,6 +41,7 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.EntityType
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
+import java.util.function.Consumer
 
 class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandler(botConfig.token) {
 
@@ -51,35 +52,38 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
 
     init {
         commands.run {
-            register(SimpleCommand(cmdStart) { runCommand(StartCommand(it), cmdStart, checkRights = false) })
-            register(SimpleCommand(cmdMyId) { runCommand(MyIdCommand(it), cmdMyId, checkRights = false) })
-            register(SimpleCommand(cmdAbout) { runCommand(AboutCommand(it), cmdAbout, checkRights = false) })
+            register(simpleCommand(cmdStart) { runCommand(StartCommand(it), cmdStart, checkRights = false) })
+            register(simpleCommand(cmdMyId) { runCommand(MyIdCommand(it), cmdMyId, checkRights = false) })
+            register(simpleCommand(cmdAbout) { runCommand(AboutCommand(it), cmdAbout, checkRights = false) })
 
-            register(SimpleCommand(cmdChat) { runCommand(ChatGPTCommand(it), cmdChat) })
-            register(SimpleCommand(cmdChatCtx) { runCommand(ChatCtxCommand(it), cmdChatCtx) })
-            register(SimpleCommand(cmdChatCtxRemove) { runCommand(ChatCtxRemoveCommand(it), cmdChatCtxRemove) })
+            register(simpleCommand(cmdChat) { runCommand(ChatGPTCommand(it), cmdChat) })
+            register(simpleCommand(cmdChatCtx) { runCommand(ChatCtxCommand(it), cmdChatCtx) })
+            register(simpleCommand(cmdChatCtxRemove) { runCommand(ChatCtxRemoveCommand(it), cmdChatCtxRemove) })
 
-            register(SimpleCommand(cmdDalle) { runCommand(DallE2Command(it), cmdDalle) })
-            register(SimpleCommand(cmdSDiff) { runCommand(StableDiffusionCommand(it), cmdSDiff) })
-            register(SimpleCommand(cmdBanList) { runCommand(BanListCommand(it), cmdBanList) })
-            register(SimpleCommand(cmdUptime) { runCommand(UptimeCommand(it), cmdUptime) })
+            register(simpleCommand(cmdDalle) { runCommand(DallE2Command(it), cmdDalle) })
+            register(simpleCommand(cmdSDiff) { runCommand(StableDiffusionCommand(it), cmdSDiff) })
+            register(simpleCommand(cmdBanList) { runCommand(BanListCommand(it), cmdBanList) })
+            register(simpleCommand(cmdUptime) { runCommand(UptimeCommand(it), cmdUptime) })
 
-            register(SimpleCommand(cmdEnable) { runCommand(ChangeStateCommand(it), cmdEnable, true) })
-            register(SimpleCommand(cmdDisable) { runCommand(ChangeStateCommand(it, true), cmdDisable, true) })
-            register(SimpleCommand(cmdChatAsText) { runCommand(ChatAsTextCommand(it), cmdChatAsText, true) })
-            register(SimpleCommand(cmdChatAsVoice) { runCommand(ChatAsVoiceCommand(it), cmdChatAsVoice, true) })
-            register(SimpleCommand(cmdBanUser) { runCommand(BanUserCommand(it), cmdBanUser, true) })
-            register(SimpleCommand(cmdUnbanUser) { runCommand(UnbanUserCommand(it), cmdUnbanUser, true) })
+            register(simpleCommand(cmdEnable) { runCommand(ChangeStateCommand(it), cmdEnable, true) })
+            register(simpleCommand(cmdDisable) { runCommand(ChangeStateCommand(it, true), cmdDisable, true) })
+            register(simpleCommand(cmdChatAsText) { runCommand(ChatAsTextCommand(it), cmdChatAsText, true) })
+            register(simpleCommand(cmdChatAsVoice) { runCommand(ChatAsVoiceCommand(it), cmdChatAsVoice, true) })
+            register(simpleCommand(cmdBanUser) { runCommand(BanUserCommand(it), cmdBanUser, true) })
+            register(simpleCommand(cmdUnbanUser) { runCommand(UnbanUserCommand(it), cmdUnbanUser, true) })
 
-            register(SimpleCommand(cmdAddAdmin) { runCommand(AddAdminCommand(it), cmdAddAdmin, isCreatorCommand = true) })
-            register(SimpleCommand(cmdRmAdmin) { runCommand(RemoveAdminCommand(it), cmdRmAdmin, true) })
-            register(SimpleCommand(cmdAdminList) { runCommand(AdminListCommand(it), cmdAdminList, true) })
+            register(simpleCommand(cmdAddAdmin) { runCommand(AddAdminCommand(it), cmdAddAdmin, isCreatorCommand = true) })
+            register(simpleCommand(cmdRmAdmin) { runCommand(RemoveAdminCommand(it), cmdRmAdmin, true) })
+            register(simpleCommand(cmdAdminList) { runCommand(AdminListCommand(it), cmdAdminList, true) })
 
-            register(SimpleCommand(cmdChatWhiteList) { runCommand(ChatWhiteListCommand(it), cmdChatWhiteList, true) })
-            register(SimpleCommand(cmdAddChat) { runCommand(AddChatCommand(it), cmdAddChat, isCreatorCommand = true) })
-            register(SimpleCommand(cmdRmChat) { runCommand(RemoveChatCommand(it), cmdRmChat, true) })
+            register(simpleCommand(cmdChatWhiteList) { runCommand(ChatWhiteListCommand(it), cmdChatWhiteList, true) })
+            register(simpleCommand(cmdAddChat) { runCommand(AddChatCommand(it), cmdAddChat, isCreatorCommand = true) })
+            register(simpleCommand(cmdRmChat) { runCommand(RemoveChatCommand(it), cmdRmChat, true) })
         }
     }
+
+    private fun simpleCommand(command: String, c: Consumer<MessageContext>) =
+        SimpleCommand("/$command", c)
 
     override fun getBotUsername() =
         botConfig.username
@@ -121,7 +125,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
 
     private fun runCommand(
         botCommand: BotCommand,
-        commandName: String,
+        command: String,
         isAdminCommand: Boolean = false,
         isCreatorCommand: Boolean = false,
         checkRights: Boolean = true
@@ -131,7 +135,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
         val userId = user.id
         val chat = botCommand.ctx.message().chat
 
-        log.info("$commandName: ${chat.id} $userId ${user.userName} ${user.firstName} ${chat.title} : ${botCommand.ctx.argumentsAsString()}")
+        log.info("$command: ${chat.id} $userId ${user.userName} ${user.firstName} ${chat.title} : ${botCommand.ctx.argumentsAsString()}")
 
         botCommand.run {
             if (!checkRights)
@@ -157,7 +161,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
                 return
             }
 
-            if (isCommandDisabled(commandName)) {
+            if (isCommandDisabled(command)) {
                 replyToMessage(Strings.command_temporary_disabled)
                 return
             }
