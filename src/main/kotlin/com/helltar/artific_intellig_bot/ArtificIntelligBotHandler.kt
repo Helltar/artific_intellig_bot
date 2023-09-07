@@ -151,7 +151,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
                 return@run
 
             if (isUserBanned(userId)) {
-                val reason = DatabaseFactory.banList.getReason(userId)?.let { "\uD83E\uDD37\u200D♂️" } // 🤷‍♂️
+                val reason = DatabaseFactory.banList.getReason(userId) ?: "\uD83E\uDD37\u200D♂️" // 🤷‍♂️
                 replyToMessage(String.format(Strings.ban_and_reason, reason))
                 return
             }
