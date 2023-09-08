@@ -7,13 +7,13 @@ Demo: https://t.me/+siikRmY3uyE5YTBi
 Download
 --------
 
-- [artific_intellig_bot-0.9.0.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.9.0/artific_intellig_bot-0.9.0.zip) (35.7 MB)
+- [artific_intellig_bot-0.9.1.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.9.1/artific_intellig_bot-0.9.1.zip) (35.7 MB)
 
 Installation
 ------------
 
 ```
-unzip artific_intellig_bot-0.9.0.zip && cd artific_intellig_bot-0.9.0
+unzip artific_intellig_bot-0.9.1.zip && cd artific_intellig_bot-0.9.1
 ```
 
 ./_config/_
@@ -35,7 +35,7 @@ NOTE: to get your telegram id, open [@artific_intellig_bot](https://t.me/artific
 <br>
 
 ```
-java -jar artific_intellig_bot-0.9.0-all.jar
+java -jar artific_intellig_bot-0.9.1-all.jar
 ```
 
 Commands
