@@ -32,6 +32,6 @@ class Sudoers {
     }
 
     fun isCreator(userId: Long) = dbQuery {
-        return@dbQuery userId == SudoersTable.selectAll().first()[SudoersTable.userId]
+        userId == SudoersTable.selectAll().first()[SudoersTable.userId]
     }
 }

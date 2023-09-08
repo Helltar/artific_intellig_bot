@@ -25,6 +25,6 @@ class CommandsState {
     }
 
     fun isDisabled(command: String) = dbQuery {
-        CommandsStateTable.select { CommandsStateTable.name eq command }.single()[CommandsStateTable.isDisabled]
+        CommandsStateTable.select { CommandsStateTable.name eq command }.singleOrNull()?.get(CommandsStateTable.isDisabled) ?: false
     }
 }
