@@ -36,7 +36,6 @@ class StableDiffusionCommand(ctx: MessageContext) : BotCommand(ctx) {
 
         if (response.second.isSuccessful) {
             try {
-                // todo: insufficient balance: {"id":"123","message":"Your organization does not have enough balance to request this action (need $0.018, have $0 in active grants, $0 in balance).","name":"insufficient_balance"}
                 val base64 = JSONObject(responseData).getJSONArray("artifacts").getJSONObject(0).getString("base64")
                 // todo: tempFile
                 val photo = File.createTempFile("tmp", ".png").apply { writeBytes(Base64.getDecoder().decode(base64)) }
@@ -45,7 +44,13 @@ class StableDiffusionCommand(ctx: MessageContext) : BotCommand(ctx) {
             } catch (e: Exception) {
                 log.error(e.message)
             }
-        }
+        } else
+            try {
+                replyToMessage(JSONObject(responseData).getString("message"))
+                return
+            } catch (e: Exception) {
+                log.error(e.message)
+            }
 
         replyToMessage(Strings.bad_request)
         log.error("$responseData : $args")
