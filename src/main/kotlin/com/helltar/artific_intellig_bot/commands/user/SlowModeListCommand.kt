@@ -16,7 +16,7 @@ class SlowModeListCommand(ctx: MessageContext) : BotCommand(ctx) {
             val limit = it[SlowModeTable.limit]
             val requests = it[SlowModeTable.requests]
             val lastRequest = it[SlowModeTable.lastRequestTimestamp]
-            list += "<code>${it[SlowModeTable.userId]}</code> <b>$username</b> <code>$limit</code> <i>$requests - $lastRequest</i>\n"
+            list += "<code>${it[SlowModeTable.userId]}</code> <b>$username</b> <code>$limit</code> <i>($requests - $lastRequest)</i>\n"
         }
 
         replyToMessage(list.ifEmpty { Strings.list_is_empty })
