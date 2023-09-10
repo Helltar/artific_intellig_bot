@@ -26,6 +26,8 @@ import com.helltar.artific_intellig_bot.Commands.cmdMyId
 import com.helltar.artific_intellig_bot.Commands.cmdRmAdmin
 import com.helltar.artific_intellig_bot.Commands.cmdRmChat
 import com.helltar.artific_intellig_bot.Commands.cmdSDiff
+import com.helltar.artific_intellig_bot.Commands.cmdSlowMode
+import com.helltar.artific_intellig_bot.Commands.cmdSlowModeOff
 import com.helltar.artific_intellig_bot.Commands.cmdStart
 import com.helltar.artific_intellig_bot.Commands.cmdUnbanUser
 import com.helltar.artific_intellig_bot.Commands.cmdUptime
@@ -41,6 +43,7 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.EntityType
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
+import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 
 class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandler(botConfig.token) {
@@ -71,6 +74,8 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
             register(simpleCommand(cmdChatAsVoice) { runCommand(ChatAsVoiceCommand(it), cmdChatAsVoice, true) })
             register(simpleCommand(cmdBanUser) { runCommand(BanUserCommand(it), cmdBanUser, true) })
             register(simpleCommand(cmdUnbanUser) { runCommand(UnbanUserCommand(it), cmdUnbanUser, true) })
+            register(simpleCommand(cmdSlowMode) { runCommand(SlowModeCommand(it), cmdSlowMode, true) })
+            register(simpleCommand(cmdSlowModeOff) { runCommand(SlowModeOffCommand(it), cmdSlowModeOff, true) })
 
             register(simpleCommand(cmdAddAdmin) { runCommand(AddAdminCommand(it), cmdAddAdmin, isCreatorCommand = true) })
             register(simpleCommand(cmdRmAdmin) { runCommand(RemoveAdminCommand(it), cmdRmAdmin, true) })
@@ -165,6 +170,26 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
                 replyToMessage(Strings.command_temporary_disabled)
                 return
             }
+
+            val userRequests = DatabaseFactory.slowMode.getRequestsSize(userId)
+
+            if (userRequests == -1)
+                return@run
+
+            val lastRequest = DatabaseFactory.slowMode.getLastRequestTimestamp(userId)
+            val limit = DatabaseFactory.slowMode.getLimitSize(userId)
+
+            if (userRequests >= limit) {
+                if ((lastRequest + TimeUnit.HOURS.toMillis(1)) > System.currentTimeMillis()) {
+                    replyToMessage(String.format(Strings.slow_mode_please_wait, TimeUnit.NANOSECONDS.toSeconds(lastRequest)))
+                    return
+                } else {
+                    DatabaseFactory.slowMode.update(user, limit, 0)
+                    return@run
+                }
+            }
+
+            DatabaseFactory.slowMode.update(user, limit, userRequests + 1)
         }
 
         addRequest("${botCommand.javaClass.simpleName}@$userId", botCommand.ctx) { botCommand.run() }

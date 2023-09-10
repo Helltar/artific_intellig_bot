@@ -32,6 +32,9 @@ object Commands {
     const val cmdAddChat = "addchat"
     const val cmdRmChat = "rmchat"
 
+    const val cmdSlowMode = "slowmode"
+    const val cmdSlowModeOff = "slowmodeoff"
+
     val disalableCmdsList =
         setOf(
             cmdChat,

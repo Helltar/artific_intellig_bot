@@ -25,7 +25,6 @@ object Strings {
     const val command_not_supported_in_chat = "Command is not supported in this chat \uD83D\uDE48" // 🙈
     const val command_temporary_disabled = "Command temporary disabled \uD83D\uDC40" // 👀
     const val empty_args = "Please write a description of what you want to receive:\n\n<code>/dalle photo realistic portrait of young woman</code>"
-    const val error_delete_lock_file = "❌ Error when delete lock file: <code>%s</code>"
     const val list_is_empty = "◻️ List is empty"
     const val many_characters = "Max <b>%d</b> characters \uD83D\uDC40" // 👀
     const val many_request = "Wait, let me deal with the last request \uD83E\uDD16" // 🤖
@@ -51,6 +50,12 @@ object Strings {
     const val chat_wait_message = "chat_wait_message"
 
     const val creator_only_command = "You cannot use this command like this (admin-only) ✋" // ✋
+
+    const val slow_mode_please_wait = "✋ Slow mode, wait <b>%d</b> seconds"
+    const val slow_mode_on = "✅ Slow mode on, <b>%d</b> requests per hour"
+    const val slow_mode_on_update = "\uD83D\uDD04 Slow mode already on, update, <b>%d</b> requests per hour" // 🔄
+    const val slow_mode_off = "✅ Slow mode off"
+    const val slow_mode_off_not_enabled = "ℹ\uFE0F Slow mode not enabled for this user" // ℹ️
 }
 
 private val log = LoggerFactory.getLogger(Strings.javaClass)

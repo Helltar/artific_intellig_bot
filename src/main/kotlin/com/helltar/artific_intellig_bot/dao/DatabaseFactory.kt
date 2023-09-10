@@ -17,6 +17,7 @@ object DatabaseFactory {
     val chatWhiteList = ChatWhiteList()
     val filesIds = FilesIds()
     val commandsState = CommandsState()
+    val slowMode = SlowMode()
 
     fun init() {
         val driver = "org.sqlite.JDBC"
@@ -24,7 +25,9 @@ object DatabaseFactory {
         val database = Database.connect(url, driver)
 
         transaction(database) {
-            SchemaUtils.create(BanListTable, SudoersTable, ChatWhiteListTable, FilesIdsTable, CommandsStateTable)
+            SchemaUtils.create(
+                BanListTable, SudoersTable, ChatWhiteListTable, FilesIdsTable, CommandsStateTable, SlowModeTable
+            )
         }
     }
 
