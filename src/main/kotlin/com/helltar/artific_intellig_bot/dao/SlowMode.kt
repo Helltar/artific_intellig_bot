@@ -3,11 +3,8 @@ package com.helltar.artific_intellig_bot.dao
 import com.helltar.artific_intellig_bot.dao.DatabaseFactory.dbQuery
 import com.helltar.artific_intellig_bot.dao.SlowModeTable.lastRequestTimestamp
 import com.helltar.artific_intellig_bot.dao.SlowModeTable.limit
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insertIgnore
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.update
 import org.telegram.telegrambots.meta.api.objects.User
 
 class SlowMode {
@@ -50,5 +47,9 @@ class SlowMode {
 
     fun off(userId: Long) = dbQuery {
         SlowModeTable.deleteWhere { SlowModeTable.userId eq userId } > 0
+    }
+
+    fun list() = dbQuery {
+        SlowModeTable.selectAll().toList()
     }
 }

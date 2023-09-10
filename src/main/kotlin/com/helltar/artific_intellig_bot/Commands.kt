@@ -34,6 +34,7 @@ object Commands {
 
     const val cmdSlowMode = "slowmode"
     const val cmdSlowModeOff = "slowmodeoff"
+    const val cmdSlowModeList = "slowmodelist"
 
     val disalableCmdsList =
         setOf(

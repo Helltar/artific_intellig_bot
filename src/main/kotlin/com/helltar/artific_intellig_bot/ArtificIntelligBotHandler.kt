@@ -27,6 +27,7 @@ import com.helltar.artific_intellig_bot.Commands.cmdRmAdmin
 import com.helltar.artific_intellig_bot.Commands.cmdRmChat
 import com.helltar.artific_intellig_bot.Commands.cmdSDiff
 import com.helltar.artific_intellig_bot.Commands.cmdSlowMode
+import com.helltar.artific_intellig_bot.Commands.cmdSlowModeList
 import com.helltar.artific_intellig_bot.Commands.cmdSlowModeOff
 import com.helltar.artific_intellig_bot.Commands.cmdStart
 import com.helltar.artific_intellig_bot.Commands.cmdUnbanUser
@@ -67,6 +68,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
             register(simpleCommand(cmdSDiff) { runCommand(StableDiffusionCommand(it), cmdSDiff) })
             register(simpleCommand(cmdBanList) { runCommand(BanListCommand(it), cmdBanList) })
             register(simpleCommand(cmdUptime) { runCommand(UptimeCommand(it), cmdUptime) })
+            register(simpleCommand(cmdSlowModeList) { runCommand(SlowModeListCommand(it), cmdSlowModeList) })
 
             register(simpleCommand(cmdEnable) { runCommand(ChangeStateCommand(it), cmdEnable, true) })
             register(simpleCommand(cmdDisable) { runCommand(ChangeStateCommand(it, true), cmdDisable, true) })
