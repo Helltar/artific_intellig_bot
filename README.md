@@ -7,7 +7,7 @@ Demo: https://t.me/+siikRmY3uyE5YTBi
 Download
 --------
 
-- [artific_intellig_bot-0.9.2.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.9.2/artific_intellig_bot-0.9.2.zip) (35.7 MB)
+- [artific_intellig_bot-0.9.2.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.9.2/artific_intellig_bot-0.9.2.zip) (69.7 MB)
 
 Installation
 ------------
