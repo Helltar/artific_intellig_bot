@@ -1,9 +1,9 @@
 package com.helltar.artific_intellig_bot
 
-import com.helltar.artific_intellig_bot.utils.Utils.getFirstRegexGroup
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileReader
+import java.util.regex.Pattern
 
 object Strings {
 
@@ -61,6 +61,15 @@ object Strings {
 private val log = LoggerFactory.getLogger(Strings.javaClass)
 
 fun localizedString(key: String, languageCode: String): String {
+
+    fun getFirstRegexGroup(text: String, regex: String): String {
+        val m = Pattern.compile(regex).matcher(text)
+
+        return if (m.find()) {
+            if (m.groupCount() >= 1) m.group(1) else ""
+        } else ""
+    }
+
     return try {
         var filename = "$DIR_LOCALE/${languageCode.lowercase()}.xml"
 
