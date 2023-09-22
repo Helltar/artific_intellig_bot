@@ -28,7 +28,6 @@ data class BotMainConfig(
 
 open class BotConfig {
 
-    val googleCloudKey: String
     val openaiKey: String
     val stableDiffusionKey: String
 
@@ -38,7 +37,6 @@ open class BotConfig {
         try {
             Properties().run {
                 load(FileReader(filename))
-                googleCloudKey = getProperty("google_cloud_key")
                 openaiKey = getProperty("openai_key")
                 stableDiffusionKey = getProperty("stable_diffusion_key")
             }

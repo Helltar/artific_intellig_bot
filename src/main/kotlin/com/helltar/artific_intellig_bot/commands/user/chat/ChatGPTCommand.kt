@@ -4,6 +4,9 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.core.isSuccessful
 import com.github.kittinunf.fuel.httpPost
+import com.google.api.gax.rpc.ApiException
+import com.google.cloud.texttospeech.v1.*
+import com.google.cloud.translate.TranslateOptions
 import com.google.gson.Gson
 import com.helltar.artific_intellig_bot.Commands.cmdChatAsVoice
 import com.helltar.artific_intellig_bot.DIR_FILES
@@ -16,13 +19,8 @@ import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.CHAT_ROLE
 import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.CHAT_ROLE_USER
 import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.ChatData
 import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.ChatMessageData
-import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.TextToSpeechJsonData
-import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.TtsAudioConfigData
-import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.TtsInputData
-import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTData.TtsVoiceData
 import com.helltar.artific_intellig_bot.dao.DatabaseFactory
 import com.helltar.artific_intellig_bot.localizedString
-import com.helltar.artific_intellig_bot.utils.Utils.detectLangCode
 import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
@@ -130,17 +128,15 @@ open class ChatGPTCommand(ctx: MessageContext) : BotCommand(ctx) {
             userUsageTokens[userId] = userUsageTokens[userId]!! + usageTotalTokens
             userContextMap[userId]?.add(ChatMessageData(CHAT_ROLE_ASSISTANT, answer))
 
-            deleteMessage(waitMessageId)
-
-            if (isVoiceOut) {
+            if (isVoiceOut)
                 sendVoice(answer, messageId)
-                return
-            }
-
-            if (isCommandDisabled(cmdChatAsVoice))
-                replyToMessage(answer, messageId, markdown = true)
             else
-                sendVoice(answer, messageId)
+                if (isCommandDisabled(cmdChatAsVoice))
+                    replyToMessage(answer, messageId, markdown = true)
+                else
+                    sendVoice(answer, messageId)
+
+            deleteMessage(waitMessageId)
 
         } catch (e: JSONException) {
             log.error(e.message)
@@ -149,7 +145,7 @@ open class ChatGPTCommand(ctx: MessageContext) : BotCommand(ctx) {
     }
 
     private fun sendVoice(text: String, messageId: Int) {
-        textToSpeech(text, detectLangCode(text))?.let { oggBytes ->
+        textToSpeech(text, detectLanguage(text))?.let { oggBytes ->
             // todo: tempFile
             val voice = File.createTempFile("tmp", ".ogg").apply { writeBytes(oggBytes) }
             sendVoice(voice, messageId)
@@ -167,29 +163,30 @@ open class ChatGPTCommand(ctx: MessageContext) : BotCommand(ctx) {
             .responseString()
 
     private fun textToSpeech(text: String, languageCode: String): ByteArray? {
-        var json = Gson().toJson(TextToSpeechJsonData(TtsInputData(text), TtsVoiceData(languageCode), TtsAudioConfigData()))
+        TextToSpeechClient.create().use { textToSpeechClient ->
+            val input = SynthesisInput.newBuilder().setText(text).build()
 
-        "https://texttospeech.googleapis.com/v1/text:synthesize?fields=audioContent&key=$googleCloudKey".httpPost()
-            .header("Content-Type", "application/json; charset=utf-8")
-            .timeout(FUEL_TIMEOUT)
-            .timeoutRead(FUEL_TIMEOUT)
-            .jsonBody(json)
-            .responseString().run {
-                json =
-                    if (second.isSuccessful)
-                        third.get()
-                    else {
-                        log.error(this.third.component2()?.message)
-                        return null
-                    }
+            val voice =
+                VoiceSelectionParams.newBuilder()
+                    .setLanguageCode(languageCode)
+                    .setSsmlGender(SsmlVoiceGender.NEUTRAL)
+                    .build()
+
+            val audioConfig = AudioConfig.newBuilder().setAudioEncoding(AudioEncoding.OGG_OPUS).build()
+
+            return try {
+                val response = textToSpeechClient.synthesizeSpeech(input, voice, audioConfig)
+                response.audioContent.toByteArray()
+            } catch (e: ApiException) {
+                log.error(e.message)
+                null
             }
-
-        return try {
-            Base64.getDecoder().decode(JSONObject(json).getString("audioContent"))
-        } catch (e: JSONException) {
-            log.error(e.message)
-            null
         }
+    }
+
+    private fun detectLanguage(text: String): String {
+        val translate = TranslateOptions.getDefaultInstance().getService()
+        return translate.detect(text).language
     }
 
     private fun getLoadingGifFileId(): String {
