@@ -7,13 +7,13 @@ Demo: https://t.me/+siikRmY3uyE5YTBi
 Download
 --------
 
-- [artific_intellig_bot-0.9.1.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.9.1/artific_intellig_bot-0.9.1.zip) (35.7 MB)
+- [artific_intellig_bot-0.9.2.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.9.2/artific_intellig_bot-0.9.2.zip) (35.7 MB)
 
 Installation
 ------------
 
 ```
-unzip artific_intellig_bot-0.9.1.zip && cd artific_intellig_bot-0.9.1
+unzip artific_intellig_bot-0.9.2.zip && cd artific_intellig_bot-0.9.2
 ```
 
 ./_config/_
@@ -30,12 +30,25 @@ NOTE: to get your telegram id, open [@artific_intellig_bot](https://t.me/artific
 
 - openai_key [OpenAI API Key](https://platform.openai.com/account/api-keys)
 - stable_diffusion_key [Stable Diffusion API Key](https://beta.dreamstudio.ai/account) (for /**sdif**)
-- google_cloud_key [Google Cloud API Key](https://console.cloud.google.com/apis/credentials) (for Text-to-Speech, audio replies)
 
-<br>
+Install and configure **Google Cloud CLI** for text-to-speech audio responses:
+
+- https://cloud.google.com/sdk/docs/install
 
 ```
-java -jar artific_intellig_bot-0.9.1-all.jar
+gcloud init
+...
+```
+
+```
+gcloud auth application-default login
+gcloud auth application-default print-access-token
+```
+
+Done, run:
+
+```
+java -jar artific_intellig_bot-0.9.2-all.jar
 ```
 
 Commands
