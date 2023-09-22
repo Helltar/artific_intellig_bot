@@ -37,7 +37,6 @@ Install and configure **Google Cloud CLI** for text-to-speech audio responses:
 
 ```
 gcloud init
-...
 ```
 
 ```
