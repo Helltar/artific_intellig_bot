@@ -173,7 +173,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
                 return
             }
 
-            val userRequests = DatabaseFactory.slowMode.getRequestsSize(userId)
+            var userRequests = DatabaseFactory.slowMode.getRequestsSize(userId)
 
             if (userRequests == -1)
                 return@run
@@ -183,12 +183,10 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
 
             if (userRequests >= limit) {
                 if ((lastRequest + TimeUnit.HOURS.toMillis(1)) > System.currentTimeMillis()) {
-                    replyToMessage(String.format(Strings.slow_mode_please_wait, TimeUnit.NANOSECONDS.toSeconds(lastRequest)))
+                    replyToMessage(String.format(Strings.slow_mode_please_wait, TimeUnit.MILLISECONDS.toSeconds((lastRequest + TimeUnit.HOURS.toMillis(1)) - System.currentTimeMillis())))
                     return
-                } else {
-                    DatabaseFactory.slowMode.update(user, limit, 0)
-                    return@run
-                }
+                } else
+                    userRequests = 0
             }
 
             DatabaseFactory.slowMode.update(user, limit, userRequests + 1)
