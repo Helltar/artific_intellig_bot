@@ -166,10 +166,16 @@ open class ChatGPTCommand(ctx: MessageContext) : BotCommand(ctx) {
         TextToSpeechClient.create().use { textToSpeechClient ->
             val input = SynthesisInput.newBuilder().setText(text).build()
 
+            val language =
+                if (textToSpeechClient.listVoices(languageCode).voicesList.isNotEmpty()) // todo: voicesList request
+                    languageCode
+                else
+                    "uk"
+
             val voice =
                 VoiceSelectionParams.newBuilder()
-                    .setLanguageCode(languageCode)
-                    .setSsmlGender(SsmlVoiceGender.NEUTRAL)
+                    .setLanguageCode(language)
+                    .setSsmlGender(SsmlVoiceGender.FEMALE)
                     .build()
 
             val audioConfig = AudioConfig.newBuilder().setAudioEncoding(AudioEncoding.OGG_OPUS).build()
