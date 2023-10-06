@@ -162,7 +162,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
         val userId = user.id
         val chat = botCommand.ctx.message().chat
 
-        log.info("$command: ${chat.id} $userId ${user.userName} ${user.firstName} ${chat.title} : ${botCommand.ctx.argumentsAsString()}")
+        log.info("$command: ${chat.id} $userId ${user.userName} ${user.firstName} ${chat.title} : ${botCommand.ctx.message().text}")
 
         botCommand.run {
             if (!checkRights)
