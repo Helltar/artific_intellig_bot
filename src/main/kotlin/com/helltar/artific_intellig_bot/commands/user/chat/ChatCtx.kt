@@ -7,8 +7,6 @@ import com.helltar.artific_intellig_bot.commands.user.chat.models.ChatGPTData.CH
 class ChatCtx(ctx: MessageContext) : ChatGPT(ctx) {
 
     override fun run() {
-        val message = ctx.message()
-
         val userId =
             if (!message.isReply)
                 this.userId

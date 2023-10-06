@@ -203,7 +203,9 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
 
             if (userRequests >= limit) {
                 if ((lastRequest + TimeUnit.HOURS.toMillis(1)) > System.currentTimeMillis()) {
-                    replyToMessage(String.format(Strings.slow_mode_please_wait, TimeUnit.MILLISECONDS.toSeconds((lastRequest + TimeUnit.HOURS.toMillis(1)) - System.currentTimeMillis())))
+                    val timestamp = System.currentTimeMillis()
+                    val remainingSeconds = TimeUnit.MILLISECONDS.toSeconds((lastRequest + TimeUnit.HOURS.toMillis(1)) - timestamp)
+                    replyToMessage(String.format(Strings.slow_mode_please_wait, remainingSeconds))
                     return
                 } else
                     userRequests = 0

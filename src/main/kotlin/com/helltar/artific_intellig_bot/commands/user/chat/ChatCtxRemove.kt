@@ -6,7 +6,6 @@ import com.helltar.artific_intellig_bot.Strings
 class ChatCtxRemove(ctx: MessageContext) : ChatGPT(ctx) {
 
     override fun run() {
-        val message = ctx.message()
         var username = ""
 
         val userId =

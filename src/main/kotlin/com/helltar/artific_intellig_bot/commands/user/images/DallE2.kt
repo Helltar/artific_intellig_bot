@@ -6,6 +6,7 @@ import com.github.kittinunf.fuel.httpPost
 import com.google.gson.Gson
 import com.helltar.artific_intellig_bot.Strings
 import com.helltar.artific_intellig_bot.commands.BotCommand
+import com.helltar.artific_intellig_bot.commands.user.images.models.DalleData
 import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
@@ -39,20 +40,12 @@ class DallE2(ctx: MessageContext) : BotCommand(ctx) {
         }
     }
 
-    /* https://beta.openai.com/docs/guides/images/usage?lang=curl */
-
-    private data class DalleJsonData(
-        val prompt: String,
-        val n: Int,
-        val size: String = "256x256"
-    )
-
     private fun sendPrompt(prompt: String) =
         "https://api.openai.com/v1/images/generations".httpPost()
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer $openaiKey")
             .timeout(FUEL_TIMEOUT)
             .timeoutRead(FUEL_TIMEOUT)
-            .jsonBody(Gson().toJson(DalleJsonData(prompt, 1)))
+            .jsonBody(Gson().toJson(DalleData.RequestData(prompt, 1)))
             .response().second.data.decodeToString()
 }

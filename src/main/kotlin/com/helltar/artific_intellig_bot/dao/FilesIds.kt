@@ -16,10 +16,6 @@ class FilesIds {
     }
 
     fun getFileId(name: String) = dbQuery {
-        FilesIdsTable.select { FilesIdsTable.name eq name }.singleOrNull()?.get(FilesIdsTable.fileId) ?: ""
-    }
-
-    fun exists(name: String) = dbQuery {
-        FilesIdsTable.select { FilesIdsTable.name eq name }.count() > 0
+        FilesIdsTable.select { FilesIdsTable.name eq name }.singleOrNull()?.get(FilesIdsTable.fileId)
     }
 }

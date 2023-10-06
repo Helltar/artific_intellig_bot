@@ -16,7 +16,6 @@ import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
-import java.io.InputStream
 import javax.imageio.ImageIO
 
 class DalleVariations(ctx: MessageContext) : BotCommand(ctx) {
@@ -36,10 +35,8 @@ class DalleVariations(ctx: MessageContext) : BotCommand(ctx) {
             return
         }
 
-        val inputStream: InputStream
-
-        try {
-            inputStream = ctx.sender.downloadFileAsStream(Methods.getFile(photoSize.fileId).call(ctx.sender))
+        val inputStream = try {
+            ctx.sender.downloadFileAsStream(Methods.getFile(photoSize.fileId).call(ctx.sender))
         } catch (e: TelegramApiException) {
             log.error(e.message)
             return
@@ -54,19 +51,20 @@ class DalleVariations(ctx: MessageContext) : BotCommand(ctx) {
             return
         }
 
-        val json = postImage(squarePngImage)
+        val responseJson = uploadImage(squarePngImage)
 
         try {
             replyToMessageWithPhoto(
-                JSONObject(json)
+                JSONObject(responseJson)
                     .getJSONArray("data")
                     .getJSONObject(0)
-                    .getString("url"), messageId = ctx.message().replyToMessage.messageId
+                    .getString("url"),
+                messageId = ctx.message().replyToMessage.messageId
             )
         } catch (e: JSONException) {
             try {
                 replyToMessage(
-                    JSONObject(json)
+                    JSONObject(responseJson)
                         .getJSONObject("error")
                         .getString("message")
                 )
@@ -88,7 +86,7 @@ class DalleVariations(ctx: MessageContext) : BotCommand(ctx) {
         return resized
     }
 
-    private fun postImage(byteArrayStream: ByteArrayOutputStream): String {
+    private fun uploadImage(byteArrayStream: ByteArrayOutputStream): String {
         val parameters = listOf("n" to "1", "size" to DALLE_IMAGE_SIZE)
 
         // todo: tempFile

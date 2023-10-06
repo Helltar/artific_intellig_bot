@@ -33,7 +33,6 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
 
     companion object {
         val userContextMap = hashMapOf<Long, LinkedList<ChatMessageData>>()
-        val userUsageTokens = hashMapOf<Long, Int>()
         private const val MAX_USER_MESSAGE_TEXT_LENGTH = 512
         private const val MAX_ADMIN_MESSAGE_TEXT_LENGTH = 1024
         private const val DIALOG_CONTEXT_SIZE = 25
@@ -84,20 +83,30 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
         val userLanguageCode = ctx.user().languageCode ?: DEFAULT_LANG_CODE
         val chatSystemMessage = localizedString(Strings.chat_gpt_system_message, userLanguageCode)
 
-        if (!userContextMap.containsKey(userId)) {
-            userContextMap[userId] = LinkedList(listOf(ChatMessageData(CHAT_ROLE_SYSTEM, String.format(chatSystemMessage, chatTitle, username, userId))))
-            userUsageTokens[userId] = 0
-        }
+        if (!userContextMap.containsKey(userId))
+            userContextMap[userId] =
+                LinkedList(
+                    listOf(
+                        ChatMessageData(
+                            CHAT_ROLE_SYSTEM,
+                            String.format(chatSystemMessage, chatTitle, username, userId)
+                        )
+                    )
+                )
 
         userContextMap[userId]?.add(ChatMessageData(CHAT_ROLE_USER, text))
 
-        // todo: userUsageTokens
-        if (userContextMap[userId]!!.size > DIALOG_CONTEXT_SIZE || userUsageTokens[userId]!! > 4000) {
+        // todo: removeAt
+        if (userContextMap[userId]!!.size > DIALOG_CONTEXT_SIZE) {
             userContextMap[userId]?.removeAt(1) // user
             userContextMap[userId]?.removeAt(1) // assistant
         }
 
-        val waitMessageId = replyToMessageWithDocument(getLoadingGifFileId(), localizedString(Strings.chat_wait_message, userLanguageCode))
+        val waitMessageId =
+            replyToMessageWithDocument(
+                getLoadingGifFileId(),
+                localizedString(Strings.chat_wait_message, userLanguageCode)
+            )
 
         val (_, response, resultString) = sendPrompt(userContextMap[userId]!!)
         val json: String
@@ -120,12 +129,11 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
                     .getJSONObject("message")
                     .getString("content")
 
-            val usageTotalTokens =
-                JSONObject(json)
-                    .getJSONObject("usage")
-                    .getInt("total_tokens")
+//            val usageTotalTokens =
+//                JSONObject(json)
+//                    .getJSONObject("usage")
+//                    .getInt("total_tokens")
 
-            userUsageTokens[userId] = userUsageTokens[userId]!! + usageTotalTokens
             userContextMap[userId]?.add(ChatMessageData(CHAT_ROLE_ASSISTANT, answer))
 
             if (isVoiceOut)
@@ -152,15 +160,6 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
         }
             ?: replyToMessage(Strings.chat_exception)
     }
-
-    private fun sendPrompt(messages: List<ChatMessageData>) =
-        "https://api.openai.com/v1/chat/completions".httpPost()
-            .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer $openaiKey")
-            .timeout(FUEL_TIMEOUT)
-            .timeoutRead(FUEL_TIMEOUT)
-            .jsonBody(Gson().toJson(ChatData(CHAT_GPT_MODEL, messages)))
-            .responseString()
 
     private fun textToSpeech(text: String, languageCode: String): ByteArray? {
         TextToSpeechClient.create().use { textToSpeechClient ->
@@ -190,21 +189,28 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
         }
     }
 
-    private fun detectLanguage(text: String): String {
-        val translate = TranslateOptions.getDefaultInstance().getService()
-        return translate.detect(text).language
-    }
+    private fun detectLanguage(text: String) =
+        TranslateOptions.getDefaultInstance().getService().detect(text).language
 
-    private fun getLoadingGifFileId(): String {
-        if (DatabaseFactory.filesIds.exists(FILE_NAME_LOADING_GIF))
-            return DatabaseFactory.filesIds.getFileId(FILE_NAME_LOADING_GIF)
+    // todo: getLoadingGifFileId
+    private fun getLoadingGifFileId() =
+        DatabaseFactory.filesIds.getFileId(FILE_NAME_LOADING_GIF)
+            ?: run {
+                val message = sendDocument(File("$DIR_FILES/$FILE_NAME_LOADING_GIF"))
+                val fileId = message.document.fileId
+                deleteMessage(message.messageId)
 
-        val message = sendDocument(File("$DIR_FILES/$FILE_NAME_LOADING_GIF"))
-        val fileId = message.document.fileId
-        deleteMessage(message.messageId)
+                DatabaseFactory.filesIds.add(FILE_NAME_LOADING_GIF, fileId)
 
-        DatabaseFactory.filesIds.add(FILE_NAME_LOADING_GIF, fileId)
+                return fileId
+            }
 
-        return fileId
-    }
+    private fun sendPrompt(messages: List<ChatMessageData>) =
+        "https://api.openai.com/v1/chat/completions".httpPost()
+            .header("Content-Type", "application/json")
+            .header("Authorization", "Bearer $openaiKey")
+            .timeout(FUEL_TIMEOUT)
+            .timeoutRead(FUEL_TIMEOUT)
+            .jsonBody(Gson().toJson(ChatData(CHAT_GPT_MODEL, messages)))
+            .responseString()
 }

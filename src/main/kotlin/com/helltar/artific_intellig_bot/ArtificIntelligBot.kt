@@ -20,6 +20,8 @@ import java.io.File
 
 class ArtificIntelligBot : BotModule {
 
+    private val log = LoggerFactory.getLogger(javaClass)
+
     companion object {
         private val requestList = hashMapOf<String, Job>()
 
@@ -37,11 +39,10 @@ class ArtificIntelligBot : BotModule {
 
             DatabaseFactory.init()
 
+            // todo: DatabaseFactory.commandsState.add
             disalableCmdsList.forEach { command -> DatabaseFactory.commandsState.add(command) }
             DatabaseFactory.commandsState.add(cmdChatAsText)
             DatabaseFactory.commandsState.add(cmdChatAsVoice, true)
-
-            LoggerFactory.getLogger(ArtificIntelligBot::class.java).info("start ...")
         }
 
         fun addRequest(requestKey: String, ctx: MessageContext, func: () -> Unit) {
@@ -61,11 +62,14 @@ class ArtificIntelligBot : BotModule {
     override fun botHandler(config: Config): BotHandler {
         val configLoader = YamlConfigLoaderService()
         val configFile = configLoader.configFile(FILE_BOT_CONFIG, config.profile)
-        val botConfig = configLoader.loadFile(configFile, BotMainConfig::class.java) {
-            it.registerModule(KotlinModule.Builder().build())
-        }
+
+        val botConfig =
+            configLoader.loadFile(configFile, BotMainConfig::class.java) {
+                it.registerModule(KotlinModule.Builder().build())
+            }
 
         DatabaseFactory.sudoers.add(botConfig.creatorId, "Owner")
+        log.info("start ...")
 
         return ArtificIntelligBotHandler(botConfig)
     }

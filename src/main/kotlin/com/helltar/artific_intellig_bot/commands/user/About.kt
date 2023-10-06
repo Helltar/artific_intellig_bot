@@ -11,7 +11,8 @@ class About(ctx: MessageContext) : BotCommand(ctx) {
             <a href="https://github.com/Helltar/artific_intellig_bot">AᎥ</a>
             Contact: @Helltar https://helltar.com
             Source Code:
-        """.trimIndent(), enableWebPagePreview = true
+            """
+                .trimIndent(), enableWebPagePreview = true
         )
     }
 }
