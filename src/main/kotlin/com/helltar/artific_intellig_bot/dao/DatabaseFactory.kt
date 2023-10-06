@@ -1,6 +1,12 @@
 package com.helltar.artific_intellig_bot.dao
 
 import com.helltar.artific_intellig_bot.FILE_DATABASE
+import com.helltar.artific_intellig_bot.dao.tables.BanList
+import com.helltar.artific_intellig_bot.dao.tables.ChatWhiteList
+import com.helltar.artific_intellig_bot.dao.tables.CommandsState
+import com.helltar.artific_intellig_bot.dao.tables.FilesIds
+import com.helltar.artific_intellig_bot.dao.tables.SlowMode
+import com.helltar.artific_intellig_bot.dao.tables.Sudoers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.Database
@@ -23,12 +29,7 @@ object DatabaseFactory {
         val driver = "org.sqlite.JDBC"
         val url = "jdbc:sqlite:$FILE_DATABASE"
         val database = Database.connect(url, driver)
-
-        transaction(database) {
-            SchemaUtils.create(
-                BanListTable, SudoersTable, ChatWhiteListTable, FilesIdsTable, CommandsStateTable, SlowModeTable
-            )
-        }
+        transaction(database) { SchemaUtils.create(BanList, Sudoers, ChatWhiteList, FilesIds, CommandsState, SlowMode) }
     }
 
     fun <T> dbQuery(block: () -> T): T =

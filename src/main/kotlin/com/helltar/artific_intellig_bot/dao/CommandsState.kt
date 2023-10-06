@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
 import java.time.LocalDateTime
+import com.helltar.artific_intellig_bot.dao.tables.CommandsState as CommandsStateTable
 
 class CommandsState {
 

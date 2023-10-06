@@ -33,11 +33,31 @@ import com.helltar.artific_intellig_bot.Commands.cmdStart
 import com.helltar.artific_intellig_bot.Commands.cmdUnbanUser
 import com.helltar.artific_intellig_bot.Commands.cmdUptime
 import com.helltar.artific_intellig_bot.commands.BotCommand
-import com.helltar.artific_intellig_bot.commands.admin.*
-import com.helltar.artific_intellig_bot.commands.user.*
-import com.helltar.artific_intellig_bot.commands.user.chat.ChatCtxCommand
-import com.helltar.artific_intellig_bot.commands.user.chat.ChatCtxRemoveCommand
-import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPTCommand
+import com.helltar.artific_intellig_bot.commands.admin.admin.AddAdmin
+import com.helltar.artific_intellig_bot.commands.admin.admin.AdminList
+import com.helltar.artific_intellig_bot.commands.admin.admin.RemoveAdmin
+import com.helltar.artific_intellig_bot.commands.admin.ban.BanUser
+import com.helltar.artific_intellig_bot.commands.admin.ban.UnbanUser
+import com.helltar.artific_intellig_bot.commands.admin.chat.AddChat
+import com.helltar.artific_intellig_bot.commands.admin.chat.ChatsWhiteList
+import com.helltar.artific_intellig_bot.commands.admin.chat.RemoveChat
+import com.helltar.artific_intellig_bot.commands.admin.command.ChangeState
+import com.helltar.artific_intellig_bot.commands.admin.command.ChatAsText
+import com.helltar.artific_intellig_bot.commands.admin.command.ChatAsVoice
+import com.helltar.artific_intellig_bot.commands.admin.slowmode.SlowMode
+import com.helltar.artific_intellig_bot.commands.admin.slowmode.SlowModeOff
+import com.helltar.artific_intellig_bot.commands.user.About
+import com.helltar.artific_intellig_bot.commands.user.MyId
+import com.helltar.artific_intellig_bot.commands.user.Start
+import com.helltar.artific_intellig_bot.commands.user.Uptime
+import com.helltar.artific_intellig_bot.commands.user.chat.ChatCtx
+import com.helltar.artific_intellig_bot.commands.user.chat.ChatCtxRemove
+import com.helltar.artific_intellig_bot.commands.user.chat.ChatGPT
+import com.helltar.artific_intellig_bot.commands.user.images.DallE2
+import com.helltar.artific_intellig_bot.commands.user.images.DalleVariations
+import com.helltar.artific_intellig_bot.commands.user.images.StableDiffusion
+import com.helltar.artific_intellig_bot.commands.user.lists.BanList
+import com.helltar.artific_intellig_bot.commands.user.lists.SlowModeList
 import com.helltar.artific_intellig_bot.dao.DatabaseFactory
 import org.slf4j.LoggerFactory
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
@@ -56,36 +76,36 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
 
     init {
         commands.run {
-            register(simpleCommand(cmdStart) { runCommand(StartCommand(it), cmdStart, checkRights = false) })
-            register(simpleCommand(cmdMyId) { runCommand(MyIdCommand(it), cmdMyId, checkRights = false) })
-            register(simpleCommand(cmdAbout) { runCommand(AboutCommand(it), cmdAbout, checkRights = false) })
+            register(simpleCommand(cmdStart) { runCommand(Start(it), cmdStart, checkRights = false) })
+            register(simpleCommand(cmdMyId) { runCommand(MyId(it), cmdMyId, checkRights = false) })
+            register(simpleCommand(cmdAbout) { runCommand(About(it), cmdAbout, checkRights = false) })
 
-            register(simpleCommand(cmdChat) { runCommand(ChatGPTCommand(it), cmdChat) })
-            register(simpleCommand(cmdChatCtx) { runCommand(ChatCtxCommand(it), cmdChatCtx) })
-            register(simpleCommand(cmdChatCtxRemove) { runCommand(ChatCtxRemoveCommand(it), cmdChatCtxRemove) })
+            register(simpleCommand(cmdChat) { runCommand(ChatGPT(it), cmdChat) })
+            register(simpleCommand(cmdChatCtx) { runCommand(ChatCtx(it), cmdChatCtx) })
+            register(simpleCommand(cmdChatCtxRemove) { runCommand(ChatCtxRemove(it), cmdChatCtxRemove) })
 
-            register(simpleCommand(cmdDalle) { runCommand(DallE2Command(it), cmdDalle) })
-            register(simpleCommand(cmdSDiff) { runCommand(StableDiffusionCommand(it), cmdSDiff) })
-            register(simpleCommand(cmdBanList) { runCommand(BanListCommand(it), cmdBanList) })
-            register(simpleCommand(cmdUptime) { runCommand(UptimeCommand(it), cmdUptime) })
-            register(simpleCommand(cmdSlowModeList) { runCommand(SlowModeListCommand(it), cmdSlowModeList) })
+            register(simpleCommand(cmdDalle) { runCommand(DallE2(it), cmdDalle) })
+            register(simpleCommand(cmdSDiff) { runCommand(StableDiffusion(it), cmdSDiff) })
+            register(simpleCommand(cmdBanList) { runCommand(BanList(it), cmdBanList) })
+            register(simpleCommand(cmdUptime) { runCommand(Uptime(it), cmdUptime) })
+            register(simpleCommand(cmdSlowModeList) { runCommand(SlowModeList(it), cmdSlowModeList) })
 
-            register(simpleCommand(cmdEnable) { runCommand(ChangeStateCommand(it), cmdEnable, true) })
-            register(simpleCommand(cmdDisable) { runCommand(ChangeStateCommand(it, true), cmdDisable, true) })
-            register(simpleCommand(cmdChatAsText) { runCommand(ChatAsTextCommand(it), cmdChatAsText, true) })
-            register(simpleCommand(cmdChatAsVoice) { runCommand(ChatAsVoiceCommand(it), cmdChatAsVoice, true) })
-            register(simpleCommand(cmdBanUser) { runCommand(BanUserCommand(it), cmdBanUser, true) })
-            register(simpleCommand(cmdUnbanUser) { runCommand(UnbanUserCommand(it), cmdUnbanUser, true) })
-            register(simpleCommand(cmdSlowMode) { runCommand(SlowModeCommand(it), cmdSlowMode, true) })
-            register(simpleCommand(cmdSlowModeOff) { runCommand(SlowModeOffCommand(it), cmdSlowModeOff, true) })
+            register(simpleCommand(cmdEnable) { runCommand(ChangeState(it), cmdEnable, true) })
+            register(simpleCommand(cmdDisable) { runCommand(ChangeState(it, true), cmdDisable, true) })
+            register(simpleCommand(cmdChatAsText) { runCommand(ChatAsText(it), cmdChatAsText, true) })
+            register(simpleCommand(cmdChatAsVoice) { runCommand(ChatAsVoice(it), cmdChatAsVoice, true) })
+            register(simpleCommand(cmdBanUser) { runCommand(BanUser(it), cmdBanUser, true) })
+            register(simpleCommand(cmdUnbanUser) { runCommand(UnbanUser(it), cmdUnbanUser, true) })
+            register(simpleCommand(cmdSlowMode) { runCommand(SlowMode(it), cmdSlowMode, true) })
+            register(simpleCommand(cmdSlowModeOff) { runCommand(SlowModeOff(it), cmdSlowModeOff, true) })
 
-            register(simpleCommand(cmdAddAdmin) { runCommand(AddAdminCommand(it), cmdAddAdmin, isCreatorCommand = true) })
-            register(simpleCommand(cmdRmAdmin) { runCommand(RemoveAdminCommand(it), cmdRmAdmin, true) })
-            register(simpleCommand(cmdAdminList) { runCommand(AdminListCommand(it), cmdAdminList, true) })
+            register(simpleCommand(cmdAddAdmin) { runCommand(AddAdmin(it), cmdAddAdmin, isCreatorCommand = true) })
+            register(simpleCommand(cmdRmAdmin) { runCommand(RemoveAdmin(it), cmdRmAdmin, true) })
+            register(simpleCommand(cmdAdminList) { runCommand(AdminList(it), cmdAdminList, true) })
 
-            register(simpleCommand(cmdChatWhiteList) { runCommand(ChatWhiteListCommand(it), cmdChatWhiteList, true) })
-            register(simpleCommand(cmdAddChat) { runCommand(AddChatCommand(it), cmdAddChat, isCreatorCommand = true) })
-            register(simpleCommand(cmdRmChat) { runCommand(RemoveChatCommand(it), cmdRmChat, true) })
+            register(simpleCommand(cmdChatWhiteList) { runCommand(ChatsWhiteList(it), cmdChatWhiteList, true) })
+            register(simpleCommand(cmdAddChat) { runCommand(AddChat(it), cmdAddChat, isCreatorCommand = true) })
+            register(simpleCommand(cmdRmChat) { runCommand(RemoveChat(it), cmdRmChat, true) })
         }
     }
 
@@ -101,7 +121,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
             message.entities.stream().anyMatch { e -> setOf(EntityType.MENTION, EntityType.TEXTMENTION).contains(e.type) }
 
         fun runChatGPT(ctx: MessageContext) =
-            runCommand(ChatGPTCommand(ctx), cmdChat)
+            runCommand(ChatGPT(ctx), cmdChat)
 
         if (update.hasMessage() && update.message.isReply) {
             val message = update.message
@@ -121,7 +141,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandl
                     }
                 } else
                     if (text == "@")
-                        runCommand(DalleVariationsCommand(ctx), cmdDalleVariations)
+                        runCommand(DalleVariations(ctx), cmdDalleVariations)
             }
         }
 

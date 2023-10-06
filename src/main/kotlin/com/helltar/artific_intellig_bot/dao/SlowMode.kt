@@ -1,11 +1,12 @@
 package com.helltar.artific_intellig_bot.dao
 
 import com.helltar.artific_intellig_bot.dao.DatabaseFactory.dbQuery
-import com.helltar.artific_intellig_bot.dao.SlowModeTable.lastRequestTimestamp
-import com.helltar.artific_intellig_bot.dao.SlowModeTable.limit
+import com.helltar.artific_intellig_bot.dao.tables.SlowMode.lastRequestTimestamp
+import com.helltar.artific_intellig_bot.dao.tables.SlowMode.limit
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.telegram.telegrambots.meta.api.objects.User
+import com.helltar.artific_intellig_bot.dao.tables.SlowMode as SlowModeTable
 
 class SlowMode {
 
@@ -49,7 +50,7 @@ class SlowMode {
         SlowModeTable.deleteWhere { SlowModeTable.userId eq userId } > 0
     }
 
-    fun list() = dbQuery {
+    fun getList() = dbQuery {
         SlowModeTable.selectAll().toList()
     }
 }
