@@ -20,8 +20,7 @@ class ChatCtxRemove(ctx: MessageContext) : ChatGPT(ctx) {
                     return
                 }
 
-        if (userContextMap.containsKey(userId))
-            userContextMap.remove(userId)
+        userContextMap.remove(userId)
 
         replyToMessage(Strings.chat_context_removed + username)
     }
