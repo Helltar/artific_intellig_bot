@@ -108,16 +108,20 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
                 localizedString(Strings.chat_wait_message, userLanguageCode)
             )
 
-        val (_, response, resultString) = sendPrompt(userContextMap[userId]!!)
+        val response = sendPrompt(userContextMap[userId]!!)
         val json: String
 
         if (response.isSuccessful)
-            json = resultString.get()
+            json = response.data.decodeToString()
         else {
             deleteMessage(waitMessageId)
             replyToMessage(Strings.chat_exception)
-            log.error(resultString.component2()?.message)
-            userContextMap[userId]?.removeLast()
+
+            userContextMap.remove(userId)
+            replyToMessage(Strings.chat_context_removed_info)
+
+            log.error("$response")
+
             return
         }
 
@@ -212,5 +216,5 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
             .timeout(FUEL_TIMEOUT)
             .timeoutRead(FUEL_TIMEOUT)
             .jsonBody(Gson().toJson(ChatData(CHAT_GPT_MODEL, messages)))
-            .responseString()
+            .response().second
 }
