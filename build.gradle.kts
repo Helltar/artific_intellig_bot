@@ -32,5 +32,5 @@ dependencies {
 }
 
 application {
-    mainClass.set("com.helltar.artific_intellig_bot.ArtificIntelligBot")
+    mainClass.set("com.helltar.aibot.ArtificIntelligBot")
 }
