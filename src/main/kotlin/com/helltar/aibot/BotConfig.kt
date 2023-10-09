@@ -1,47 +1,47 @@
 package com.helltar.aibot
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import org.slf4j.LoggerFactory
+import java.io.FileNotFoundException
 import java.io.FileReader
 import java.util.*
 
-private const val DIR_CONFIG = "config"
+object BotConfig {
 
-const val DIR_DB = "database"
-const val DIR_LOCALE = "locale"
-const val DIR_FILES = "files"
+    data class JsonData(
+        @JsonProperty(required = true)
+        val token: String,
 
-const val FILE_BOT_CONFIG = "$DIR_CONFIG/bot_config"
-const val FILE_DATABASE = "$DIR_DB/database.db"
+        @JsonProperty(required = true)
+        val username: String,
 
-const val FILE_NAME_LOADING_GIF = "loading.gif"
+        @JsonProperty(required = true)
+        val creatorId: Long
+    )
 
-data class BotMainConfig(
-    @JsonProperty(required = true)
-    val token: String,
+    private const val DIR_CONFIG = "config"
+    const val DIR_DB = "database"
+    const val DIR_LOCALE = "locale"
+    const val DIR_FILES = "files"
 
-    @JsonProperty(required = true)
-    val username: String,
+    private const val FILE_API_KEYS = "$DIR_CONFIG/api_keys.ini"
+    const val FILE_BOT_CONFIG = "$DIR_CONFIG/bot_config"
+    const val FILE_DATABASE = "$DIR_DB/database.db"
+    const val FILE_LOADING_GIF = "loading.gif"
 
-    @JsonProperty(required = true)
-    val creatorId: Long
-)
+    val openaiApiKey: String = getApiKey("openai_key")
+    val stableDiffusionApiKey: String = getApiKey("stable_diffusion_key")
 
-open class BotConfig {
+    private val log = LoggerFactory.getLogger(javaClass)
 
-    val openaiKey: String
-    val stableDiffusionKey: String
-
-    init {
-        val filename = "$DIR_CONFIG/api_keys.ini"
-
+    private fun getApiKey(name: String) =
         try {
             Properties().run {
-                load(FileReader(filename))
-                openaiKey = getProperty("openai_key")
-                stableDiffusionKey = getProperty("stable_diffusion_key")
+                load(FileReader(FILE_API_KEYS))
+                getProperty(name)
             }
-        } catch (e: Exception) {
-            throw Exception("Error when reading API Keys: $filename ${e.message}")
+        } catch (e: FileNotFoundException) {
+            log.error(e.message)
+            throw e
         }
-    }
 }

@@ -2,11 +2,12 @@ package com.helltar.aibot.commands.user.images
 
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.FileDataPart
-import com.github.kittinunf.fuel.core.Method
+import com.helltar.aibot.BotConfig.openaiApiKey
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
+import com.helltar.aibot.commands.user.images.models.DalleData.DALLE_REQUEST_IMAGE_SIZE
+import com.helltar.aibot.utils.NetworkUtils.httpUpload
 import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
@@ -21,10 +22,6 @@ import javax.imageio.ImageIO
 class DalleVariations(ctx: MessageContext) : BotCommand(ctx) {
 
     private val log = LoggerFactory.getLogger(javaClass)
-
-    private companion object {
-        const val DALLE_IMAGE_SIZE = "256x256" // 512x512 1024x1024
-    }
 
     override fun run() {
         val photo = ctx.message().replyToMessage.photo
@@ -87,16 +84,11 @@ class DalleVariations(ctx: MessageContext) : BotCommand(ctx) {
     }
 
     private fun uploadImage(byteArrayStream: ByteArrayOutputStream): String {
-        val parameters = listOf("n" to "1", "size" to DALLE_IMAGE_SIZE)
-
-        // todo: tempFile
-        val file = File.createTempFile("tmp", ".png").apply { writeBytes(byteArrayStream.toByteArray()) }
-
-        return Fuel.upload("https://api.openai.com/v1/images/variations", Method.POST, parameters)
-            .add(FileDataPart(file, "image"))
-            .header("Authorization", "Bearer $openaiKey")
-            .timeout(FUEL_TIMEOUT)
-            .timeoutRead(FUEL_TIMEOUT)
-            .response().second.data.decodeToString()
+        val url = "https://api.openai.com/v1/images/variations"
+        val headers = mapOf("Authorization" to "Bearer $openaiApiKey")
+        val parameters = listOf("n" to "1", "size" to DALLE_REQUEST_IMAGE_SIZE)
+        val file = File.createTempFile("tmp", ".png").apply { writeBytes(byteArrayStream.toByteArray()) } // todo: tempFile
+        val dataPart = FileDataPart(file, "image")
+        return httpUpload(url, parameters, headers, dataPart).data.decodeToString()
     }
 }

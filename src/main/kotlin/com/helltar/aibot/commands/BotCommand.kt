@@ -2,7 +2,6 @@ package com.helltar.aibot.commands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.BotConfig
 import com.helltar.aibot.dao.DatabaseFactory
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.InputFile
@@ -11,11 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import java.io.File
 import java.io.Serializable
 
-abstract class BotCommand(val ctx: MessageContext) : BotConfig() {
-
-    protected companion object {
-        const val FUEL_TIMEOUT = 180000
-    }
+abstract class BotCommand(val ctx: MessageContext) {
 
     protected val userId = ctx.user().id
     protected val message = ctx.message()

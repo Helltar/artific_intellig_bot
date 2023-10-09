@@ -1,18 +1,19 @@
 package com.helltar.aibot.commands.user.chat
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.github.kittinunf.fuel.core.extensions.jsonBody
+import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.core.isSuccessful
-import com.github.kittinunf.fuel.httpPost
 import com.google.api.gax.rpc.ApiException
 import com.google.cloud.texttospeech.v1.*
 import com.google.cloud.translate.TranslateOptions
 import com.google.gson.Gson
-import com.helltar.aibot.Commands.cmdChatAsVoice
-import com.helltar.aibot.DIR_FILES
-import com.helltar.aibot.FILE_NAME_LOADING_GIF
+import com.helltar.aibot.BotConfig.DIR_FILES
+import com.helltar.aibot.BotConfig.FILE_LOADING_GIF
+import com.helltar.aibot.BotConfig.openaiApiKey
 import com.helltar.aibot.Strings
+import com.helltar.aibot.Strings.localizedString
 import com.helltar.aibot.commands.BotCommand
+import com.helltar.aibot.commands.Commands.cmdChatAsVoice
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_GPT_MODEL
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_ASSISTANT
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_SYSTEM
@@ -20,7 +21,7 @@ import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_USER
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.ChatData
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.ChatMessageData
 import com.helltar.aibot.dao.DatabaseFactory
-import com.helltar.aibot.localizedString
+import com.helltar.aibot.utils.NetworkUtils.httpPost
 import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
@@ -207,23 +208,21 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
 
     // todo: getLoadingGifFileId
     private fun getLoadingGifFileId() =
-        DatabaseFactory.filesIds.getFileId(FILE_NAME_LOADING_GIF)
+        DatabaseFactory.filesIds.getFileId(FILE_LOADING_GIF)
             ?: run {
-                val message = sendDocument(File("$DIR_FILES/$FILE_NAME_LOADING_GIF"))
+                val message = sendDocument(File("$DIR_FILES/$FILE_LOADING_GIF"))
                 val fileId = message.document.fileId
                 deleteMessage(message.messageId)
 
-                DatabaseFactory.filesIds.add(FILE_NAME_LOADING_GIF, fileId)
+                DatabaseFactory.filesIds.add(FILE_LOADING_GIF, fileId)
 
                 return fileId
             }
 
-    private fun sendPrompt(messages: List<ChatMessageData>) =
-        "https://api.openai.com/v1/chat/completions".httpPost()
-            .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer $openaiKey")
-            .timeout(FUEL_TIMEOUT)
-            .timeoutRead(FUEL_TIMEOUT)
-            .jsonBody(Gson().toJson(ChatData(CHAT_GPT_MODEL, messages)))
-            .response().second
+    private fun sendPrompt(messages: List<ChatMessageData>): Response {
+        val url = "https://api.openai.com/v1/chat/completions"
+        val headers = mapOf("Content-Type" to "application/json", "Authorization" to "Bearer $openaiApiKey")
+        val body = Gson().toJson(ChatData(CHAT_GPT_MODEL, messages))
+        return httpPost(url, headers, body)
+    }
 }

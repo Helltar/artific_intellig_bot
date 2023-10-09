@@ -1,10 +1,10 @@
 package com.helltar.aibot.commands.admin.command
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.Commands.cmdChatAsText
-import com.helltar.aibot.Commands.cmdChatAsVoice
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
+import com.helltar.aibot.commands.Commands.cmdChatAsText
+import com.helltar.aibot.commands.Commands.cmdChatAsVoice
 import com.helltar.aibot.dao.DatabaseFactory
 
 class ChatAsVoice(ctx: MessageContext) : BotCommand(ctx) {

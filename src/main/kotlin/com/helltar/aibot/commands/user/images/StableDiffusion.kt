@@ -2,15 +2,15 @@ package com.helltar.aibot.commands.user.images
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.Response
-import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.core.isSuccessful
-import com.github.kittinunf.fuel.httpPost
 import com.google.gson.Gson
+import com.helltar.aibot.BotConfig.stableDiffusionApiKey
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.user.images.models.StableDiffusionData
 import com.helltar.aibot.commands.user.images.models.StableDiffusionData.ENGINE_ID
 import com.helltar.aibot.commands.user.images.models.StableDiffusionData.TextPromptData
+import com.helltar.aibot.utils.NetworkUtils.httpPost
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -53,18 +53,13 @@ class StableDiffusion(ctx: MessageContext) : BotCommand(ctx) {
             }
 
         replyToMessage(Strings.bad_request)
-        log.error("$responseJson : $args")
+        log.error("$responseJson: $args")
     }
 
     private fun sendPrompt(prompt: String): Response {
-        val jsonBody = Gson().toJson(StableDiffusionData.RequestData(text_prompts = listOf(TextPromptData(prompt))))
-
-        return "https://api.stability.ai/v1/generation/$ENGINE_ID/text-to-image".httpPost()
-            .header("Accept", "application/json")
-            .header("Authorization", "Bearer $stableDiffusionKey")
-            .timeout(FUEL_TIMEOUT)
-            .timeoutRead(FUEL_TIMEOUT)
-            .jsonBody(jsonBody)
-            .response().second
+        val url = "https://api.stability.ai/v1/generation/$ENGINE_ID/text-to-image"
+        val headers = mapOf("Accept" to "application/json", "Authorization" to "Bearer $stableDiffusionApiKey")
+        val body = Gson().toJson(StableDiffusionData.RequestData(text_prompts = listOf(TextPromptData(prompt))))
+        return httpPost(url, headers, body)
     }
 }

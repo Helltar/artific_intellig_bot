@@ -1,6 +1,6 @@
 package com.helltar.aibot.dao
 
-import com.helltar.aibot.FILE_DATABASE
+import com.helltar.aibot.BotConfig.FILE_DATABASE
 import com.helltar.aibot.dao.tables.BanList
 import com.helltar.aibot.dao.tables.ChatWhiteList
 import com.helltar.aibot.dao.tables.CommandsState

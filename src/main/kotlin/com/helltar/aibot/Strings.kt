@@ -1,5 +1,6 @@
 package com.helltar.aibot
 
+import com.helltar.aibot.BotConfig.DIR_LOCALE
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileReader
@@ -57,30 +58,30 @@ object Strings {
     const val slow_mode_on_update = "\uD83D\uDD04 Slow mode already on, update, <b>%d</b> requests per hour" // 🔄
     const val slow_mode_off = "✅ Slow mode off"
     const val slow_mode_off_not_enabled = "ℹ\uFE0F Slow mode not enabled for this user" // ℹ️
-}
 
-private val log = LoggerFactory.getLogger(Strings.javaClass)
+    private val log = LoggerFactory.getLogger(Strings.javaClass)
 
-fun localizedString(key: String, languageCode: String): String {
+    fun localizedString(key: String, languageCode: String): String {
 
-    fun getFirstRegexGroup(text: String, regex: String): String {
-        val m = Pattern.compile(regex).matcher(text)
+        fun getFirstRegexGroup(text: String, regex: String): String {
+            val m = Pattern.compile(regex).matcher(text)
 
-        return if (m.find()) {
-            if (m.groupCount() >= 1) m.group(1) else ""
-        } else ""
-    }
+            return if (m.find()) {
+                if (m.groupCount() >= 1) m.group(1) else ""
+            } else ""
+        }
 
-    return try {
-        var filename = "$DIR_LOCALE/${languageCode.lowercase()}.xml"
+        return try {
+            var filename = "$DIR_LOCALE/${languageCode.lowercase()}.xml"
 
-        if (!File(filename).exists())
-            filename = "$DIR_LOCALE/en.xml"
+            if (!File(filename).exists())
+                filename = "$DIR_LOCALE/en.xml"
 
-        val regex = """<string name="$key">(\X*?)<\/string>"""
-        getFirstRegexGroup(FileReader(filename).readText(), regex).trimIndent().ifEmpty { key }
-    } catch (e: Exception) {
-        log.error(e.message)
-        key
+            val regex = """<string name="$key">(\X*?)<\/string>"""
+            getFirstRegexGroup(FileReader(filename).readText(), regex).trimIndent().ifEmpty { key }
+        } catch (e: Exception) {
+            log.error(e.message)
+            key
+        }
     }
 }

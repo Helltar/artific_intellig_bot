@@ -1,12 +1,12 @@
 package com.helltar.aibot.commands.user.images
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.github.kittinunf.fuel.core.extensions.jsonBody
-import com.github.kittinunf.fuel.httpPost
 import com.google.gson.Gson
+import com.helltar.aibot.BotConfig.openaiApiKey
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.user.images.models.DalleData
+import com.helltar.aibot.utils.NetworkUtils.httpPost
 import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
@@ -40,12 +40,10 @@ class DallE2(ctx: MessageContext) : BotCommand(ctx) {
         }
     }
 
-    private fun sendPrompt(prompt: String) =
-        "https://api.openai.com/v1/images/generations".httpPost()
-            .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer $openaiKey")
-            .timeout(FUEL_TIMEOUT)
-            .timeoutRead(FUEL_TIMEOUT)
-            .jsonBody(Gson().toJson(DalleData.RequestData(prompt, 1)))
-            .response().second.data.decodeToString()
+    private fun sendPrompt(prompt: String): String {
+        val url = "https://api.openai.com/v1/images/generations"
+        val headers = mapOf("Content-Type" to "application/json", "Authorization" to "Bearer $openaiApiKey")
+        val body = Gson().toJson(DalleData.RequestData(prompt, 1))
+        return httpPost(url, headers, body).data.decodeToString()
+    }
 }

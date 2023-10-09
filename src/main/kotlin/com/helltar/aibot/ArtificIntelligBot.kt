@@ -7,9 +7,11 @@ import com.annimon.tgbotsmodule.beans.Config
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.annimon.tgbotsmodule.services.YamlConfigLoaderService
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.helltar.aibot.Commands.cmdChatAsText
-import com.helltar.aibot.Commands.cmdChatAsVoice
-import com.helltar.aibot.Commands.disalableCmdsList
+import com.helltar.aibot.BotConfig.DIR_DB
+import com.helltar.aibot.BotConfig.FILE_BOT_CONFIG
+import com.helltar.aibot.commands.Commands.cmdChatAsText
+import com.helltar.aibot.commands.Commands.cmdChatAsVoice
+import com.helltar.aibot.commands.Commands.disalableCmdsList
 import com.helltar.aibot.dao.DatabaseFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -64,7 +66,7 @@ class ArtificIntelligBot : BotModule {
         val configFile = configLoader.configFile(FILE_BOT_CONFIG, config.profile)
 
         val botConfig =
-            configLoader.loadFile(configFile, BotMainConfig::class.java) {
+            configLoader.loadFile(configFile, BotConfig.JsonData::class.java) {
                 it.registerModule(KotlinModule.Builder().build())
             }
 

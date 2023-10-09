@@ -6,33 +6,33 @@ import com.annimon.tgbotsmodule.commands.SimpleCommand
 import com.annimon.tgbotsmodule.commands.authority.SimpleAuthority
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.ArtificIntelligBot.Companion.addRequest
-import com.helltar.aibot.Commands.cmdAbout
-import com.helltar.aibot.Commands.cmdAddAdmin
-import com.helltar.aibot.Commands.cmdAddChat
-import com.helltar.aibot.Commands.cmdAdminList
-import com.helltar.aibot.Commands.cmdBanList
-import com.helltar.aibot.Commands.cmdBanUser
-import com.helltar.aibot.Commands.cmdChat
-import com.helltar.aibot.Commands.cmdChatAsText
-import com.helltar.aibot.Commands.cmdChatAsVoice
-import com.helltar.aibot.Commands.cmdChatCtx
-import com.helltar.aibot.Commands.cmdChatCtxRemove
-import com.helltar.aibot.Commands.cmdChatWhiteList
-import com.helltar.aibot.Commands.cmdDalle
-import com.helltar.aibot.Commands.cmdDalleVariations
-import com.helltar.aibot.Commands.cmdDisable
-import com.helltar.aibot.Commands.cmdEnable
-import com.helltar.aibot.Commands.cmdMyId
-import com.helltar.aibot.Commands.cmdRmAdmin
-import com.helltar.aibot.Commands.cmdRmChat
-import com.helltar.aibot.Commands.cmdSDiff
-import com.helltar.aibot.Commands.cmdSlowMode
-import com.helltar.aibot.Commands.cmdSlowModeList
-import com.helltar.aibot.Commands.cmdSlowModeOff
-import com.helltar.aibot.Commands.cmdStart
-import com.helltar.aibot.Commands.cmdUnbanUser
-import com.helltar.aibot.Commands.cmdUptime
 import com.helltar.aibot.commands.BotCommand
+import com.helltar.aibot.commands.Commands.cmdAbout
+import com.helltar.aibot.commands.Commands.cmdAddAdmin
+import com.helltar.aibot.commands.Commands.cmdAddChat
+import com.helltar.aibot.commands.Commands.cmdAdminList
+import com.helltar.aibot.commands.Commands.cmdBanList
+import com.helltar.aibot.commands.Commands.cmdBanUser
+import com.helltar.aibot.commands.Commands.cmdChat
+import com.helltar.aibot.commands.Commands.cmdChatAsText
+import com.helltar.aibot.commands.Commands.cmdChatAsVoice
+import com.helltar.aibot.commands.Commands.cmdChatCtx
+import com.helltar.aibot.commands.Commands.cmdChatCtxRemove
+import com.helltar.aibot.commands.Commands.cmdChatWhiteList
+import com.helltar.aibot.commands.Commands.cmdDalle
+import com.helltar.aibot.commands.Commands.cmdDalleVariations
+import com.helltar.aibot.commands.Commands.cmdDisable
+import com.helltar.aibot.commands.Commands.cmdEnable
+import com.helltar.aibot.commands.Commands.cmdMyId
+import com.helltar.aibot.commands.Commands.cmdRmAdmin
+import com.helltar.aibot.commands.Commands.cmdRmChat
+import com.helltar.aibot.commands.Commands.cmdSDiff
+import com.helltar.aibot.commands.Commands.cmdSlowMode
+import com.helltar.aibot.commands.Commands.cmdSlowModeList
+import com.helltar.aibot.commands.Commands.cmdSlowModeOff
+import com.helltar.aibot.commands.Commands.cmdStart
+import com.helltar.aibot.commands.Commands.cmdUnbanUser
+import com.helltar.aibot.commands.Commands.cmdUptime
 import com.helltar.aibot.commands.admin.admin.AddAdmin
 import com.helltar.aibot.commands.admin.admin.AdminList
 import com.helltar.aibot.commands.admin.admin.RemoveAdmin
@@ -67,7 +67,7 @@ import org.telegram.telegrambots.meta.api.objects.Update
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 
-class ArtificIntelligBotHandler(private val botConfig: BotMainConfig) : BotHandler(botConfig.token) {
+class ArtificIntelligBotHandler(private val botConfig: BotConfig.JsonData) : BotHandler(botConfig.token) {
 
     private val authority = SimpleAuthority(botConfig.creatorId)
     private val commands = CommandRegistry(botConfig.username, authority)

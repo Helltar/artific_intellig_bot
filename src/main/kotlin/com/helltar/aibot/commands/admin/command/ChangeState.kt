@@ -1,9 +1,9 @@
 package com.helltar.aibot.commands.admin.command
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.Commands
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
+import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.dao.DatabaseFactory
 
 class ChangeState(ctx: MessageContext, private val disable: Boolean = false) : BotCommand(ctx) {

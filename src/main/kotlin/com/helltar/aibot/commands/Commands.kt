@@ -1,4 +1,4 @@
-package com.helltar.aibot
+package com.helltar.aibot.commands
 
 object Commands {
 
