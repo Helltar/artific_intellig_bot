@@ -1,4 +1,4 @@
-package com.helltar.artific_intellig_bot.commands.user.chat
+package com.helltar.aibot.commands.user.chat
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.extensions.jsonBody
@@ -8,22 +8,23 @@ import com.google.api.gax.rpc.ApiException
 import com.google.cloud.texttospeech.v1.*
 import com.google.cloud.translate.TranslateOptions
 import com.google.gson.Gson
-import com.helltar.artific_intellig_bot.Commands.cmdChatAsVoice
-import com.helltar.artific_intellig_bot.DIR_FILES
-import com.helltar.artific_intellig_bot.FILE_NAME_LOADING_GIF
-import com.helltar.artific_intellig_bot.Strings
-import com.helltar.artific_intellig_bot.commands.BotCommand
-import com.helltar.artific_intellig_bot.commands.user.chat.models.ChatGPTData.CHAT_GPT_MODEL
-import com.helltar.artific_intellig_bot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_ASSISTANT
-import com.helltar.artific_intellig_bot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_SYSTEM
-import com.helltar.artific_intellig_bot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_USER
-import com.helltar.artific_intellig_bot.commands.user.chat.models.ChatGPTData.ChatData
-import com.helltar.artific_intellig_bot.commands.user.chat.models.ChatGPTData.ChatMessageData
-import com.helltar.artific_intellig_bot.dao.DatabaseFactory
-import com.helltar.artific_intellig_bot.localizedString
+import com.helltar.aibot.Commands.cmdChatAsVoice
+import com.helltar.aibot.DIR_FILES
+import com.helltar.aibot.FILE_NAME_LOADING_GIF
+import com.helltar.aibot.Strings
+import com.helltar.aibot.commands.BotCommand
+import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_GPT_MODEL
+import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_ASSISTANT
+import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_SYSTEM
+import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_USER
+import com.helltar.aibot.commands.user.chat.models.ChatGPTData.ChatData
+import com.helltar.aibot.commands.user.chat.models.ChatGPTData.ChatMessageData
+import com.helltar.aibot.dao.DatabaseFactory
+import com.helltar.aibot.localizedString
 import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException
 import java.io.File
 import java.util.*
 
@@ -143,9 +144,17 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
             if (isVoiceOut)
                 sendVoice(answer, messageId)
             else
-                if (isCommandDisabled(cmdChatAsVoice))
-                    replyToMessage(answer, messageId, markdown = true)
-                else
+                if (isCommandDisabled(cmdChatAsVoice)) {
+                    try {
+                        replyToMessage(answer, messageId, markdown = true)
+                    } catch (e: TelegramApiRequestException) { // todo: TelegramApiRequestException
+                        replyToMessageWithDocument(
+                            File.createTempFile("answer", ".txt").apply { writeText(answer) },
+                            "TelegramApiRequestException, response saved to file"
+                        )
+                        log.error(e.message)
+                    }
+                } else
                     sendVoice(answer, messageId)
 
             deleteMessage(waitMessageId)
