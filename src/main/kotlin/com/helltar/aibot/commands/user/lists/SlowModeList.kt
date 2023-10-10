@@ -18,6 +18,6 @@ class SlowModeList(ctx: MessageContext) : BotCommand(ctx) {
                 "<code>${it[SlowMode.userId]}</code> <b>$username</b> <code>$limit</code> <i>($requests - $lastRequest)</i>"
             }
 
-        replyToMessage(list.ifEmpty { Strings.list_is_empty })
+        replyToMessage(list.ifEmpty { Strings.LIST_IS_EMPTY })
     }
 }

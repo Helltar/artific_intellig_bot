@@ -15,6 +15,6 @@ class ChatsWhiteList(ctx: MessageContext) : BotCommand(ctx) {
                 "<code>${it[ChatWhiteList.chatId]}</code> $title <i>(${it[ChatWhiteList.datetime]})</i>"
             }
 
-        replyToMessage(text.ifEmpty { Strings.list_is_empty })
+        replyToMessage(text.ifEmpty { Strings.LIST_IS_EMPTY })
     }
 }

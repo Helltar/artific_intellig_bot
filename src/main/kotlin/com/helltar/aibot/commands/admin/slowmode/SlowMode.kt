@@ -12,9 +12,9 @@ class SlowMode(ctx: MessageContext) : BotCommand(ctx) {
         val limit = argsText.toIntOrNull() ?: return
 
         if (DatabaseFactory.slowMode.add(user, limit))
-            replyToMessage(String.format(Strings.slow_mode_on, limit))
+            replyToMessage(String.format(Strings.SLOW_MODE_ON, limit))
         else {
-            replyToMessage(String.format(Strings.slow_mode_on_update, limit))
+            replyToMessage(String.format(Strings.SLOW_MODE_ON_UPDATE, limit))
             DatabaseFactory.slowMode.update(user, limit)
         }
     }

@@ -14,7 +14,7 @@ class ChatCtx(ctx: MessageContext) : ChatGPT(ctx) {
                 if (isAdmin())
                     message.replyToMessage.from.id
                 else {
-                    replyToMessage(Strings.creator_only_command)
+                    replyToMessage(Strings.CREATOR_ONLY_COMMAND)
                     return
                 }
 
@@ -22,7 +22,7 @@ class ChatCtx(ctx: MessageContext) : ChatGPT(ctx) {
             if (userContextMap.containsKey(userId))
                 userContextMap[userId]?.filter { it.role == CHAT_ROLE_USER }?.joinToString("\n") { "- ${it.content}" }
             else
-                Strings.chat_context_empty
+                Strings.CHAT_CONTEXT_EMPTY
 
         replyToMessage("$text", markdown = true)
     }

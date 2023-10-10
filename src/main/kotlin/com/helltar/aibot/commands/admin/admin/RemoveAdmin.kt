@@ -18,8 +18,8 @@ class RemoveAdmin(ctx: MessageContext) : BotCommand(ctx) {
             return
 
         if (DatabaseFactory.sudoers.remove(userId))
-            replyToMessage(Strings.admin_removed)
+            replyToMessage(Strings.ADMIN_REMOVED)
         else
-            replyToMessage(Strings.admin_not_exists)
+            replyToMessage(Strings.ADMIN_NOT_EXISTS)
     }
 }

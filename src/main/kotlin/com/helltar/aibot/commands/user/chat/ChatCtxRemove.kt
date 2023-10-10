@@ -16,12 +16,12 @@ class ChatCtxRemove(ctx: MessageContext) : ChatGPT(ctx) {
                     username = " (<b>${message.replyToMessage.from.firstName}</b>)"
                     message.replyToMessage.from.id
                 } else {
-                    replyToMessage(Strings.creator_only_command)
+                    replyToMessage(Strings.CREATOR_ONLY_COMMAND)
                     return
                 }
 
         userContextMap.remove(userId)
 
-        replyToMessage(Strings.chat_context_removed + username)
+        replyToMessage(Strings.CHAT_CONTEXT_REMOVED + username)
     }
 }

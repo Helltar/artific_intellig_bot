@@ -9,9 +9,9 @@ import com.annimon.tgbotsmodule.services.YamlConfigLoaderService
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.helltar.aibot.BotConfig.DIR_DB
 import com.helltar.aibot.BotConfig.FILE_BOT_CONFIG
-import com.helltar.aibot.commands.Commands.cmdChatAsText
-import com.helltar.aibot.commands.Commands.cmdChatAsVoice
-import com.helltar.aibot.commands.Commands.disalableCmdsList
+import com.helltar.aibot.commands.Commands.CMD_CHAT_AS_TEXT
+import com.helltar.aibot.commands.Commands.CMD_CHAT_AS_VOICE
+import com.helltar.aibot.commands.Commands.disalableCommandsList
 import com.helltar.aibot.dao.DatabaseFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,16 +42,16 @@ class ArtificIntelligBot : BotModule {
             DatabaseFactory.init()
 
             // todo: DatabaseFactory.commandsState.add
-            disalableCmdsList.forEach { command -> DatabaseFactory.commandsState.add(command) }
-            DatabaseFactory.commandsState.add(cmdChatAsText)
-            DatabaseFactory.commandsState.add(cmdChatAsVoice, true)
+            disalableCommandsList.forEach { command -> DatabaseFactory.commandsState.add(command) }
+            DatabaseFactory.commandsState.add(CMD_CHAT_AS_TEXT)
+            DatabaseFactory.commandsState.add(CMD_CHAT_AS_VOICE, true)
         }
 
         fun addRequest(requestKey: String, ctx: MessageContext, func: () -> Unit) {
             if (requestList.containsKey(requestKey))
                 if (requestList[requestKey]?.isCompleted == false) {
                     ctx.replyToMessage()
-                        .setText(Strings.many_request)
+                        .setText(Strings.MANY_REQUEST)
                         .callAsync(ctx.sender)
 
                     return

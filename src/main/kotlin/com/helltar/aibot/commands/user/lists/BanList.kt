@@ -17,6 +17,6 @@ class BanList(ctx: MessageContext) : BotCommand(ctx) {
                 "<code>${it[BanList.userId]}</code> <b>$username</b> $reason <i>(${it[BanList.datetime]})</i>"
             }
 
-        replyToMessage(list.ifEmpty { Strings.list_is_empty })
+        replyToMessage(list.ifEmpty { Strings.LIST_IS_EMPTY })
     }
 }

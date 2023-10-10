@@ -14,6 +14,6 @@ class AdminList(ctx: MessageContext) : BotCommand(ctx) {
                 "<code>${it[Sudoers.userId]}</code> <b>${it[Sudoers.username]}</b> <i>(${it[Sudoers.datetime]})</i>"
             }
 
-        replyToMessage(list.ifEmpty { Strings.list_is_empty })
+        replyToMessage(list.ifEmpty { Strings.LIST_IS_EMPTY })
     }
 }

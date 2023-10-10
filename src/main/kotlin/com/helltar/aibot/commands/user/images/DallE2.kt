@@ -17,12 +17,12 @@ class DallE2(ctx: MessageContext) : BotCommand(ctx) {
 
     override fun run() {
         if (args.isEmpty()) {
-            replyToMessage(Strings.empty_args)
+            replyToMessage(Strings.EMPTY_ARGS)
             return
         }
 
         if (argsText.length > 1000) {
-            replyToMessage(String.format(Strings.many_characters, 1000))
+            replyToMessage(String.format(Strings.MANY_CHARACTERS, 1000))
             return
         }
 
@@ -35,7 +35,7 @@ class DallE2(ctx: MessageContext) : BotCommand(ctx) {
                 argsText
             )
         } catch (e: JSONException) {
-            replyToMessage(Strings.chat_exception)
+            replyToMessage(Strings.CHAT_EXCEPTION)
             log.error(e.message)
         }
     }

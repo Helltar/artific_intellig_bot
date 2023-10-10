@@ -15,8 +15,8 @@ class SlowModeOff(ctx: MessageContext) : BotCommand(ctx) {
                 message.replyToMessage?.from?.id
 
         if (DatabaseFactory.slowMode.off(userId ?: return))
-            replyToMessage(Strings.slow_mode_off)
+            replyToMessage(Strings.SLOW_MODE_OFF)
         else
-            replyToMessage(Strings.slow_mode_off_not_enabled)
+            replyToMessage(Strings.SLOW_MODE_OFF_NOT_ENABLED)
     }
 }

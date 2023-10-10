@@ -2,45 +2,45 @@ package com.helltar.aibot.commands
 
 object Commands {
 
-    const val cmdChat = "chat"
-    const val cmdChatCtx = "chatctx" // dialog context
-    const val cmdChatCtxRemove = "chatrm" // remove context
-    const val cmdChatAsText = "chatastext"
-    const val cmdChatAsVoice = "chatasvoice"
+    const val CMD_CHAT = "chat"
+    const val CMD_CHATCTX = "chatctx" // dialog context
+    const val CMD_CHAT_CTX_REMOVE = "chatrm" // remove context
+    const val CMD_CHAT_AS_TEXT = "chatastext"
+    const val CMD_CHAT_AS_VOICE = "chatasvoice"
 
-    const val cmdStart = "start"
-    const val cmdDalle = "dalle"
-    const val cmdSDiff = "sdif"
-    const val cmdDalleVariations = "dallevariations"
+    const val CMD_START = "start"
+    const val CMD_DALLE = "dalle"
+    const val CMD_SDIFF = "sdif"
+    const val CMD_DALLE_VARIATIONS = "dallevariations"
 
-    const val cmdAbout = "about"
-    const val cmdUptime = "uptime"
-    const val cmdMyId = "myid"
+    const val CMD_ABOUT = "about"
+    const val CMD_UPTIME = "uptime"
+    const val CMD_MYID = "myid"
 
-    const val cmdAddAdmin = "addadmin"
-    const val cmdRmAdmin = "rmadmin"
-    const val cmdAdminList = "sudoers"
+    const val CMD_ADDADMIN = "addadmin"
+    const val CMD_RM_ADMIN = "rmadmin"
+    const val CMD_ADMIN_LIST = "sudoers"
 
-    const val cmdBanUser = "ban"
-    const val cmdUnbanUser = "unban"
-    const val cmdBanList = "banlist"
+    const val CMD_BAN_USER = "ban"
+    const val CMD_UNBAN_USER = "unban"
+    const val CMD_BAN_LIST = "banlist"
 
-    const val cmdDisable = "disable"
-    const val cmdEnable = "enable"
+    const val CMD_DISABLE = "disable"
+    const val CMD_ENABLE = "enable"
 
-    const val cmdChatWhiteList = "chats"
-    const val cmdAddChat = "addchat"
-    const val cmdRmChat = "rmchat"
+    const val CMD_CHATS_WHITE_LIST = "chats"
+    const val CMD_ADD_CHAT = "addchat"
+    const val CMD_RM_CHAT = "rmchat"
 
-    const val cmdSlowMode = "slowmode"
-    const val cmdSlowModeOff = "slowmodeoff"
-    const val cmdSlowModeList = "slowmodelist"
+    const val CMD_SLOW_MODE = "slowmode"
+    const val CMD_SLOW_MODE_OFF = "slowmodeoff"
+    const val CMD_SLOW_MODE_LIST = "slowmodelist"
 
-    val disalableCmdsList =
+    val disalableCommandsList =
         setOf(
-            cmdChat,
-            cmdDalle,
-            cmdSDiff,
-            cmdDalleVariations
+            CMD_CHAT,
+            CMD_DALLE,
+            CMD_SDIFF,
+            CMD_DALLE_VARIATIONS
         )
 }

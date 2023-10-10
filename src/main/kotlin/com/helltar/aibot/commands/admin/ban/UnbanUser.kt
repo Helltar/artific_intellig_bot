@@ -15,8 +15,8 @@ class UnbanUser(ctx: MessageContext) : BotCommand(ctx) {
                 ctx.message().replyToMessage?.from?.id
 
         if (DatabaseFactory.banList.unbanUser(userId ?: return))
-            replyToMessage(Strings.user_unbanned)
+            replyToMessage(Strings.USER_UNBANNED)
         else
-            replyToMessage(Strings.user_not_banned)
+            replyToMessage(Strings.USER_NOT_BANNED)
     }
 }

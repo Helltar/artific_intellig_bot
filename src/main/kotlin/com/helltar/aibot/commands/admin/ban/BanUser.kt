@@ -12,8 +12,8 @@ class BanUser(ctx: MessageContext) : BotCommand(ctx) {
         val reason = argsText.ifEmpty { null }
 
         if (DatabaseFactory.banList.banUser(user, reason))
-            replyToMessage(Strings.user_banned)
+            replyToMessage(Strings.USER_BANNED)
         else
-            replyToMessage(Strings.user_already_banned)
+            replyToMessage(Strings.USER_ALREADY_BANNED)
     }
 }

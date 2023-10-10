@@ -28,7 +28,7 @@ class DalleVariations(ctx: MessageContext) : BotCommand(ctx) {
         val photoSize = photo[photo.lastIndex]
 
         if (photoSize.fileSize > (1024 * 1000)) {
-            replyToMessage(String.format(Strings.image_must_be_less_than, "1MB"))
+            replyToMessage(String.format(Strings.IMAGE_MUST_BE_LESS_THAN, "1MB"))
             return
         }
 
@@ -67,7 +67,7 @@ class DalleVariations(ctx: MessageContext) : BotCommand(ctx) {
                 )
             } catch (e: JSONException) {
                 log.error(e.message, e)
-                replyToMessage(Strings.bad_request)
+                replyToMessage(Strings.BAD_REQUEST)
             }
         }
     }

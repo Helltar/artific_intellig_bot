@@ -13,7 +13,7 @@ import com.helltar.aibot.BotConfig.openaiApiKey
 import com.helltar.aibot.Strings
 import com.helltar.aibot.Strings.localizedString
 import com.helltar.aibot.commands.BotCommand
-import com.helltar.aibot.commands.Commands.cmdChatAsVoice
+import com.helltar.aibot.commands.Commands.CMD_CHAT_AS_VOICE
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_GPT_MODEL
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_ASSISTANT
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_SYSTEM
@@ -56,7 +56,7 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
                 text = message.text
         } else
             if (argsText.isEmpty()) {
-                replyToMessage(Strings.chat_hello)
+                replyToMessage(Strings.CHAT_HELLO)
                 return
             }
 
@@ -67,7 +67,7 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
                 MAX_ADMIN_MESSAGE_TEXT_LENGTH
 
         if (text.length > textLength) {
-            replyToMessage(String.format(Strings.many_characters, textLength))
+            replyToMessage(String.format(Strings.MANY_CHARACTERS, textLength))
             return
         }
 
@@ -83,7 +83,7 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
         }
 
         val userLanguageCode = ctx.user().languageCode ?: DEFAULT_LANG_CODE
-        val chatSystemMessage = localizedString(Strings.chat_gpt_system_message, userLanguageCode)
+        val chatSystemMessage = localizedString(Strings.CHAT_GPT_SYSTEM_MESSAGE, userLanguageCode)
 
         if (!userContextMap.containsKey(userId))
             userContextMap[userId] =
@@ -107,7 +107,7 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
         val waitMessageId =
             replyToMessageWithDocument(
                 getLoadingGifFileId(),
-                localizedString(Strings.chat_wait_message, userLanguageCode)
+                localizedString(Strings.CHAT_WAIT_MESSAGE, userLanguageCode)
             )
 
         val response = sendPrompt(userContextMap[userId]!!)
@@ -117,10 +117,10 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
             json = response.data.decodeToString()
         else {
             deleteMessage(waitMessageId)
-            replyToMessage(Strings.chat_exception)
+            replyToMessage(Strings.CHAT_EXCEPTION)
 
             userContextMap.remove(userId)
-            replyToMessage(Strings.chat_context_removed_info)
+            replyToMessage(Strings.CHAT_CONTEXT_REMOVED_INFO)
 
             log.error("$response")
 
@@ -145,7 +145,7 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
             if (isVoiceOut)
                 sendVoice(answer, messageId)
             else
-                if (isCommandDisabled(cmdChatAsVoice)) {
+                if (isCommandDisabled(CMD_CHAT_AS_VOICE)) {
                     try {
                         replyToMessage(answer, messageId, markdown = true)
                     } catch (e: TelegramApiRequestException) { // todo: TelegramApiRequestException
@@ -162,7 +162,7 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
 
         } catch (e: JSONException) {
             log.error(e.message)
-            replyToMessage(Strings.chat_exception)
+            replyToMessage(Strings.CHAT_EXCEPTION)
         }
     }
 
@@ -172,7 +172,7 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
             val voice = File.createTempFile("tmp", ".ogg").apply { writeBytes(oggBytes) }
             sendVoice(voice, messageId)
         }
-            ?: replyToMessage(Strings.chat_exception)
+            ?: replyToMessage(Strings.CHAT_EXCEPTION)
     }
 
     private fun textToSpeech(text: String, languageCode: String): ByteArray? {

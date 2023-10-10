@@ -22,12 +22,12 @@ class StableDiffusion(ctx: MessageContext) : BotCommand(ctx) {
 
     override fun run() {
         if (args.isEmpty()) {
-            replyToMessage(Strings.stable_diffusion_empty_args)
+            replyToMessage(Strings.STABLE_DIFFUSION_EMPTY_ARGS)
             return
         }
 
         if (argsText.length > 2000) {
-            replyToMessage(String.format(Strings.many_characters, 2000))
+            replyToMessage(String.format(Strings.MANY_CHARACTERS, 2000))
             return
         }
 
@@ -52,7 +52,7 @@ class StableDiffusion(ctx: MessageContext) : BotCommand(ctx) {
                 log.error(e.message)
             }
 
-        replyToMessage(Strings.bad_request)
+        replyToMessage(Strings.BAD_REQUEST)
         log.error("$responseJson: $args")
     }
 
