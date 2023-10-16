@@ -4,6 +4,7 @@ import com.helltar.aibot.BotConfig
 import com.helltar.aibot.RequestExecutor
 import com.helltar.aibot.Strings
 import com.helltar.aibot.dao.DatabaseFactory
+import com.helltar.aibot.dao.tables.SlowModeTable
 import org.slf4j.LoggerFactory
 import org.telegram.telegrambots.meta.api.objects.User
 import java.util.concurrent.TimeUnit
@@ -85,18 +86,14 @@ class CommandExecutor(private val botConfig: BotConfig.JsonData) {
     }
 
     private fun checkSlowMode(user: User): Long {
-        val userId = user.id
+        val slowModeState = DatabaseFactory.slowMode.getSlowModeState(user.id) ?: return 0
 
-        var userRequests = DatabaseFactory.slowMode.getRequestsSize(userId)
-
-        if (userRequests == -1)
-            return 0
-
-        val lastRequest = DatabaseFactory.slowMode.getLastRequestTimestamp(userId)
-        val limit = DatabaseFactory.slowMode.getLimitSize(userId)
+        var userRequests = slowModeState[SlowModeTable.requests]
+        val limit = slowModeState[SlowModeTable.limit]
 
         if (userRequests >= limit) {
             val timestamp = System.currentTimeMillis()
+            val lastRequest = slowModeState[SlowModeTable.lastRequestTimestamp]
 
             if ((lastRequest + TimeUnit.HOURS.toMillis(1)) > timestamp)
                 return TimeUnit.MILLISECONDS.toSeconds((lastRequest + TimeUnit.HOURS.toMillis(1)) - timestamp)

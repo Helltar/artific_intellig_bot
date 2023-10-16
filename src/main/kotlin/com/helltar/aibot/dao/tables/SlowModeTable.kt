@@ -2,7 +2,7 @@ package com.helltar.aibot.dao.tables
 
 import org.jetbrains.exposed.sql.Table
 
-object SlowMode : Table() {
+object SlowModeTable : Table() {
 
     val userId = long("id")
     val username = varchar("username", 32).nullable()

@@ -7,7 +7,7 @@ import com.helltar.aibot.dao.tables.BanList
 import com.helltar.aibot.dao.tables.ChatWhiteList
 import com.helltar.aibot.dao.tables.CommandsState
 import com.helltar.aibot.dao.tables.FilesIds
-import com.helltar.aibot.dao.tables.SlowMode
+import com.helltar.aibot.dao.tables.SlowModeTable
 import com.helltar.aibot.dao.tables.Sudoers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -38,7 +38,7 @@ object DatabaseFactory {
         val url = "jdbc:sqlite:$FILE_DATABASE"
         val database = Database.connect(url, driver)
 
-        transaction(database) { SchemaUtils.create(BanList, Sudoers, ChatWhiteList, FilesIds, CommandsState, SlowMode) }
+        transaction(database) { SchemaUtils.create(BanList, Sudoers, ChatWhiteList, FilesIds, CommandsState, SlowModeTable) }
 
         setup(creatorId)
     }

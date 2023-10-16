@@ -1,12 +1,10 @@
 package com.helltar.aibot.dao
 
 import com.helltar.aibot.dao.DatabaseFactory.dbQuery
-import com.helltar.aibot.dao.tables.SlowMode.lastRequestTimestamp
-import com.helltar.aibot.dao.tables.SlowMode.limit
+import com.helltar.aibot.dao.tables.SlowModeTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.telegram.telegrambots.meta.api.objects.User
-import com.helltar.aibot.dao.tables.SlowMode as SlowModeTable
 
 class SlowMode {
 
@@ -34,19 +32,11 @@ class SlowMode {
         }
     }
 
-    fun getRequestsSize(userId: Long) = dbQuery {
-        SlowModeTable.select { SlowModeTable.userId eq userId }.singleOrNull()?.get(SlowModeTable.requests) ?: -1
+    fun getSlowModeState(userId: Long) = dbQuery {
+        SlowModeTable.select { SlowModeTable.userId eq userId }.singleOrNull()
     }
 
-    fun getLimitSize(userId: Long) = dbQuery {
-        SlowModeTable.select { SlowModeTable.userId eq userId }.single()[limit]
-    }
-
-    fun getLastRequestTimestamp(userId: Long) = dbQuery {
-        SlowModeTable.select { SlowModeTable.userId eq userId }.single()[lastRequestTimestamp]
-    }
-
-    fun off(userId: Long) = dbQuery {
+    fun offSlowMode(userId: Long) = dbQuery {
         SlowModeTable.deleteWhere { SlowModeTable.userId eq userId } > 0
     }
 
