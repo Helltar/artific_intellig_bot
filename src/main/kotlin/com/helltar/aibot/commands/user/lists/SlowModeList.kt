@@ -3,6 +3,7 @@ package com.helltar.aibot.commands.user.lists
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
+import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.dao.DatabaseFactory
 import com.helltar.aibot.dao.tables.SlowMode
 
@@ -20,4 +21,7 @@ class SlowModeList(ctx: MessageContext) : BotCommand(ctx) {
 
         replyToMessage(list.ifEmpty { Strings.LIST_IS_EMPTY })
     }
+
+    override fun getCommandName() =
+        Commands.CMD_SLOW_MODE_LIST
 }

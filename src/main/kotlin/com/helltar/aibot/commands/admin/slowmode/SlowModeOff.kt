@@ -3,6 +3,7 @@ package com.helltar.aibot.commands.admin.slowmode
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
+import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.dao.DatabaseFactory
 
 class SlowModeOff(ctx: MessageContext) : BotCommand(ctx) {
@@ -19,4 +20,7 @@ class SlowModeOff(ctx: MessageContext) : BotCommand(ctx) {
         else
             replyToMessage(Strings.SLOW_MODE_OFF_NOT_ENABLED)
     }
+
+    override fun getCommandName() =
+        Commands.CMD_SLOW_MODE_OFF
 }

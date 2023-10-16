@@ -6,6 +6,7 @@ import com.github.kittinunf.fuel.core.FileDataPart
 import com.helltar.aibot.BotConfig.openaiApiKey
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
+import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.user.images.models.DalleData.DALLE_REQUEST_IMAGE_SIZE
 import com.helltar.aibot.utils.NetworkUtils.httpUpload
 import org.json.JSONException
@@ -71,6 +72,9 @@ class DalleVariations(ctx: MessageContext) : BotCommand(ctx) {
             }
         }
     }
+
+    override fun getCommandName() =
+        Commands.CMD_DALLE_VARIATIONS
 
     private fun resizeImage(image: BufferedImage): BufferedImage {
         val resized = BufferedImage(512, 512, BufferedImage.TYPE_INT_ARGB)

@@ -2,6 +2,7 @@ package com.helltar.aibot.commands.user
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.commands.BotCommand
+import com.helltar.aibot.commands.Commands
 import java.lang.management.ManagementFactory
 import java.util.concurrent.TimeUnit
 
@@ -10,6 +11,9 @@ class Uptime(ctx: MessageContext) : BotCommand(ctx) {
     override fun run() {
         replyToMessage(getSysStat())
     }
+
+    override fun getCommandName() =
+        Commands.CMD_UPTIME
 
     private fun getSysStat() =
         "<code>Threads: ${ManagementFactory.getThreadMXBean().threadCount}\n${getMemUsage()}\n${getJVMUptime()}</code>"

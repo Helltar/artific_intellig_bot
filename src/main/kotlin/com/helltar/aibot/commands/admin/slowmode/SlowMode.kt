@@ -3,6 +3,7 @@ package com.helltar.aibot.commands.admin.slowmode
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
+import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.dao.DatabaseFactory
 
 class SlowMode(ctx: MessageContext) : BotCommand(ctx) {
@@ -18,4 +19,7 @@ class SlowMode(ctx: MessageContext) : BotCommand(ctx) {
             DatabaseFactory.slowMode.update(user, limit)
         }
     }
+
+    override fun getCommandName() =
+        Commands.CMD_SLOW_MODE
 }

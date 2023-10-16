@@ -9,17 +9,28 @@ import com.helltar.aibot.dao.DatabaseFactory
 class ChangeState(ctx: MessageContext, private val disable: Boolean = false) : BotCommand(ctx) {
 
     override fun run() {
-        val disalableCmdsList = Commands.disalableCommandsList.toString()
-
         if (args.isEmpty()) {
-            replyToMessage(disalableCmdsList)
+            val text =
+                buildString {
+                    Commands.disalableCommandsList.forEach { commandName ->
+                        append("<code>$commandName</code> ")
+
+                        if (DatabaseFactory.commandsState.isDisabled(commandName))
+                            append("➖")
+                        else
+                            append("➕")
+
+                        append("\n")
+                    }
+                }
+            replyToMessage(text)
             return
         }
 
         val commandName = args[0]
 
         if (!Commands.disalableCommandsList.contains(commandName)) {
-            replyToMessage(String.format(Strings.COMMAND_NOT_AVAILABLE, commandName, disalableCmdsList))
+            replyToMessage(String.format(Strings.COMMAND_NOT_AVAILABLE, commandName, Commands.disalableCommandsList))
             return
         }
 
@@ -28,6 +39,9 @@ class ChangeState(ctx: MessageContext, private val disable: Boolean = false) : B
         else
             disable(commandName)
     }
+
+    override fun getCommandName() =
+        if (disable) Commands.CMD_DISABLE else Commands.CMD_ENABLE
 
     private fun enable(commandName: String) {
         if (!DatabaseFactory.commandsState.isDisabled(commandName))

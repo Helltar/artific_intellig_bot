@@ -2,6 +2,7 @@ package com.helltar.aibot.commands.user.chat
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
+import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_USER
 
 class ChatCtx(ctx: MessageContext) : ChatGPT(ctx) {
@@ -14,9 +15,15 @@ class ChatCtx(ctx: MessageContext) : ChatGPT(ctx) {
                 if (isAdmin())
                     message.replyToMessage.from.id
                 else {
-                    replyToMessage(Strings.CREATOR_ONLY_COMMAND)
+                    replyToMessage(Strings.ADMIN_ONLY_COMMAND)
                     return
                 }
+
+        if (isCreator(userId))
+            if (!isCreator()) {
+                replyToMessage(Strings.CREATOR_CONTEXT_CANNOT_BE_VIEWED)
+                return
+            }
 
         val text =
             if (userContextMap.containsKey(userId))
@@ -26,4 +33,7 @@ class ChatCtx(ctx: MessageContext) : ChatGPT(ctx) {
 
         replyToMessage("$text", markdown = true)
     }
+
+    override fun getCommandName() =
+        Commands.CMD_CHATCTX
 }

@@ -2,6 +2,7 @@ package com.helltar.aibot.commands
 
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.commands.context.MessageContext
+import com.helltar.aibot.BotConfig
 import com.helltar.aibot.dao.DatabaseFactory
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.InputFile
@@ -14,10 +15,14 @@ abstract class BotCommand(val ctx: MessageContext) {
 
     protected val userId = ctx.user().id
     protected val message = ctx.message()
+    protected val replyMessage: Message? = message.replyToMessage
+    private val isReply = message.isReply
+    protected val isNotReply = !isReply
     protected val args: Array<String> = ctx.arguments()
     protected val argsText: String = ctx.argumentsAsString()
 
     abstract fun run()
+    abstract fun getCommandName(): String
 
     fun isCommandDisabled(command: String) =
         DatabaseFactory.commandsState.isDisabled(command)
@@ -28,11 +33,8 @@ abstract class BotCommand(val ctx: MessageContext) {
     fun isUserBanned(userId: Long) =
         DatabaseFactory.banList.isUserBanned(userId)
 
-    fun isNotAdmin() =
-        !DatabaseFactory.sudoers.isAdmin(userId)
-
     fun isAdmin() =
-        !isNotAdmin()
+        DatabaseFactory.sudoers.isAdmin(userId)
 
     fun isCreator(userId: Long = this.userId) =
         DatabaseFactory.sudoers.isCreator(userId)
@@ -106,4 +108,17 @@ abstract class BotCommand(val ctx: MessageContext) {
 
     protected fun deleteMessage(messageId: Int) =
         ctx.deleteMessage().setMessageId(messageId).callAsync(ctx.sender)
+
+    // todo: getLoadingGifFileId
+    protected fun getLoadingGifFileId() =
+        DatabaseFactory.filesIds.getFileId(BotConfig.FILE_LOADING_GIF)
+            ?: run {
+                val message = sendDocument(File("${BotConfig.DIR_FILES}/${BotConfig.FILE_LOADING_GIF}"))
+                val fileId = message.document.fileId
+                deleteMessage(message.messageId)
+
+                DatabaseFactory.filesIds.add(BotConfig.FILE_LOADING_GIF, fileId)
+
+                return fileId
+            }
 }

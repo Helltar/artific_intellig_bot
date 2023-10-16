@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.helltar.aibot.BotConfig.openaiApiKey
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
+import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.user.images.models.DalleData
 import com.helltar.aibot.utils.NetworkUtils.httpPost
 import org.json.JSONException
@@ -39,6 +40,9 @@ class DallE2(ctx: MessageContext) : BotCommand(ctx) {
             log.error(e.message)
         }
     }
+
+    override fun getCommandName() =
+        Commands.CMD_DALLE
 
     private fun sendPrompt(prompt: String): String {
         val url = "https://api.openai.com/v1/images/generations"

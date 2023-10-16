@@ -3,6 +3,7 @@ package com.helltar.aibot.commands.admin.admin
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
+import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.dao.DatabaseFactory
 
 class AddAdmin(ctx: MessageContext) : BotCommand(ctx) {
@@ -21,4 +22,7 @@ class AddAdmin(ctx: MessageContext) : BotCommand(ctx) {
         else
             replyToMessage(Strings.ADMIN_EXISTS)
     }
+
+    override fun getCommandName() =
+        Commands.CMD_ADD_ADMIN
 }

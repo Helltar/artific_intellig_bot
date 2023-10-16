@@ -7,25 +7,21 @@ import com.google.api.gax.rpc.ApiException
 import com.google.cloud.texttospeech.v1.*
 import com.google.cloud.translate.TranslateOptions
 import com.google.gson.Gson
-import com.helltar.aibot.BotConfig.DIR_FILES
-import com.helltar.aibot.BotConfig.FILE_LOADING_GIF
 import com.helltar.aibot.BotConfig.openaiApiKey
 import com.helltar.aibot.Strings
 import com.helltar.aibot.Strings.localizedString
 import com.helltar.aibot.commands.BotCommand
-import com.helltar.aibot.commands.Commands.CMD_CHAT_AS_VOICE
+import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_GPT_MODEL
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_ASSISTANT
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_SYSTEM
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_USER
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.ChatData
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.ChatMessageData
-import com.helltar.aibot.dao.DatabaseFactory
 import com.helltar.aibot.utils.NetworkUtils.httpPost
 import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
-import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException
 import java.io.File
 import java.util.*
 
@@ -47,6 +43,8 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
         var text = argsText
         var isVoiceOut = false
 
+        /* todo: refact. */
+
         if (message.isReply) {
             if (message.replyToMessage.from.id != ctx.sender.me.id) {
                 text = message.replyToMessage.text ?: return
@@ -61,7 +59,7 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
             }
 
         val textLength =
-            if (isNotAdmin())
+            if (!isAdmin())
                 MAX_USER_MESSAGE_TEXT_LENGTH
             else
                 MAX_ADMIN_MESSAGE_TEXT_LENGTH
@@ -129,42 +127,39 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
 
         try {
             val answer =
-                JSONObject(json)
-                    .getJSONArray("choices")
-                    .getJSONObject(0)
-                    .getJSONObject("message")
-                    .getString("content")
-
-//            val usageTotalTokens =
-//                JSONObject(json)
-//                    .getJSONObject("usage")
-//                    .getInt("total_tokens")
+                try {
+                    JSONObject(json)
+                        .getJSONArray("choices")
+                        .getJSONObject(0)
+                        .getJSONObject("message")
+                        .getString("content")
+                } catch (e: JSONException) {
+                    log.error(e.message)
+                    replyToMessage(Strings.CHAT_EXCEPTION)
+                    return
+                }
 
             userContextMap[userId]?.add(ChatMessageData(CHAT_ROLE_ASSISTANT, answer))
 
             if (isVoiceOut)
                 sendVoice(answer, messageId)
             else
-                if (isCommandDisabled(CMD_CHAT_AS_VOICE)) {
-                    try {
-                        replyToMessage(answer, messageId, markdown = true)
-                    } catch (e: TelegramApiRequestException) { // todo: TelegramApiRequestException
-                        replyToMessageWithDocument(
-                            File.createTempFile("answer", ".txt").apply { writeText(answer) },
-                            "TelegramApiRequestException, response saved to file"
-                        )
-                        log.error(e.message)
-                    }
-                } else
-                    sendVoice(answer, messageId)
-
+                try {
+                    replyToMessage(answer, messageId, markdown = true)
+                } catch (e: Exception) { // todo: TelegramApiRequestException
+                    replyToMessageWithDocument(
+                        File.createTempFile("answer", ".txt").apply { writeText(answer) },
+                        Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE
+                    )
+                    log.error(e.message)
+                }
+        } finally {
             deleteMessage(waitMessageId)
-
-        } catch (e: JSONException) {
-            log.error(e.message)
-            replyToMessage(Strings.CHAT_EXCEPTION)
         }
     }
+
+    override fun getCommandName() =
+        Commands.CMD_CHAT
 
     private fun sendVoice(text: String, messageId: Int) {
         textToSpeech(text, detectLanguage(text))?.let { oggBytes ->
@@ -205,19 +200,6 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
 
     private fun detectLanguage(text: String) =
         TranslateOptions.getDefaultInstance().getService().detect(text).language
-
-    // todo: getLoadingGifFileId
-    private fun getLoadingGifFileId() =
-        DatabaseFactory.filesIds.getFileId(FILE_LOADING_GIF)
-            ?: run {
-                val message = sendDocument(File("$DIR_FILES/$FILE_LOADING_GIF"))
-                val fileId = message.document.fileId
-                deleteMessage(message.messageId)
-
-                DatabaseFactory.filesIds.add(FILE_LOADING_GIF, fileId)
-
-                return fileId
-            }
 
     private fun sendPrompt(messages: List<ChatMessageData>): Response {
         val url = "https://api.openai.com/v1/chat/completions"

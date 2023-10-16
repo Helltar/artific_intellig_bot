@@ -5,19 +5,18 @@ object Commands {
     const val CMD_CHAT = "chat"
     const val CMD_CHATCTX = "chatctx" // dialog context
     const val CMD_CHAT_CTX_REMOVE = "chatrm" // remove context
-    const val CMD_CHAT_AS_TEXT = "chatastext"
-    const val CMD_CHAT_AS_VOICE = "chatasvoice"
 
     const val CMD_START = "start"
     const val CMD_DALLE = "dalle"
     const val CMD_SDIFF = "sdif"
+    const val CMD_ASR = "asr"
     const val CMD_DALLE_VARIATIONS = "dallevariations"
 
     const val CMD_ABOUT = "about"
     const val CMD_UPTIME = "uptime"
     const val CMD_MYID = "myid"
 
-    const val CMD_ADDADMIN = "addadmin"
+    const val CMD_ADD_ADMIN = "addadmin"
     const val CMD_RM_ADMIN = "rmadmin"
     const val CMD_ADMIN_LIST = "sudoers"
 
@@ -41,6 +40,7 @@ object Commands {
             CMD_CHAT,
             CMD_DALLE,
             CMD_SDIFF,
+            CMD_ASR,
             CMD_DALLE_VARIATIONS
         )
 }

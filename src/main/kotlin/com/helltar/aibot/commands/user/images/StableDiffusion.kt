@@ -7,6 +7,7 @@ import com.google.gson.Gson
 import com.helltar.aibot.BotConfig.stableDiffusionApiKey
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
+import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.user.images.models.StableDiffusionData
 import com.helltar.aibot.commands.user.images.models.StableDiffusionData.ENGINE_ID
 import com.helltar.aibot.commands.user.images.models.StableDiffusionData.TextPromptData
@@ -55,6 +56,9 @@ class StableDiffusion(ctx: MessageContext) : BotCommand(ctx) {
         replyToMessage(Strings.BAD_REQUEST)
         log.error("$responseJson: $args")
     }
+
+    override fun getCommandName() =
+        Commands.CMD_SDIFF
 
     private fun sendPrompt(prompt: String): Response {
         val url = "https://api.stability.ai/v1/generation/$ENGINE_ID/text-to-image"

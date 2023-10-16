@@ -32,6 +32,8 @@ object Strings {
     const val MANY_REQUEST = "Wait, let me deal with the last request \uD83E\uDD16" // 🤖
     const val STABLE_DIFFUSION_EMPTY_ARGS = "Please write a description of what you want to receive:\n\n<code>/sdif photo realistic portrait of young woman</code>"
     const val IMAGE_MUST_BE_LESS_THAN = "Image must be less than %s 😥" // 😥
+    const val AUDIO_MUST_BE_LESS_THAN = "Audio must be less than %s 😥" // 😥
+    const val TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE = "TelegramApiException, response saved to file \uD83D\uDE48" // 🙈
 
     const val USER_ALREADY_BANNED = "✅ User already banned"
     const val USER_BANNED = "❌ User banned"
@@ -51,7 +53,9 @@ object Strings {
     const val CHAT_GPT_SYSTEM_MESSAGE = "chat_gpt_system_message"
     const val CHAT_WAIT_MESSAGE = "chat_wait_message"
 
-    const val CREATOR_ONLY_COMMAND = "You cannot use this command like this (admin-only) ✋" // ✋
+    const val ADMIN_ONLY_COMMAND = "You cannot use this command like this (admin-only) ✋" // ✋
+    const val CREATOR_CONTEXT_CANNOT_BE_VIEWED = "Creator context cannot be viewed ✋" // ✋
+    const val CREATOR_CONTEXT_CANNOT_BE_DELETED = "Creator context cannot be deleted ✋" // ✋
 
     const val SLOW_MODE_PLEASE_WAIT = "✋ Slow mode, wait <b>%d</b> seconds"
     const val SLOW_MODE_ON = "✅ Slow mode on, <b>%d</b> requests per hour"
