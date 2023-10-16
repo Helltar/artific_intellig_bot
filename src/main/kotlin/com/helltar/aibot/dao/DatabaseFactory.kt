@@ -3,12 +3,12 @@ package com.helltar.aibot.dao
 import com.helltar.aibot.BotConfig
 import com.helltar.aibot.BotConfig.FILE_DATABASE
 import com.helltar.aibot.commands.Commands.disalableCommandsList
-import com.helltar.aibot.dao.tables.BanList
-import com.helltar.aibot.dao.tables.ChatWhiteList
-import com.helltar.aibot.dao.tables.CommandsState
-import com.helltar.aibot.dao.tables.FilesIds
+import com.helltar.aibot.dao.tables.BanListTable
+import com.helltar.aibot.dao.tables.ChatWhiteListTable
+import com.helltar.aibot.dao.tables.CommandsStateTable
+import com.helltar.aibot.dao.tables.FilesIdsTable
 import com.helltar.aibot.dao.tables.SlowModeTable
-import com.helltar.aibot.dao.tables.Sudoers
+import com.helltar.aibot.dao.tables.SudoersTable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.Database
@@ -38,7 +38,7 @@ object DatabaseFactory {
         val url = "jdbc:sqlite:$FILE_DATABASE"
         val database = Database.connect(url, driver)
 
-        transaction(database) { SchemaUtils.create(BanList, Sudoers, ChatWhiteList, FilesIds, CommandsState, SlowModeTable) }
+        transaction(database) { SchemaUtils.create(BanListTable, SudoersTable, ChatWhiteListTable, FilesIdsTable, CommandsStateTable, SlowModeTable) }
 
         setup(creatorId)
     }

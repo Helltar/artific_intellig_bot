@@ -5,14 +5,14 @@ import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.dao.DatabaseFactory
-import com.helltar.aibot.dao.tables.Sudoers
+import com.helltar.aibot.dao.tables.SudoersTable
 
 class AdminList(ctx: MessageContext) : BotCommand(ctx) {
 
     override fun run() {
         val list =
             DatabaseFactory.sudoers.getList().joinToString("\n") {
-                "<code>${it[Sudoers.userId]}</code> <b>${it[Sudoers.username]}</b> <i>(${it[Sudoers.datetime]})</i>"
+                "<code>${it[SudoersTable.userId]}</code> <b>${it[SudoersTable.username]}</b> <i>(${it[SudoersTable.datetime]})</i>"
             }
 
         replyToMessage(list.ifEmpty { Strings.LIST_IS_EMPTY })

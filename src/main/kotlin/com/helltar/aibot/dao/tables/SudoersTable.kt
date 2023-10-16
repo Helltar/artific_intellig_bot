@@ -3,11 +3,11 @@ package com.helltar.aibot.dao.tables
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.datetime
 
-object CommandsState : Table() {
+object SudoersTable : Table() {
 
-    val name = varchar("name", 32)
-    val isDisabled = bool("isDisabled")
+    val userId = long("id")
+    val username = varchar("username", 32).nullable()
     val datetime = datetime("datetime")
 
-    override val primaryKey = PrimaryKey(name)
+    override val primaryKey = PrimaryKey(userId)
 }

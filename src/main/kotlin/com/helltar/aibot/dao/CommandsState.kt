@@ -5,7 +5,7 @@ import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
 import java.time.LocalDateTime
-import com.helltar.aibot.dao.tables.CommandsState as CommandsStateTable
+import com.helltar.aibot.dao.tables.CommandsStateTable as CommandsStateTable
 
 class CommandsState {
 

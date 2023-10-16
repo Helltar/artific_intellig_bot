@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.time.LocalDateTime
-import com.helltar.aibot.dao.tables.ChatWhiteList as ChatWhiteListTable
+import com.helltar.aibot.dao.tables.ChatWhiteListTable as ChatWhiteListTable
 
 class ChatWhiteList {
 

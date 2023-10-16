@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.time.LocalDateTime
-import com.helltar.aibot.dao.tables.Sudoers as SudoersTable
+import com.helltar.aibot.dao.tables.SudoersTable as SudoersTable
 
 class Sudoers {
 

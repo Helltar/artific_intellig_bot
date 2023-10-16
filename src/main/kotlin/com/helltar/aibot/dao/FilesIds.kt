@@ -3,7 +3,7 @@ package com.helltar.aibot.dao
 import com.helltar.aibot.dao.DatabaseFactory.dbQuery
 import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.select
-import com.helltar.aibot.dao.tables.FilesIds as FilesIdsTable
+import com.helltar.aibot.dao.tables.FilesIdsTable as FilesIdsTable
 
 class FilesIds {
 
