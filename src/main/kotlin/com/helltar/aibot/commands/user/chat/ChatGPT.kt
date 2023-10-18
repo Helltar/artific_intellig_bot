@@ -107,19 +107,18 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
             )
 
         val response = sendPrompt(userContextMap[userId]!!)
-        val json: String
+        val json = response.data.decodeToString()
 
-        if (response.isSuccessful)
-            json = response.data.decodeToString()
-        else {
-            deleteMessage(waitMessageId)
-            replyToMessage(Strings.CHAT_EXCEPTION)
-
-            userContextMap.remove(userId)
-            replyToMessage(Strings.CHAT_CONTEXT_REMOVED_INFO)
+        if (!response.isSuccessful) {
+            try {
+                replyToMessage(JSONObject(json).getJSONObject("error").getString("message"))
+            } catch (e: JSONException) {
+                replyToMessage(Strings.CHAT_EXCEPTION)
+                log.error(e.message)
+            }
 
             log.error("$response")
-
+            deleteMessage(waitMessageId)
             return
         }
 
@@ -132,8 +131,8 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
                         .getJSONObject("message")
                         .getString("content")
                 } catch (e: JSONException) {
-                    log.error(e.message)
                     replyToMessage(Strings.CHAT_EXCEPTION)
+                    log.error(e.message)
                     return
                 }
 
