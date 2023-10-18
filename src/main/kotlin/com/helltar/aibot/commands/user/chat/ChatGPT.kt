@@ -96,9 +96,13 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
 
         userContextMap[userId]?.add(ChatMessageData(CHAT_ROLE_USER, text))
 
-        if (getUserDialogContextLengh() > MAX_CHAT_MODEL_CONTEXT_LENGH)
-            while (getUserDialogContextLengh() > MAX_CHAT_MODEL_CONTEXT_LENGH)
+        var contextLengh = getUserDialogContextLengh()
+
+        if (contextLengh > MAX_CHAT_MODEL_CONTEXT_LENGH)
+            while (contextLengh > MAX_CHAT_MODEL_CONTEXT_LENGH) {
                 userContextMap[userId]?.removeAt(1) // todo: removeAt
+                contextLengh = getUserDialogContextLengh()
+            }
 
         val waitMessageId =
             replyToMessageWithDocument(
