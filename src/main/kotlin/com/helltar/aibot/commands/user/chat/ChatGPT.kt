@@ -33,7 +33,7 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
         val userContextMap = hashMapOf<Long, LinkedList<ChatMessageData>>()
         private const val MAX_USER_MESSAGE_TEXT_LENGTH = 512
         private const val MAX_ADMIN_MESSAGE_TEXT_LENGTH = 1024
-        private const val DIALOG_CONTEXT_SIZE = 25
+        private const val MAX_CHAT_MODEL_CONTEXT_LENGH = 4096 // gpt-3.5-turbo
         private const val VOICE_OUT_TEXT_TAG = "#voice"
         private const val DEFAULT_LANG_CODE = "en"
     }
@@ -96,11 +96,9 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
 
         userContextMap[userId]?.add(ChatMessageData(CHAT_ROLE_USER, text))
 
-        // todo: removeAt
-        if (userContextMap[userId]!!.size > DIALOG_CONTEXT_SIZE) {
-            userContextMap[userId]?.removeAt(1) // user
-            userContextMap[userId]?.removeAt(1) // assistant
-        }
+        if (getUserDialogContextLengh() > MAX_CHAT_MODEL_CONTEXT_LENGH)
+            while (getUserDialogContextLengh() > MAX_CHAT_MODEL_CONTEXT_LENGH)
+                userContextMap[userId]?.removeAt(1) // todo: removeAt
 
         val waitMessageId =
             replyToMessageWithDocument(
@@ -197,6 +195,9 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
             }
         }
     }
+
+    private fun getUserDialogContextLengh() =
+        userContextMap[userId]!!.sumOf { it.content.length }
 
     private fun detectLanguage(text: String) =
         TranslateOptions.getDefaultInstance().getService().detect(text).language
