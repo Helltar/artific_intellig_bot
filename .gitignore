@@ -3,8 +3,6 @@
 
 build/
 deploy/
+database/
 test/
-
-/database/
-
-logback.log
+logs/
