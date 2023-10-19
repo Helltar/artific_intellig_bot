@@ -74,13 +74,13 @@ class ArtificIntelligBotHandler(private val botConfig: BotConfig.JsonData) : Bot
             register(simpleCommand(CMD_MYID) { ce.execute(MyId(it), checkRights = false) })
             register(simpleCommand(CMD_ABOUT) { ce.execute(About(it), checkRights = false) })
 
-            register(simpleCommand(CMD_CHAT) { ce.execute(ChatGPT(it)) })
+            register(simpleCommand(CMD_CHAT) { ce.execute(ChatGPT(it), isLongtimeCommand = true) })
             register(simpleCommand(CMD_CHATCTX) { ce.execute(ChatCtx(it)) })
             register(simpleCommand(CMD_CHAT_CTX_REMOVE) { ce.execute(ChatCtxRemove(it)) })
 
-            register(simpleCommand(CMD_DALLE) { ce.execute(DallE2(it)) })
-            register(simpleCommand(CMD_SDIFF) { ce.execute(StableDiffusion(it)) })
-            register(simpleCommand(CMD_ASR) { ce.execute(AsrWhisper(it)) })
+            register(simpleCommand(CMD_DALLE) { ce.execute(DallE2(it), isLongtimeCommand = true) })
+            register(simpleCommand(CMD_SDIFF) { ce.execute(StableDiffusion(it), isLongtimeCommand = true) })
+            register(simpleCommand(CMD_ASR) { ce.execute(AsrWhisper(it), isLongtimeCommand = true) })
             register(simpleCommand(CMD_BAN_LIST) { ce.execute(BanList(it)) })
             register(simpleCommand(CMD_UPTIME) { ce.execute(Uptime(it)) })
             register(simpleCommand(CMD_SLOW_MODE_LIST) { ce.execute(SlowModeList(it)) })
@@ -114,11 +114,13 @@ class ArtificIntelligBotHandler(private val botConfig: BotConfig.JsonData) : Bot
 
     override fun onUpdate(update: Update): BotApiMethod<*>? {
 
+        /* todo: refact */
+
         fun hasMentions(message: Message) =
             message.entities.stream().anyMatch { e -> setOf(EntityType.MENTION, EntityType.TEXTMENTION).contains(e.type) }
 
         fun runChatGPT(ctx: MessageContext) =
-            ce.execute(ChatGPT(ctx))
+            ce.execute(ChatGPT(ctx), isLongtimeCommand = true)
 
         if (update.hasMessage() && update.message.isReply) {
             val message = update.message
@@ -138,7 +140,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotConfig.JsonData) : Bot
                     }
                 } else
                     if (text == "@")
-                        ce.execute(DalleVariations(ctx))
+                        ce.execute(DalleVariations(ctx), isLongtimeCommand = true)
             }
         }
 

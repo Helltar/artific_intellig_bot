@@ -35,7 +35,6 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
         private const val MAX_ADMIN_MESSAGE_TEXT_LENGTH = 1024
         private const val MAX_CHAT_MODEL_CONTEXT_LENGH = 4096 // gpt-3.5-turbo
         private const val VOICE_OUT_TEXT_TAG = "#voice"
-        private const val DEFAULT_LANG_CODE = "en"
     }
 
     override fun run() {
@@ -80,7 +79,6 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
                 text = text.replace(VOICE_OUT_TEXT_TAG, "").trim()
         }
 
-        val userLanguageCode = ctx.user().languageCode ?: DEFAULT_LANG_CODE
         val chatSystemMessage = localizedString(Strings.CHAT_GPT_SYSTEM_MESSAGE, userLanguageCode)
 
         if (!userContextMap.containsKey(userId))
@@ -104,12 +102,6 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
                 contextLengh = getUserDialogContextLengh()
             }
 
-        val waitMessageId =
-            replyToMessageWithDocument(
-                getLoadingGifFileId(),
-                localizedString(Strings.CHAT_WAIT_MESSAGE, userLanguageCode)
-            )
-
         val response = sendPrompt(userContextMap[userId]!!)
         val json = response.data.decodeToString()
 
@@ -122,41 +114,36 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
             }
 
             log.error("$response")
-            deleteMessage(waitMessageId)
             return
         }
 
-        try {
-            val answer =
-                try {
-                    JSONObject(json)
-                        .getJSONArray("choices")
-                        .getJSONObject(0)
-                        .getJSONObject("message")
-                        .getString("content")
-                } catch (e: JSONException) {
-                    replyToMessage(Strings.CHAT_EXCEPTION)
-                    log.error(e.message)
-                    return
-                }
+        val answer =
+            try {
+                JSONObject(json)
+                    .getJSONArray("choices")
+                    .getJSONObject(0)
+                    .getJSONObject("message")
+                    .getString("content")
+            } catch (e: JSONException) {
+                replyToMessage(Strings.CHAT_EXCEPTION)
+                log.error(e.message)
+                return
+            }
 
-            userContextMap[userId]?.add(ChatMessageData(CHAT_ROLE_ASSISTANT, answer))
+        userContextMap[userId]?.add(ChatMessageData(CHAT_ROLE_ASSISTANT, answer))
 
-            if (isVoiceOut)
-                sendVoice(answer, messageId)
-            else
-                try {
-                    replyToMessage(answer, messageId, markdown = true)
-                } catch (e: Exception) { // todo: TelegramApiRequestException
-                    replyToMessageWithDocument(
-                        File.createTempFile("answer", ".txt").apply { writeText(answer) },
-                        Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE
-                    )
-                    log.error(e.message)
-                }
-        } finally {
-            deleteMessage(waitMessageId)
-        }
+        if (isVoiceOut)
+            sendVoice(answer, messageId)
+        else
+            try {
+                replyToMessage(answer, messageId, markdown = true)
+            } catch (e: Exception) { // todo: TelegramApiRequestException
+                replyToMessageWithDocument(
+                    File.createTempFile("answer", ".txt").apply { writeText(answer) },
+                    Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE
+                )
+                log.error(e.message)
+            }
     }
 
     override fun getCommandName() =
