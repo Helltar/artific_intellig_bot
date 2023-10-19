@@ -13,11 +13,16 @@ import java.io.Serializable
 
 abstract class BotCommand(val ctx: MessageContext) {
 
+    private companion object {
+        const val DEFAULT_LANG_CODE = "en"
+    }
+
+    val userLanguageCode = ctx.user().languageCode ?: DEFAULT_LANG_CODE
+
     protected val userId = ctx.user().id
     protected val message = ctx.message()
     protected val replyMessage: Message? = message.replyToMessage
-    private val isReply = message.isReply
-    protected val isNotReply = !isReply
+    protected val isNotReply = !message.isReply
     protected val args: Array<String> = ctx.arguments()
     protected val argsText: String = ctx.argumentsAsString()
 
@@ -41,7 +46,7 @@ abstract class BotCommand(val ctx: MessageContext) {
 
     fun replyToMessage(
         text: String,
-        messageId: Int = ctx.messageId(),
+        messageId: Int = message.messageId,
         enableWebPagePreview: Boolean = false,
         markdown: Boolean = false
     ): Int =
@@ -51,6 +56,30 @@ abstract class BotCommand(val ctx: MessageContext) {
             .setWebPagePreviewEnabled(enableWebPagePreview)
             .call(ctx.sender)
             .messageId
+
+    fun replyToMessageWithDocument(fileId: String, caption: String): Int =
+        ctx.replyWithDocument()
+            .setFile(fileId)
+            .setCaption(caption)
+            .setReplyToMessageId(message.messageId)
+            .call(ctx.sender)
+            .messageId
+
+    fun deleteMessage(messageId: Int) =
+        ctx.deleteMessage().setMessageId(messageId).callAsync(ctx.sender)
+
+    // todo: getLoadingGifFileId
+    fun getLoadingGifFileId() =
+        DatabaseFactory.filesIds.getFileId(BotConfig.FILE_LOADING_GIF)
+            ?: run {
+                val message = sendDocument(File("${BotConfig.DIR_FILES}/${BotConfig.FILE_LOADING_GIF}"))
+                val fileId = message.document.fileId
+                deleteMessage(message.messageId)
+
+                DatabaseFactory.filesIds.add(BotConfig.FILE_LOADING_GIF, fileId)
+
+                return fileId
+            }
 
     protected fun replyToMessageWithMarkup(text: String, replyMarkup: InlineKeyboardMarkup): Int =
         ctx.replyToMessage(text)
@@ -71,7 +100,7 @@ abstract class BotCommand(val ctx: MessageContext) {
             .setParseMode(ParseMode.HTML)
             .call(ctx.sender)
 
-    protected fun replyToMessageWithPhoto(url: String, caption: String = "", messageId: Int = ctx.messageId()): Message =
+    protected fun replyToMessageWithPhoto(url: String, caption: String = "", messageId: Int = message.messageId): Message =
         ctx.replyToMessageWithPhoto()
             .setFile(InputFile(url))
             .setCaption(caption)
@@ -79,26 +108,13 @@ abstract class BotCommand(val ctx: MessageContext) {
             .setParseMode(ParseMode.HTML)
             .call(ctx.sender)
 
-    protected fun replyToMessageWithDocument(fileId: String, caption: String): Int =
-        ctx.replyWithDocument()
-            .setFile(fileId)
-            .setCaption(caption)
-            .setReplyToMessageId(ctx.messageId())
-            .call(ctx.sender)
-            .messageId
-
     protected fun replyToMessageWithDocument(file: File, caption: String): Int =
         ctx.replyWithDocument()
             .setFile(file)
             .setCaption(caption)
-            .setReplyToMessageId(ctx.messageId())
+            .setReplyToMessageId(message.messageId)
             .call(ctx.sender)
             .messageId
-
-    protected fun sendDocument(file: File): Message =
-        ctx.replyWithDocument()
-            .setFile(file)
-            .call(ctx.sender)
 
     protected fun sendVoice(file: File, messageId: Int): Message =
         ctx.replyToMessageWithAudio()
@@ -106,19 +122,8 @@ abstract class BotCommand(val ctx: MessageContext) {
             .setReplyToMessageId(messageId)
             .call(ctx.sender)
 
-    protected fun deleteMessage(messageId: Int) =
-        ctx.deleteMessage().setMessageId(messageId).callAsync(ctx.sender)
-
-    // todo: getLoadingGifFileId
-    protected fun getLoadingGifFileId() =
-        DatabaseFactory.filesIds.getFileId(BotConfig.FILE_LOADING_GIF)
-            ?: run {
-                val message = sendDocument(File("${BotConfig.DIR_FILES}/${BotConfig.FILE_LOADING_GIF}"))
-                val fileId = message.document.fileId
-                deleteMessage(message.messageId)
-
-                DatabaseFactory.filesIds.add(BotConfig.FILE_LOADING_GIF, fileId)
-
-                return fileId
-            }
+    private fun sendDocument(file: File): Message =
+        ctx.replyWithDocument()
+            .setFile(file)
+            .call(ctx.sender)
 }
