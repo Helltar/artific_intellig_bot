@@ -15,7 +15,6 @@ import com.helltar.aibot.utils.NetworkUtils.httpPost
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.io.File
-import java.util.*
 
 class StableDiffusion(ctx: MessageContext) : BotCommand(ctx) {
 
@@ -32,38 +31,46 @@ class StableDiffusion(ctx: MessageContext) : BotCommand(ctx) {
             return
         }
 
-        val response = sendPrompt(argsText)
-        val responseJson = response.data.decodeToString()
+        val response = sendPrompt(argsText, StableDiffusionData.StylePresets.PHOTOGRAPHIC)
+        val responseBytes = response.data
 
         if (response.isSuccessful) {
             try {
-                val base64 = JSONObject(responseJson).getJSONArray("artifacts").getJSONObject(0).getString("base64")
-                // todo: tempFile
-                val photo = File.createTempFile("tmp", ".png").apply { writeBytes(Base64.getDecoder().decode(base64)) }
-                replyToMessageWithPhoto(photo, argsText)
+                val caption = // todo: StableDiffusion caption
+                    if (argsText.length > 128)
+                        "${argsText.substring(0, 128)}..."
+                    else
+                        argsText
+
+                File.createTempFile("tmp", ".png").apply { // todo: temp file
+                    writeBytes(responseBytes)
+                    replyToMessageWithPhoto(this, caption)
+                    delete()
+                }
+
                 return
             } catch (e: Exception) {
                 log.error(e.message)
             }
         } else
             try {
-                replyToMessage(JSONObject(responseJson).getString("message"))
+                replyToMessage(JSONObject(response.data.decodeToString()).getString("message"))
                 return
             } catch (e: Exception) {
                 log.error(e.message)
             }
 
         replyToMessage(Strings.BAD_REQUEST)
-        log.error("$responseJson: $args")
+        log.error("$response: $args")
     }
 
     override fun getCommandName() =
         Commands.CMD_SDIFF
 
-    private fun sendPrompt(prompt: String): Response {
+    private fun sendPrompt(prompt: String, stylePreset: String): Response {
         val url = "https://api.stability.ai/v1/generation/$ENGINE_ID/text-to-image"
-        val headers = mapOf("Accept" to "application/json", "Authorization" to "Bearer $stableDiffusionApiKey")
-        val body = Gson().toJson(StableDiffusionData.RequestData(text_prompts = listOf(TextPromptData(prompt))))
+        val headers = mapOf("Accept" to "image/png", "Authorization" to "Bearer $stableDiffusionApiKey")
+        val body = Gson().toJson(StableDiffusionData.RequestData(style_preset = stylePreset, text_prompts = listOf(TextPromptData(prompt))))
         return httpPost(url, headers, body)
     }
 }
