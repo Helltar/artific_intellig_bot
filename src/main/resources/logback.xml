@@ -1,24 +1,31 @@
 <configuration>
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{mm:ss} %-5level %logger{36} [%thread] %M: %msg%n</pattern>
+            <charset>UTF-8</charset>
+            <pattern>%highlight(%-5level) %gray(%logger{36}) %cyan([%thread]) %magenta(%M)-%gray([%line]) --> %msg%n</pattern>
         </encoder>
     </appender>
 
-    <appender name="file" class="ch.qos.logback.core.FileAppender">
-        <file>logback.log</file>
-        <append>true</append>
-        <immediateFlush>true</immediateFlush>
+    <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/log.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/%d{dd.MM.YYYY}/log_%d{dd.MM.YYYY}.%i.log</fileNamePattern>
+            <maxFileSize>25MB</maxFileSize>
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>50GB</totalSizeCap>
+        </rollingPolicy>
+
         <encoder>
-            <pattern>%d{dd.MM HH:mm:ss.SSS} %-5level %logger{36} %M\(\) --> %msg%n</pattern>
+            <charset>UTF-8</charset>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} [%thread] %M-[%line] --> %msg%n</pattern>
         </encoder>
     </appender>
 
-    <root level="debug">
+    <root level="DEBUG">
         <appender-ref ref="STDOUT"/>
+        <appender-ref ref="ROLLING"/>
     </root>
 
-    <root level="info">
-        <appender-ref ref="file"/>
-    </root>
 </configuration>
