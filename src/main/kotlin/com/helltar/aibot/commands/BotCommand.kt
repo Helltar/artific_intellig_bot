@@ -1,15 +1,12 @@
 package com.helltar.aibot.commands
 
-import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.BotConfig
 import com.helltar.aibot.dao.DatabaseFactory
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.InputFile
 import org.telegram.telegrambots.meta.api.objects.Message
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import java.io.File
-import java.io.Serializable
 
 abstract class BotCommand(val ctx: MessageContext) {
 
@@ -17,13 +14,13 @@ abstract class BotCommand(val ctx: MessageContext) {
         const val DEFAULT_LANG_CODE = "en"
     }
 
+    val args: Array<String> = ctx.arguments()
     val userLanguageCode = ctx.user().languageCode ?: DEFAULT_LANG_CODE
 
     protected val userId = ctx.user().id
     protected val message = ctx.message()
     protected val replyMessage: Message? = message.replyToMessage
     protected val isNotReply = !message.isReply
-    protected val args: Array<String> = ctx.arguments()
     protected val argsText: String = ctx.argumentsAsString()
 
     abstract fun run()
@@ -80,18 +77,6 @@ abstract class BotCommand(val ctx: MessageContext) {
 
                 return fileId
             }
-
-    protected fun replyToMessageWithMarkup(text: String, replyMarkup: InlineKeyboardMarkup): Int =
-        ctx.replyToMessage(text)
-            .setReplyMarkup(replyMarkup)
-            .setReplyToMessageId(ctx.messageId())
-            .call(ctx.sender)
-            .messageId
-
-    protected fun editMessageText(text: String, messageId: Int, replyMarkup: InlineKeyboardMarkup): Serializable =
-        Methods.editMessageText(ctx.chatId(), messageId, text)
-            .setReplyMarkup(replyMarkup)
-            .call(ctx.sender)
 
     protected fun replyToMessageWithPhoto(file: File, caption: String): Message =
         ctx.replyToMessageWithPhoto()
