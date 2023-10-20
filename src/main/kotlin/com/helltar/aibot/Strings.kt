@@ -10,11 +10,7 @@ object Strings {
 
     const val BAD_REQUEST = "<code>Bad Request</code> \uD83D\uDE10" // 😐
     const val BAN_AND_REASON = "❌ Ban, reason: <b>%s</b>"
-    const val CHAT_AS_TEXT_ALREADY_ENABLED = "✅ ChatAsText already enabled"
-    const val CHAT_AS_TEXT_OK = "✅ ChatAsText"
-    const val CHAT_AS_VOICE_ALREADY_ENABLED = "✅ ChatAsVoice already enabled"
-    const val CHAT_AS_VOICE_OK = "✅ ChatAsVoice"
-    const val CHAT_EXCEPTION = "Something is broken \uD83D\uDE48" // 🙈
+    const val CHAT_EXCEPTION = "Something is broken \uD83E\uDEE1" // 🫡
     const val CHAT_HELLO = "\uD83D\uDC4B Hello, please ask your questions as replying to my messages" // 👋
     const val CHAT_CONTEXT_REMOVED = "Context has been removed \uD83D\uDC4C" // 👌
     const val CHAT_CONTEXT_REMOVED_INFO = "Try again (context has been removed) ℹ\uFE0F" // ℹ️
@@ -34,6 +30,12 @@ object Strings {
     const val IMAGE_MUST_BE_LESS_THAN = "Image must be less than %s 😥" // 😥
     const val AUDIO_MUST_BE_LESS_THAN = "Audio must be less than %s 😥" // 😥
     const val TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE = "TelegramApiException, response saved to file \uD83D\uDE48" // 🙈
+    const val ASR_WHISPER_USE_AS_REPLY = "Use this command as a reply to an voice or video message \uD83D\uDE43" // 🙃
+    const val BAD_VIDEO_DURATION = "Bad video duration, must be less than <b>%d</b> seconds \uD83D\uDE13" // 😓
+    const val BAD_VIDEO_NOTE_DURATION = "Bad video-note duration, must be less than <b>%d</b> seconds \uD83D\uDE13" // 😓
+    const val VIDEO_OR_AUDIO_NOT_FOUND = "Replied message is neither a voice nor video recording \uD83E\uDD14" // 🤔
+    const val ERROR_RETRIEVING_AUDIO_FROM_VIDEO = "Error when retrieving audio from a video file \uD83E\uDEE1" // 🫡
+    const val COULDNT_RECOGNIZE_VOICE = "Couldn't recognize the voice \uD83D\uDE49" // 🙉
 
     const val USER_ALREADY_BANNED = "✅ User already banned"
     const val USER_BANNED = "❌ User banned"
