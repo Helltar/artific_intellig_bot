@@ -2,7 +2,7 @@ package com.helltar.aibot.commands.user.images
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.google.gson.Gson
-import com.helltar.aibot.BotConfig.openaiApiKey
+import com.helltar.aibot.BotConfig.getOpenaiApiKey
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
@@ -46,7 +46,7 @@ class DallE2(ctx: MessageContext) : BotCommand(ctx) {
 
     private fun sendPrompt(prompt: String): String {
         val url = "https://api.openai.com/v1/images/generations"
-        val headers = mapOf("Content-Type" to "application/json", "Authorization" to "Bearer $openaiApiKey")
+        val headers = mapOf("Content-Type" to "application/json", "Authorization" to "Bearer ${getOpenaiApiKey()}")
         val body = Gson().toJson(DalleData.RequestData(prompt, 1))
         return httpPost(url, headers, body).data.decodeToString()
     }

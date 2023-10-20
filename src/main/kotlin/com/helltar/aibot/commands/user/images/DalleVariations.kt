@@ -3,7 +3,7 @@ package com.helltar.aibot.commands.user.images
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.FileDataPart
-import com.helltar.aibot.BotConfig.openaiApiKey
+import com.helltar.aibot.BotConfig.getStableDiffusionApiKey
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
@@ -89,7 +89,7 @@ class DalleVariations(ctx: MessageContext) : BotCommand(ctx) {
 
     private fun uploadImage(byteArrayStream: ByteArrayOutputStream): String {
         val url = "https://api.openai.com/v1/images/variations"
-        val headers = mapOf("Authorization" to "Bearer $openaiApiKey")
+        val headers = mapOf("Authorization" to "Bearer ${getStableDiffusionApiKey()}")
         val parameters = listOf("n" to "1", "size" to DALLE_REQUEST_IMAGE_SIZE)
         val file = File.createTempFile("tmp", ".png").apply { writeBytes(byteArrayStream.toByteArray()) } // todo: tempFile
         val dataPart = FileDataPart(file, "image")

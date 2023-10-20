@@ -23,14 +23,18 @@ object BotConfig {
     const val DIR_DB = "database"
     const val DIR_LOCALE = "locale"
     const val DIR_FILES = "files"
+    const val DIR_TEMP = "tmp"
 
     private const val FILE_API_KEYS = "$DIR_CONFIG/api_keys.ini"
     const val FILE_BOT_CONFIG = "$DIR_CONFIG/bot_config"
     const val FILE_DATABASE = "$DIR_DB/database.db"
     const val FILE_LOADING_GIF = "loading.gif"
 
-    val openaiApiKey: String = getApiKey("openai_key")
-    val stableDiffusionApiKey: String = getApiKey("stable_diffusion_key")
+    fun getOpenaiApiKey(): String =
+        getApiKey("openai_key")
+
+    fun getStableDiffusionApiKey(): String =
+        getApiKey("stable_diffusion_key")
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -38,10 +42,10 @@ object BotConfig {
         try {
             Properties().run {
                 load(FileReader(FILE_API_KEYS))
-                getProperty(name)
+                getProperty(name, "")
             }
         } catch (e: FileNotFoundException) {
             log.error(e.message)
-            throw e
+            ""
         }
 }

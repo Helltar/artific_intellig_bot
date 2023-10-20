@@ -4,7 +4,7 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.core.isSuccessful
 import com.google.gson.Gson
-import com.helltar.aibot.BotConfig.stableDiffusionApiKey
+import com.helltar.aibot.BotConfig.getStableDiffusionApiKey
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
@@ -69,7 +69,7 @@ class StableDiffusion(ctx: MessageContext) : BotCommand(ctx) {
 
     private fun sendPrompt(prompt: String, stylePreset: String): Response {
         val url = "https://api.stability.ai/v1/generation/$ENGINE_ID/text-to-image"
-        val headers = mapOf("Accept" to "image/png", "Authorization" to "Bearer $stableDiffusionApiKey")
+        val headers = mapOf("Accept" to "image/png", "Authorization" to "Bearer ${getStableDiffusionApiKey()}")
         val body = Gson().toJson(StableDiffusionData.RequestData(style_preset = stylePreset, text_prompts = listOf(TextPromptData(prompt))))
         return httpPost(url, headers, body)
     }
