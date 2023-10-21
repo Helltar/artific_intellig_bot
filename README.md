@@ -7,13 +7,13 @@ Demo: https://t.me/+siikRmY3uyE5YTBi
 Download
 --------
 
-- [artific_intellig_bot-0.9.2.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.9.2/artific_intellig_bot-0.9.2.zip) (69.7 MB)
+- [artific_intellig_bot-0.9.5.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.9.5/artific_intellig_bot-0.9.5.zip) (71.4 MB)
 
 Installation
 ------------
 
 ```
-unzip artific_intellig_bot-0.9.2.zip && cd artific_intellig_bot-0.9.2
+unzip artific_intellig_bot-0.9.5.zip && cd artific_intellig_bot-0.9.5/bin
 ```
 
 ./_config/_
@@ -26,11 +26,6 @@ unzip artific_intellig_bot-0.9.2.zip && cd artific_intellig_bot-0.9.2
 
 NOTE: to get your telegram id, open [@artific_intellig_bot](https://t.me/artific_intellig_bot) and run the command /**myid**
 
-**api_keys.ini**:
-
-- openai_key [OpenAI API Key](https://platform.openai.com/account/api-keys)
-- stable_diffusion_key [Stable Diffusion API Key](https://beta.dreamstudio.ai/account) (for /**sdif**)
-
 Install and configure **Google Cloud CLI** for text-to-speech audio responses:
 
 - https://cloud.google.com/sdk/docs/install
@@ -38,17 +33,35 @@ Install and configure **Google Cloud CLI** for text-to-speech audio responses:
 ```
 gcloud init
 ```
-
 ```
 gcloud auth application-default login
+```
+
+Check:
+
+```
 gcloud auth application-default print-access-token
 ```
+
+Install **ffmpeg** for **/asr** command support:
+
+- https://ffmpeg.org/
 
 Done, run:
 
 ```
-java -jar artific_intellig_bot-0.9.2-all.jar
+./artific_intellig_bot # or artific_intellig_bot.bat for windows
 ```
+
+Just got to get the api keys:
+
+- [OpenAI API Key](https://platform.openai.com/account/api-keys)
+- [Stable Diffusion API Key](https://platform.stability.ai/account/keys)
+
+and add them with the /**updatekey** command:
+
+- /**_updatekey_** _openai.com sk-qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxc_
+- /**_updatekey_** _stability.ai sk-qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxc_
 
 Commands
 --------
@@ -57,6 +70,7 @@ Commands
 - /**dalle** - DALL·E 2
 - /**sdif** - Stable Diffusion
 - /**dallevariations** - DALL·E 2 Variations
+- /**asr** - Automatic Speech Recognition (openai-Whisper)
 - /**uptime**
 - /**about**
 
@@ -71,32 +85,33 @@ For audio responses, add the **#voice** tag to your message, for example:
 
 `Hello, how are you? #voice`
 
-...or use the /**chatasvoice** command to globally set bot replies as voice
-
 Admin commands
 --------------
 
 - /**enable** _commandName_ (example: _/enable chat_)
 - /**disable** _commandName_ (example: _/disable dalle_)
-<br>
 
-- /**chatastext** (ChatGPT answers as text, default)
-- /**chatasvoice** (ChatGPT answers as voice, Google Text-to-Speech)
+NOTE: run /enable or /disable with no arguments for view supported commands
 <br>
 
 - /**ban** (use as reply to user message, example: _/ban reason_)
 - /**unban** (use as reply to user message or by user ID)
-- /**banlist** (view banned users list)
+- /**banlist**
+<br>
+
+- /**slowmode** (use as reply to user message, example: _/slowmode 5_) (requests per. hour)
+- /**slowmodeoff** (use as reply to user message or by user ID)
+- /**slowmodelist**
 <br>
 
 - /**addadmin** (add admin by ID, example: _/addadmin 123456789 username_) (creator-only command)
 - /**rmadmin** (remove admin by ID)
-- /**sudoers** (view admin list)
+- /**sudoers** (view admin list, run it only in private chat)
 <br>
 
 - /**addchat** (add chat to white list, use in chat or by ID) (creator-only command)
 - /**rmchat** (remove chat from white list, use in chat or by ID)
-- /**chats** (view chats list)
+- /**chats** (view chats list, run it only in private chat)
 
 <br>
 <a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA.png" alt="IntelliJ IDEA logo." width="32%"></a>
