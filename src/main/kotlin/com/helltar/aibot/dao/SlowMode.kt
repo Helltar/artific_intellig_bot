@@ -32,6 +32,12 @@ class SlowMode {
         }
     }
 
+    fun update(userId: Long, limit: Int) = dbQuery {
+        SlowModeTable.update({ SlowModeTable.userId eq userId }) {
+            it[this.limit] = limit
+        } > 0
+    }
+
     fun getSlowModeState(userId: Long) = dbQuery {
         SlowModeTable.select { SlowModeTable.userId eq userId }.singleOrNull()
     }
