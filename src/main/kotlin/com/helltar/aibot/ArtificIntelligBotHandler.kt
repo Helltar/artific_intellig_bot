@@ -29,6 +29,7 @@ import com.helltar.aibot.commands.Commands.CMD_SLOW_MODE_LIST
 import com.helltar.aibot.commands.Commands.CMD_SLOW_MODE_OFF
 import com.helltar.aibot.commands.Commands.CMD_START
 import com.helltar.aibot.commands.Commands.CMD_UNBAN_USER
+import com.helltar.aibot.commands.Commands.CMD_UPDATE_API_KEY
 import com.helltar.aibot.commands.Commands.CMD_UPTIME
 import com.helltar.aibot.commands.admin.admin.AddAdmin
 import com.helltar.aibot.commands.admin.admin.AdminList
@@ -41,6 +42,7 @@ import com.helltar.aibot.commands.admin.chat.RemoveChat
 import com.helltar.aibot.commands.admin.command.ChangeState
 import com.helltar.aibot.commands.admin.slowmode.SlowMode
 import com.helltar.aibot.commands.admin.slowmode.SlowModeOff
+import com.helltar.aibot.commands.admin.system.UpdateApiKey
 import com.helltar.aibot.commands.user.About
 import com.helltar.aibot.commands.user.MyId
 import com.helltar.aibot.commands.user.Start
@@ -99,6 +101,8 @@ class ArtificIntelligBotHandler(private val botConfig: BotConfig.JsonData) : Bot
             register(simpleCommand(CMD_CHATS_WHITE_LIST) { ce.execute(ChatsWhiteList(it), true, userChatOnly = true) })
             register(simpleCommand(CMD_ADD_CHAT) { ce.execute(AddChat(it), isCreatorCommand = true) })
             register(simpleCommand(CMD_RM_CHAT) { ce.execute(RemoveChat(it), true) })
+
+            register(simpleCommand(CMD_UPDATE_API_KEY) { ce.execute(UpdateApiKey(it), userChatOnly = true, isCreatorCommand = true) })
         }
     }
 

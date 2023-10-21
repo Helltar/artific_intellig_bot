@@ -20,7 +20,8 @@ abstract class BotCommand(val ctx: MessageContext) {
     protected val userId = ctx.user().id
     protected val message = ctx.message()
     protected val replyMessage: Message? = message.replyToMessage
-    protected val isNotReply = !message.isReply
+    protected val isReply = message.isReply
+    protected val isNotReply = !isReply
     protected val argsText: String = ctx.argumentsAsString()
 
     abstract fun run()
@@ -77,6 +78,16 @@ abstract class BotCommand(val ctx: MessageContext) {
 
                 return fileId
             }
+
+    protected fun reply(text: String) {
+        ctx.reply()
+            .setText(text)
+            .setParseMode(ParseMode.HTML)
+            .call(ctx.sender)
+    }
+
+    protected fun getApiKey(provider: String) =
+        DatabaseFactory.apiKeys.getApiKey(provider)
 
     protected fun replyToMessageWithPhoto(file: File, caption: String): Message =
         ctx.replyToMessageWithPhoto()

@@ -1,14 +1,10 @@
 package com.helltar.aibot.dao
 
-import com.helltar.aibot.BotConfig
+import com.helltar.aibot.BotConfig.DIR_DB
 import com.helltar.aibot.BotConfig.FILE_DATABASE
+import com.helltar.aibot.BotConfig.availableApiProviders
 import com.helltar.aibot.commands.Commands.disalableCommandsList
-import com.helltar.aibot.dao.tables.BanListTable
-import com.helltar.aibot.dao.tables.ChatWhiteListTable
-import com.helltar.aibot.dao.tables.CommandsStateTable
-import com.helltar.aibot.dao.tables.FilesIdsTable
-import com.helltar.aibot.dao.tables.SlowModeTable
-import com.helltar.aibot.dao.tables.SudoersTable
+import com.helltar.aibot.dao.tables.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.Database
@@ -27,18 +23,29 @@ object DatabaseFactory {
     val filesIds = FilesIds()
     val commandsState = CommandsState()
     val slowMode = SlowMode()
+    val apiKeys = ApiKeys()
 
     fun init(creatorId: Long) {
-        val databaseDir = File(BotConfig.DIR_DB)
+        val databaseDir = File(DIR_DB)
 
         if (!databaseDir.exists() && !databaseDir.mkdir())
-            throw RuntimeException("error when create database-dir: ${BotConfig.DIR_DB}")
+            throw RuntimeException("error when create database-dir: $DIR_DB")
 
         val driver = "org.sqlite.JDBC"
         val url = "jdbc:sqlite:$FILE_DATABASE"
         val database = Database.connect(url, driver)
 
-        transaction(database) { SchemaUtils.create(BanListTable, SudoersTable, ChatWhiteListTable, FilesIdsTable, CommandsStateTable, SlowModeTable) }
+        transaction(database) {
+            SchemaUtils.create(
+                ApiKeysTable,
+                BanListTable,
+                ChatWhiteListTable,
+                CommandsStateTable,
+                FilesIdsTable,
+                SlowModeTable,
+                SudoersTable
+            )
+        }
 
         setup(creatorId)
     }
@@ -53,6 +60,7 @@ object DatabaseFactory {
 
     private fun setup(creatorId: Long) {
         sudoers.add(creatorId, "Owner")
-        disalableCommandsList.forEach { command -> commandsState.add(command) } // todo: commandsState.add
+        availableApiProviders.forEach { apiKeys.add(it, null) }
+        disalableCommandsList.forEach { commandsState.add(it) }
     }
 }

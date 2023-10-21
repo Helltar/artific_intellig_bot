@@ -3,7 +3,7 @@ package com.helltar.aibot.commands.user.audio
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.FileDataPart
-import com.helltar.aibot.BotConfig.getOpenaiApiKey
+import com.helltar.aibot.BotConfig.PROVIDER_OPENAI_COM
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
@@ -151,7 +151,7 @@ class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
 
     private fun uploadAudio(file: File): String {
         val url = "https://api.openai.com/v1/audio/transcriptions"
-        val headers = mapOf("Authorization" to "Bearer ${getOpenaiApiKey()}")
+        val headers = mapOf("Authorization" to "Bearer ${getApiKey(PROVIDER_OPENAI_COM)}")
         val parameters = listOf("model" to "whisper-1")
         val dataPart = FileDataPart(file, "file")
         return httpUpload(url, parameters, headers, dataPart).data.decodeToString()

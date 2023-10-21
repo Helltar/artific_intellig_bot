@@ -35,6 +35,8 @@ object Commands {
     const val CMD_SLOW_MODE_OFF = "slowmodeoff"
     const val CMD_SLOW_MODE_LIST = "slowmodelist"
 
+    const val CMD_UPDATE_API_KEY = "updatekey"
+
     val disalableCommandsList =
         setOf(
             CMD_CHAT,

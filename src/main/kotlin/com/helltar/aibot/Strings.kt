@@ -36,6 +36,9 @@ object Strings {
     const val VIDEO_OR_AUDIO_NOT_FOUND = "Replied message is neither a voice nor video recording \uD83E\uDD14" // 🤔
     const val ERROR_RETRIEVING_AUDIO_FROM_VIDEO = "Error when retrieving audio from a video file \uD83E\uDEE1" // 🫡
     const val COULDNT_RECOGNIZE_VOICE = "Couldn't recognize the voice \uD83D\uDE49" // 🙉
+    const val UPDATE_API_KEYS_COMMAND_EXAMPLE = "ℹ\uFE0F Example: <code>/%s %s sk-qwertyuiop...</code>" // ℹ️
+    const val PROVIDER_API_KEY_SUCCESS_ADD = "✅ Api Key for <b>%s</b> succesfully updated"
+    const val API_KEY_FAILD_ADD = "⚠\uFE0F Error when update <b>%s</b> api key, available providers:" // ⚠️
 
     const val USER_ALREADY_BANNED = "✅ User already banned"
     const val USER_BANNED = "❌ User banned"

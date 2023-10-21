@@ -7,7 +7,7 @@ import com.google.api.gax.rpc.ApiException
 import com.google.cloud.texttospeech.v1.*
 import com.google.cloud.translate.TranslateOptions
 import com.google.gson.Gson
-import com.helltar.aibot.BotConfig.getOpenaiApiKey
+import com.helltar.aibot.BotConfig.PROVIDER_OPENAI_COM
 import com.helltar.aibot.Strings
 import com.helltar.aibot.Strings.localizedString
 import com.helltar.aibot.commands.BotCommand
@@ -194,7 +194,7 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
 
     private fun sendPrompt(messages: List<ChatMessageData>): Response {
         val url = "https://api.openai.com/v1/chat/completions"
-        val headers = mapOf("Content-Type" to "application/json", "Authorization" to "Bearer ${getOpenaiApiKey()}")
+        val headers = mapOf("Content-Type" to "application/json", "Authorization" to "Bearer ${getApiKey(PROVIDER_OPENAI_COM)}")
         val body = Gson().toJson(ChatData(CHAT_GPT_MODEL, messages))
         return httpPost(url, headers, body)
     }
