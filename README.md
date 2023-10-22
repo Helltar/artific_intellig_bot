@@ -12,7 +12,7 @@ Download
 Installation
 ------------
 
-```
+```bash
 unzip artific_intellig_bot-0.9.5.zip && cd artific_intellig_bot-0.9.5/bin
 ```
 
@@ -30,16 +30,16 @@ Install and configure **Google Cloud CLI** for text-to-speech audio responses:
 
 - https://cloud.google.com/sdk/docs/install
 
-```
+```bash
 gcloud init
 ```
-```
+```bash
 gcloud auth application-default login
 ```
 
 Check:
 
-```
+```bash
 gcloud auth application-default print-access-token
 ```
 
@@ -49,7 +49,7 @@ Install **ffmpeg** for **/asr** command support:
 
 Done, run:
 
-```
+```bash
 ./artific_intellig_bot # or artific_intellig_bot.bat for windows
 ```
 
