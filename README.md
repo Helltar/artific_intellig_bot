@@ -91,7 +91,8 @@ Admin commands
 - /**enable** _commandName_ (example: _/enable chat_)
 - /**disable** _commandName_ (example: _/disable dalle_)
 
-NOTE: run /enable or /disable with no arguments for view supported commands
+NOTE: run _/enable_ or _/disable_ with no arguments for view supported commands
+<br>
 <br>
 
 - /**ban** (use as reply to user message, example: _/ban reason_)
