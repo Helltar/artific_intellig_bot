@@ -44,11 +44,11 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
 
         /* todo: refact. */
 
-        if (message.isReply) {
-            if (message.replyToMessage.from.id != ctx.sender.me.id) {
-                text = message.replyToMessage.text ?: return
+        if (isReply) {
+            if (replyMessage?.from?.id != ctx.sender.me.id) {
+                text = replyMessage?.text ?: return
                 isVoiceOut = argsText == VOICE_OUT_TEXT_TAG
-                messageId = message.replyToMessage.messageId
+                messageId = replyMessage.messageId
             } else
                 text = message.text
         } else

@@ -1,13 +1,13 @@
 package com.helltar.aibot.dao
 
 import com.helltar.aibot.dao.DatabaseFactory.dbQuery
+import com.helltar.aibot.dao.tables.SudoersTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.time.LocalDateTime
-import com.helltar.aibot.dao.tables.SudoersTable as SudoersTable
 
 class Sudoers {
 
@@ -33,6 +33,6 @@ class Sudoers {
     }
 
     fun isCreator(userId: Long) = dbQuery {
-        userId == SudoersTable.selectAll().first()[SudoersTable.userId]
+        userId == SudoersTable.selectAll().first()[SudoersTable.userId] // todo: isCreator (first())
     }
 }
