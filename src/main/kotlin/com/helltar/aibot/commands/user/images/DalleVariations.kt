@@ -22,14 +22,28 @@ import javax.imageio.ImageIO
 
 class DalleVariations(ctx: MessageContext) : BotCommand(ctx) {
 
+    private companion object {
+        const val MAX_PHOTO_FILE_SIZE = 1024000
+    }
+
     private val log = LoggerFactory.getLogger(javaClass)
 
     override fun run() {
-        val photo = ctx.message().replyToMessage.photo
-        val photoSize = photo[photo.lastIndex]
+        if (isNotReply) {
+            replyToMessage(Strings.DALLE_VARIATIONS_USE_AS_REPLY)
+            return
+        }
 
-        if (photoSize.fileSize > (1024 * 1000)) {
-            replyToMessage(String.format(Strings.IMAGE_MUST_BE_LESS_THAN, "1MB"))
+        if (!replyMessage!!.hasPhoto()) {
+            replyToMessage(Strings.NO_PHOTO_IN_MESSAGE)
+            return
+        }
+
+        val photo = replyMessage.photo
+        val photoSize = photo.last()
+
+        if (photoSize.fileSize > MAX_PHOTO_FILE_SIZE) {
+            replyToMessage(Strings.IMAGE_MUST_BE_LESS_THAN.format("1MB"))
             return
         }
 
@@ -56,8 +70,7 @@ class DalleVariations(ctx: MessageContext) : BotCommand(ctx) {
                 JSONObject(responseJson)
                     .getJSONArray("data")
                     .getJSONObject(0)
-                    .getString("url"),
-                messageId = ctx.message().replyToMessage.messageId
+                    .getString("url"), messageId = replyMessage.messageId
             )
         } catch (e: JSONException) {
             try {

@@ -18,6 +18,7 @@ import com.helltar.aibot.commands.Commands.CMD_CHATCTX
 import com.helltar.aibot.commands.Commands.CMD_CHATS_WHITE_LIST
 import com.helltar.aibot.commands.Commands.CMD_CHAT_CTX_REMOVE
 import com.helltar.aibot.commands.Commands.CMD_DALLE
+import com.helltar.aibot.commands.Commands.CMD_DALLE_VARIATIONS
 import com.helltar.aibot.commands.Commands.CMD_DISABLE
 import com.helltar.aibot.commands.Commands.CMD_ENABLE
 import com.helltar.aibot.commands.Commands.CMD_MYID
@@ -81,6 +82,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotConfig.JsonData) : Bot
             register(simpleCommand(CMD_CHAT_CTX_REMOVE) { ce.execute(ChatCtxRemove(it)) })
 
             register(simpleCommand(CMD_DALLE) { ce.execute(DallE2(it), isLongtimeCommand = true) })
+            register(simpleCommand(CMD_DALLE_VARIATIONS) { ce.execute(DalleVariations(it), isLongtimeCommand = true) })
             register(simpleCommand(CMD_SDIFF) { ce.execute(StableDiffusion(it), isLongtimeCommand = true) })
             register(simpleCommand(CMD_ASR) { ce.execute(AsrWhisper(it), isLongtimeCommand = true) })
             register(simpleCommand(CMD_BAN_LIST) { ce.execute(BanList(it)) })
@@ -118,33 +120,27 @@ class ArtificIntelligBotHandler(private val botConfig: BotConfig.JsonData) : Bot
 
     override fun onUpdate(update: Update): BotApiMethod<*>? {
 
-        /* todo: refact */
+        fun Message.hasMentions() =
+            this.entities.stream().anyMatch { e ->
+                setOf(EntityType.MENTION, EntityType.TEXTMENTION).contains(e.type)
+            }
 
-        fun hasMentions(message: Message) =
-            message.entities.stream().anyMatch { e -> setOf(EntityType.MENTION, EntityType.TEXTMENTION).contains(e.type) }
-
-        fun runChatGPT(ctx: MessageContext) =
+        fun chatGPT(ctx: MessageContext) =
             ce.execute(ChatGPT(ctx), isLongtimeCommand = true)
 
-        if (update.hasMessage() && update.message.isReply) {
+        if (update.hasMessage() && update.message.isReply && update.message.hasText()) {
             val message = update.message
+            val replyToMessage = message.replyToMessage
+            val text = message.text
 
-            if (message.hasText()) {
-                val text = message.text
-                val replyToMessage = message.replyToMessage
+            if (!replyToMessage.hasPhoto() && replyToMessage.from.id == me.id && !text.startsWith("/")) {
                 val ctx = MessageContext(this, update, "")
 
-                if (!replyToMessage.hasPhoto()) {
-                    if (replyToMessage.from.id == me.id && !text.startsWith("/")) {
-                        if (!message.hasEntities())
-                            runChatGPT(ctx)
-                        else
-                            if (!hasMentions(message))
-                                runChatGPT(ctx)
-                    }
-                } else
-                    if (text == "@")
-                        ce.execute(DalleVariations(ctx), isLongtimeCommand = true)
+                if (!message.hasEntities()) // if it doesn't have text formatting, @username, etc...
+                    chatGPT(ctx)
+                else
+                    if (!message.hasMentions()) // if it has text formatting, etc..., but doesn't have @username
+                        chatGPT(ctx)
             }
         }
 
