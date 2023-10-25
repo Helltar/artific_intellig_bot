@@ -10,7 +10,7 @@ object Commands {
     const val CMD_DALLE = "dalle"
     const val CMD_SDIFF = "sdif"
     const val CMD_ASR = "asr"
-    const val CMD_DALLE_VARIATIONS = "dallevariations"
+    const val CMD_DALLE_VARIATIONS = "dallevar"
 
     const val CMD_ABOUT = "about"
     const val CMD_UPTIME = "uptime"
