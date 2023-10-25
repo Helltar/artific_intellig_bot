@@ -16,7 +16,7 @@ dependencies {
     implementation("com.github.kittinunf.fuel:fuel:2.3.1")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.imgscalr:imgscalr-lib:4.2")
-    implementation("org.json:json:20230227")
+    implementation("org.json:json:20231013")
     implementation("org.slf4j:slf4j-api:2.0.6")
     implementation("ch.qos.logback:logback-classic:1.4.7")
 
