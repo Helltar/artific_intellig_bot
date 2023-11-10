@@ -144,10 +144,10 @@ class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
 
     private fun extractAudioFromVideo(file: File): File? {
         val outputFilename = "$tempDir/audio_${UUID.randomUUID()}.wav"
-        val ffmpegCommand = "ffmpeg -i ${file.absolutePath} -acodec pcm_s16le -ac 1 -ar 16000 $outputFilename"
+        val ffmpegCommands = arrayOf("ffmpeg", "-i", file.absolutePath, "-acodec", "pcm_s16le", "-ac", "1", "-ar", "16000", outputFilename)
 
         return try {
-            Runtime.getRuntime().exec(ffmpegCommand).waitFor(2, TimeUnit.MINUTES)
+            Runtime.getRuntime().exec(ffmpegCommands).waitFor(2, TimeUnit.MINUTES)
             File(outputFilename).run { if (exists()) this else null }
         } catch (e: Exception) {
             log.error(e.message)
