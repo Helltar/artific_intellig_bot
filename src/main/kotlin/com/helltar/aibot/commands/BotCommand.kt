@@ -89,10 +89,11 @@ abstract class BotCommand(val ctx: MessageContext) {
     protected fun getApiKey(provider: String) =
         DatabaseFactory.apiKeys.getApiKey(provider)
 
-    protected fun replyToMessageWithPhoto(file: File, caption: String): Message =
+    protected fun replyToMessageWithPhoto(file: File, caption: String = "", messageId: Int = message.messageId): Message =
         ctx.replyToMessageWithPhoto()
             .setFile(file)
             .setCaption(caption)
+            .setReplyToMessageId(messageId)
             .setParseMode(ParseMode.HTML)
             .call(ctx.sender)
 
