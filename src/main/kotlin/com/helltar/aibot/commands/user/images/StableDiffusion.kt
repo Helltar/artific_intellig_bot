@@ -47,7 +47,10 @@ class StableDiffusion(ctx: MessageContext) : BotCommand(ctx) {
 
         if (response.isSuccessful) {
             try {
-                val caption = argsText
+                var caption = argsText
+
+                if (caption.length > 512)
+                    caption = caption.substring(0, 512)
 
                 File.createTempFile("tmp", ".png").apply { // todo: temp file
                     writeBytes(responseBytes)
