@@ -42,5 +42,26 @@ object StableDiffusionData {
         const val PHOTOGRAPHIC = "photographic"
         const val PIXEL_ART = "pixel-art"
         const val TILE_TEXTURE = "tile-texture"
+
+        val list =
+            setOf(
+                ANALOG_FILM,
+                ANIME,
+                CINEMATIC,
+                COMIC_BOOK,
+                DIGITAL_ART,
+                ENHANCE,
+                FANTASY_ART,
+                ISOMETRIC,
+                LINE_ART,
+                LOW_POLY,
+                MODELING_COMPOUND,
+                MODEL_3D,
+                NEON_PUNK,
+                ORIGAMI,
+                PHOTOGRAPHIC,
+                PIXEL_ART,
+                TILE_TEXTURE
+            )
     }
 }

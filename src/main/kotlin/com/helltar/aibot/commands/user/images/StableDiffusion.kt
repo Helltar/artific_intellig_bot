@@ -31,16 +31,23 @@ class StableDiffusion(ctx: MessageContext) : BotCommand(ctx) {
             return
         }
 
-        val response = sendPrompt(argsText, StableDiffusionData.StylePresets.PHOTOGRAPHIC)
+        // todo: command for show stylePresets
+
+        var stylePreset =
+            if (args.size > 1)
+                args.last()
+            else
+                StableDiffusionData.StylePresets.PHOTOGRAPHIC
+
+        if (stylePreset !in StableDiffusionData.StylePresets.list)
+            stylePreset = StableDiffusionData.StylePresets.PHOTOGRAPHIC
+
+        val response = sendPrompt(argsText, stylePreset)
         val responseBytes = response.data
 
         if (response.isSuccessful) {
             try {
-                val caption = // todo: StableDiffusion caption
-                    if (argsText.length > 128)
-                        "${argsText.substring(0, 128)}..."
-                    else
-                        argsText
+                val caption = argsText
 
                 File.createTempFile("tmp", ".png").apply { // todo: temp file
                     writeBytes(responseBytes)
