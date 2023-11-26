@@ -128,7 +128,7 @@ class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
 
     private fun checkVideoAndGetFileData(video: Video) =
         if (video.duration <= maxVideoDuration)
-            Pair(video.fileId, video.fileName)
+            Pair(video.fileId, "video.mp4") // todo: temp fix. (todo check mime_type or som. else)
         else {
             replyToMessage(Strings.BAD_VIDEO_DURATION.format(maxVideoDuration))
             null
