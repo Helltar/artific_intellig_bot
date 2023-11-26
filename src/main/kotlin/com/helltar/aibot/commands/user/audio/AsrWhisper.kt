@@ -24,7 +24,6 @@ class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
     }
 
     private val isCreator = isCreator()
-    private val tempDir = System.getProperty("java.io.tmpdir")
 
     private val maxAudioSize = if (!isCreator) 1024000 else WHISPER_MAX_AUDIO_FILE_SIZE
     private val maxVoiceSize = maxAudioSize
@@ -48,7 +47,7 @@ class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
 
         val fileId = fileData.first?.first ?: return
         val fileName = fileData.first?.second ?: return
-        var outFile = File("$tempDir/${UUID.randomUUID()}_${fileName}")
+        var outFile = File.createTempFile("file", fileName)
 
         try {
             ctx.sender.downloadFile(Methods.getFile(fileId).call(ctx.sender), outFile)
@@ -73,10 +72,9 @@ class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
         }
 
         val responseJson = uploadAudio(outFile)
+        val messageId = replyMessage.messageId
 
         try {
-            val messageId = replyMessage.messageId
-
             val text =
                 JSONObject(responseJson).getString("text").ifEmpty {
                     replyToMessage(Strings.COULDNT_RECOGNIZE_VOICE, messageId)
@@ -143,6 +141,7 @@ class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
         }
 
     private fun extractAudioFromVideo(file: File): File? {
+        val tempDir = System.getProperty("java.io.tmpdir")
         val outputFilename = "$tempDir/audio_${UUID.randomUUID()}.wav"
         val ffmpegCommands = arrayOf("ffmpeg", "-i", file.absolutePath, "-acodec", "pcm_s16le", "-ac", "1", "-ar", "16000", outputFilename)
 
