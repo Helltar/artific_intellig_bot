@@ -32,7 +32,7 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
     companion object {
         val userContextMap = hashMapOf<Long, LinkedList<ChatMessageData>>()
         private const val MAX_USER_MESSAGE_TEXT_LENGTH = 512
-        private const val MAX_ADMIN_MESSAGE_TEXT_LENGTH = 1024
+        private const val MAX_ADMIN_MESSAGE_TEXT_LENGTH = 2048
         private const val MAX_CHAT_MODEL_CONTEXT_LENGH = 4096 // gpt-3.5-turbo
         private const val VOICE_OUT_TEXT_TAG = "#voice"
     }
