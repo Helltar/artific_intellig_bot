@@ -9,7 +9,7 @@ class ChatCtx(ctx: MessageContext) : ChatGPT(ctx) {
 
     override fun run() {
         val userId =
-            if (!message.isReply)
+            if (!isReply)
                 this.userId
             else
                 if (isAdmin())

@@ -10,7 +10,7 @@ class ChatCtxRemove(ctx: MessageContext) : ChatGPT(ctx) {
         var username = ""
 
         val userId =
-            if (!message.isReply)
+            if (!isReply)
                 this.userId
             else
                 if (isAdmin()) {

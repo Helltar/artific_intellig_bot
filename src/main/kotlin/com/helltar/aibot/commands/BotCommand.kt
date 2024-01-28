@@ -20,7 +20,7 @@ abstract class BotCommand(val ctx: MessageContext) {
     protected val userId = ctx.user().id
     protected val message = ctx.message()
     protected val replyMessage: Message? = message.replyToMessage
-    protected val isReply = message.isReply
+    protected val isReply = message.isReply && message.replyToMessage.messageId != message.replyToMessage.messageThreadId // todo: tmp. fix, check.
     protected val isNotReply = !isReply
     protected val argsText: String = ctx.argumentsAsString()
 
