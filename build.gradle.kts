@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.helltar"
-version = "0.9.5"
+version = "0.9.6"
 
 repositories {
     mavenCentral()
@@ -18,7 +18,7 @@ dependencies {
     implementation("org.imgscalr:imgscalr-lib:4.2")
     implementation("org.json:json:20231013")
     implementation("org.slf4j:slf4j-api:2.0.6")
-    implementation("ch.qos.logback:logback-classic:1.4.7")
+    implementation("ch.qos.logback:logback-classic:1.4.12")
 
     implementation("org.jetbrains.exposed:exposed-core:0.44.1")
     implementation("org.jetbrains.exposed:exposed-java-time:0.44.1")
