@@ -7,13 +7,13 @@ Demo: https://t.me/+siikRmY3uyE5YTBi
 Download
 --------
 
-- [artific_intellig_bot-0.9.5.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.9.5/artific_intellig_bot-0.9.5.zip) (71.4 MB)
+- [artific_intellig_bot-0.9.6.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.9.6/artific_intellig_bot-0.9.6.zip) (72.0 MB)
 
 Installation
 ------------
 
 ```bash
-unzip artific_intellig_bot-0.9.5.zip && cd artific_intellig_bot-0.9.5/bin
+unzip artific_intellig_bot-0.9.6.zip && cd artific_intellig_bot-0.9.6/bin
 ```
 
 ./_config/_
@@ -24,7 +24,7 @@ unzip artific_intellig_bot-0.9.5.zip && cd artific_intellig_bot-0.9.5/bin
 - username: bot_username ([BotFather](https://t.me/BotFather))
 - creatorId: 1234567890 (your Telegram user-ID)
 
-NOTE: to get your telegram id, open [@artific_intellig_bot](https://t.me/artific_intellig_bot) and run the command /**myid**
+NOTE: to get your telegram id, you can open [@artific_intellig_bot](https://t.me/artific_intellig_bot) and run the command /**myid**
 
 Install and configure **Google Cloud CLI** for text-to-speech audio responses:
 
@@ -69,12 +69,10 @@ Commands
 - /**chat** - ChatGPT
 - /**dalle** - DALL·E 2
 - /**sdif** - Stable Diffusion
-- /**dallevariations** - DALL·E 2 Variations
+- /**dallevar** - DALL·E 2 Variations
 - /**asr** - Automatic Speech Recognition (openai-Whisper)
 - /**uptime**
 - /**about**
-
-NOTE: /**dallevariations** - is not a typical command in use, run it as a reply to an image with text: "**@**"
 
 Additional chat commands:
 
