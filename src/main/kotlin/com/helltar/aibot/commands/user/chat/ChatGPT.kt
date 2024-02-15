@@ -31,9 +31,9 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
 
     companion object {
         val userContextMap = hashMapOf<Long, LinkedList<ChatMessageData>>()
-        private const val MAX_USER_MESSAGE_TEXT_LENGTH = 512
-        private const val MAX_ADMIN_MESSAGE_TEXT_LENGTH = 2048
-        private const val MAX_CHAT_MODEL_CONTEXT_LENGH = 4096 // gpt-3.5-turbo
+        private const val MAX_USER_MESSAGE_TEXT_LENGTH = 2048
+        private const val MAX_ADMIN_MESSAGE_TEXT_LENGTH = 4096
+        private const val MAX_CHAT_CONTEXT_LENGH = 8192
         private const val VOICE_OUT_TEXT_TAG = "#voice"
     }
 
@@ -96,8 +96,8 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
 
         var contextLengh = getUserDialogContextLengh()
 
-        if (contextLengh > MAX_CHAT_MODEL_CONTEXT_LENGH)
-            while (contextLengh > MAX_CHAT_MODEL_CONTEXT_LENGH) {
+        if (contextLengh > MAX_CHAT_CONTEXT_LENGH)
+            while (contextLengh > MAX_CHAT_CONTEXT_LENGH) {
                 userContextMap[userId]?.removeAt(1) // todo: removeAt
                 contextLengh = getUserDialogContextLengh()
             }
