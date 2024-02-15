@@ -28,8 +28,11 @@ class SlowMode(ctx: MessageContext) : BotCommand(ctx) {
 
             val limit = args[1].toIntOrNull() ?: return
 
-            if (DatabaseFactory.slowMode.update(userId, limit))
-                replyToMessage(String.format(Strings.SLOW_MODE_ON_UPDATE, limit))
+            if (DatabaseFactory.slowMode.add(userId, limit))
+                replyToMessage(String.format(Strings.SLOW_MODE_ON, limit))
+            else
+                if (DatabaseFactory.slowMode.update(userId, limit))
+                    replyToMessage(String.format(Strings.SLOW_MODE_ON_UPDATE, limit))
         }
     }
 

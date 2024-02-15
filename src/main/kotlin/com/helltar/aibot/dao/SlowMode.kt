@@ -20,6 +20,18 @@ class SlowMode {
             .insertedCount > 0
     }
 
+    fun add(userId: Long, limit: Int) = dbQuery {
+        SlowModeTable.insertIgnore {
+            it[this.userId] = userId
+            it[username] = null
+            it[firstName] = "null"
+            it[this.limit] = limit
+            it[requests] = 0
+            it[lastRequestTimestamp] = 0
+        }
+            .insertedCount > 0
+    }
+
     fun update(user: User, limit: Int, requests: Int = -1) = dbQuery {
         SlowModeTable.update({ SlowModeTable.userId eq user.id }) {
             it[username] = user.userName
