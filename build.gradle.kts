@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.annimon:tgbots-module:6.5.1")
+    implementation("com.annimon:tgbots-module:7.1.0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2")
     implementation("com.github.kittinunf.fuel:fuel:2.3.1")
     implementation("com.google.code.gson:gson:2.10.1")
