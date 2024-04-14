@@ -19,7 +19,7 @@
 
         <encoder>
             <charset>UTF-8</charset>
-            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} [%thread] %M-[%line] --> %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) %gray(%logger{36}) %cyan([%thread]) %magenta(%M)-%gray([%line]) --> %msg%n</pattern>
         </encoder>
     </appender>
 
