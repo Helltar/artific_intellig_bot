@@ -5,6 +5,7 @@ object Commands {
     const val CMD_CHAT = "chat"
     const val CMD_CHATCTX = "chatctx" // dialog context
     const val CMD_CHAT_CTX_REMOVE = "chatrm" // remove context
+    const val CMD_GPT_VISION = "vision"
 
     const val CMD_START = "start"
     const val CMD_DALLE = "dalle"
@@ -40,6 +41,7 @@ object Commands {
     val disalableCommandsList =
         setOf(
             CMD_CHAT,
+            CMD_GPT_VISION,
             CMD_DALLE,
             CMD_SDIFF,
             CMD_ASR,

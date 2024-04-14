@@ -21,6 +21,7 @@ import com.helltar.aibot.commands.Commands.CMD_DALLE
 import com.helltar.aibot.commands.Commands.CMD_DALLE_VARIATIONS
 import com.helltar.aibot.commands.Commands.CMD_DISABLE
 import com.helltar.aibot.commands.Commands.CMD_ENABLE
+import com.helltar.aibot.commands.Commands.CMD_GPT_VISION
 import com.helltar.aibot.commands.Commands.CMD_MYID
 import com.helltar.aibot.commands.Commands.CMD_RM_ADMIN
 import com.helltar.aibot.commands.Commands.CMD_RM_CHAT
@@ -54,6 +55,7 @@ import com.helltar.aibot.commands.user.chat.ChatCtxRemove
 import com.helltar.aibot.commands.user.chat.ChatGPT
 import com.helltar.aibot.commands.user.images.DallE2
 import com.helltar.aibot.commands.user.images.DalleVariations
+import com.helltar.aibot.commands.user.images.GPT4Vision
 import com.helltar.aibot.commands.user.images.StableDiffusion
 import com.helltar.aibot.commands.user.lists.BanList
 import com.helltar.aibot.commands.user.lists.SlowModeList
@@ -78,6 +80,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotConfig.JsonData) : Bot
             register(simpleCommand(CMD_ABOUT) { ce.execute(About(it), checkRights = false) })
 
             register(simpleCommand(CMD_CHAT) { ce.execute(ChatGPT(it), isLongtimeCommand = true) })
+            register(simpleCommand(CMD_GPT_VISION) { ce.execute(GPT4Vision(it), isLongtimeCommand = true) })
             register(simpleCommand(CMD_CHATCTX) { ce.execute(ChatCtx(it)) })
             register(simpleCommand(CMD_CHAT_CTX_REMOVE) { ce.execute(ChatCtxRemove(it)) })
 

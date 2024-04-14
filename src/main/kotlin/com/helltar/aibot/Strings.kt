@@ -30,6 +30,8 @@ object Strings {
     const val DALLE_VARIATIONS_USE_AS_REPLY = "Use this command as a reply to photo \uD83D\uDE43" // 🙃
     const val EMPTY_ARGS = "Please write a description of what you want to receive:\n\n<code>/dalle photo realistic portrait of young woman</code>"
     const val ERROR_RETRIEVING_AUDIO_FROM_VIDEO = "Error when retrieving audio from a video file \uD83E\uDEE1" // 🫡
+    const val GPT_VISION_NO_PHOTO_IN_MESSAGE = "No photo in message \uD83E\uDD14" // 🤔
+    const val GPT_VISION_USE_AS_REPLY = "Use this command as a reply to photo \uD83D\uDE43" // 🙃
     const val IMAGE_MUST_BE_LESS_THAN = "Image must be less than %s 😥" // 😥
     const val LIST_IS_EMPTY = "◻️ List is empty"
     const val MANY_CHARACTERS = "Max <b>%d</b> characters \uD83D\uDC40" // 👀
