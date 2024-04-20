@@ -1,6 +1,5 @@
 package com.helltar.aibot.commands.user.chat
 
-import JUnidecode
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.core.isSuccessful
@@ -14,6 +13,7 @@ import com.helltar.aibot.Strings.localizedString
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_GPT_MODEL_3_5
+import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_GPT_MODEL_4
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_ASSISTANT
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_SYSTEM
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_USER
@@ -103,7 +103,8 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
                 contextLengh = getUserDialogContextLengh()
             }
 
-        val response = sendPrompt(userContextMap[userId]!!)
+        val gptModel = if (!isCreator()) CHAT_GPT_MODEL_3_5 else CHAT_GPT_MODEL_4
+        val response = sendPrompt(userContextMap[userId]!!, gptModel)
         val json = response.data.decodeToString()
 
         if (!response.isSuccessful) {
@@ -193,10 +194,10 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
     private fun detectLanguage(text: String) =
         TranslateOptions.getDefaultInstance().getService().detect(text).language
 
-    private fun sendPrompt(messages: List<ChatMessageData>): Response {
+    private fun sendPrompt(messages: List<ChatMessageData>, gptModel: String): Response {
         val url = "https://api.openai.com/v1/chat/completions"
         val headers = mapOf("Content-Type" to "application/json", "Authorization" to "Bearer ${getApiKey(PROVIDER_OPENAI_COM)}")
-        val body = Gson().toJson(ChatData(CHAT_GPT_MODEL_3_5, messages))
+        val body = Gson().toJson(ChatData(gptModel, messages))
         return httpPost(url, headers, body)
     }
 }
