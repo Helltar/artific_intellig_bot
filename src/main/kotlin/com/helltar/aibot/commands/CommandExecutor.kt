@@ -89,8 +89,12 @@ class CommandExecutor(private val botConfig: BotConfig.JsonData) {
             if (isLongtimeCommand) {
                 val gifCaption = Strings.localizedString(Strings.CHAT_WAIT_MESSAGE, bc.userLanguageCode)
                 val waitMessageId = bc.replyToMessageWithDocument(bc.getLoadingGifFileId(), gifCaption)
-                bc.run()
-                bc.deleteMessage(waitMessageId)
+
+                try {
+                    bc.run()
+                } finally {
+                    bc.deleteMessage(waitMessageId)
+                }
             } else
                 bc.run()
         }
