@@ -2,14 +2,17 @@ package com.helltar.aibot.commands.user.images
 
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.commands.context.MessageContext
+import com.github.kittinunf.fuel.core.Response
+import com.github.kittinunf.fuel.core.isSuccessful
 import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
 import com.helltar.aibot.BotConfig.PROVIDER_OPENAI_COM
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.user.images.models.GPT4VisionData
 import com.helltar.aibot.utils.NetworkUtils.httpPost
+import org.json.JSONException
+import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import java.io.File
@@ -48,34 +51,46 @@ class GPT4Vision(ctx: MessageContext) : BotCommand(ctx) {
             return
         }
 
-        val responseJson = sendPrompt(argsText, imageFile)
+        val response = sendPrompt(argsText, imageFile)
+        val responseJson = response.data.decodeToString()
 
-        val answer =
+        if (response.isSuccessful) {
+            val answer =
+                try {
+                    Gson().fromJson(responseJson, GPT4VisionData.ResponseData::class.java).choices.first().message.content
+                } catch (e: Exception) {
+                    replyToMessage(Strings.CHAT_EXCEPTION)
+                    log.error(responseJson)
+                    log.error(e.message)
+                    return
+                }
+
             try {
-                Gson().fromJson(responseJson, GPT4VisionData.ResponseData::class.java).choices.first().message.content
-            } catch (e: JsonSyntaxException) {
-                replyToMessage(Strings.CHAT_EXCEPTION)
-                log.error(responseJson)
+                replyToMessage(answer, markdown = true)
+            } catch (e: Exception) { // todo: TelegramApiRequestException
+                replyToMessageWithDocument(
+                    File.createTempFile("answer", ".txt").apply { writeText(answer) },
+                    Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE
+                )
+
                 log.error(e.message)
-                return
+            }
+        } else {
+            try {
+                replyToMessage(JSONObject(responseJson).getJSONObject("error").getString("message")) // todo: errors model
+            } catch (e: JSONException) {
+                replyToMessage(Strings.CHAT_EXCEPTION)
+                log.error(e.message)
             }
 
-        try {
-            replyToMessage(answer, markdown = true)
-        } catch (e: Exception) { // todo: TelegramApiRequestException
-            replyToMessageWithDocument(
-                File.createTempFile("answer", ".txt").apply { writeText(answer) },
-                Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE
-            )
-
-            log.error(e.message)
+            log.error(responseJson)
         }
     }
 
     override fun getCommandName() =
         Commands.CMD_GPT_VISION
 
-    private fun sendPrompt(text: String, image: File): String {
+    private fun sendPrompt(text: String, image: File): Response {
         val url = "https://api.openai.com/v1/chat/completions"
         val headers = mapOf("Content-Type" to "application/json", "Authorization" to "Bearer ${getApiKey(PROVIDER_OPENAI_COM)}")
 
@@ -100,6 +115,6 @@ class GPT4Vision(ctx: MessageContext) : BotCommand(ctx) {
                 )
             )
 
-        return httpPost(url, headers, Gson().toJson(requestData)).data.decodeToString()
+        return httpPost(url, headers, Gson().toJson(requestData))
     }
 }
