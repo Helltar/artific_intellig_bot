@@ -49,7 +49,7 @@ abstract class BotCommand(val ctx: MessageContext) {
         markdown: Boolean = false
     ): Int =
         ctx.replyToMessage(text)
-            .setReplyToMessageId(messageId)
+            .setReplyToMessageId(if (replyMessage?.from?.isBot == false) messageId else message.messageId) // todo: refact.
             .setParseMode(if (!markdown) ParseMode.HTML else ParseMode.MARKDOWN)
             .setWebPagePreviewEnabled(enableWebPagePreview)
             .call(ctx.sender)
