@@ -6,6 +6,7 @@ import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.dao.DatabaseFactory
+import com.helltar.aibot.dao.tables.ApiKeyType
 
 class UpdateApiKey(ctx: MessageContext) : BotCommand(ctx) {
 
@@ -19,13 +20,34 @@ class UpdateApiKey(ctx: MessageContext) : BotCommand(ctx) {
         }
 
         val provider = args[0]
-        val apiKey = args[1]
 
-        if (DatabaseFactory.apiKeys.update(provider, apiKey)) {
-            replyToMessage(Strings.PROVIDER_API_KEY_SUCCESS_ADD.format(provider))
-        } else {
-            replyToMessage(Strings.API_KEY_FAILD_ADD.format(provider))
+        if (provider !in availableApiProviders) {
             reply(providersHtmlList)
+            return
+        }
+
+        val apiKey = args[1]
+        var type = ApiKeyType.USER
+
+        if (args.size >= 3) {
+            type =
+                when (args[2].toIntOrNull()) {
+                    0 -> ApiKeyType.CREATOR
+                    1 -> ApiKeyType.ADMIN
+                    else -> type
+                }
+        }
+
+        if (DatabaseFactory.apiKeys.getApiKey(provider, type) != null) {
+            if (DatabaseFactory.apiKeys.update(provider, apiKey, type)) {
+                replyToMessage(Strings.PROVIDER_API_KEY_SUCCESS_UPDATE.format(provider, type.toString()))
+            } else
+                replyToMessage(Strings.API_KEY_FAIL_UPDATE.format("$provider $type $apiKey"))
+        } else {
+            if (DatabaseFactory.apiKeys.add(provider, apiKey, type))
+                replyToMessage(Strings.PROVIDER_API_KEY_SUCCESS_ADD.format(provider, type.toString()))
+            else
+                replyToMessage(Strings.API_KEY_FAIL_ADD.format("$provider $type $apiKey"))
         }
     }
 

@@ -2,7 +2,6 @@ package com.helltar.aibot.dao
 
 import com.helltar.aibot.BotConfig.DIR_DB
 import com.helltar.aibot.BotConfig.FILE_DATABASE
-import com.helltar.aibot.BotConfig.availableApiProviders
 import com.helltar.aibot.commands.Commands.disalableCommandsList
 import com.helltar.aibot.dao.tables.*
 import kotlinx.coroutines.Dispatchers
@@ -60,7 +59,6 @@ object DatabaseFactory {
 
     private fun setup(creatorId: Long) {
         sudoers.add(creatorId, "Owner")
-        availableApiProviders.forEach { apiKeys.add(it, null) }
         disalableCommandsList.forEach { commandsState.add(it) }
     }
 }

@@ -3,6 +3,7 @@ package com.helltar.aibot.commands.user.chat
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.core.isSuccessful
+import com.google.api.client.http.HttpStatusCodes
 import com.google.api.gax.rpc.ApiException
 import com.google.cloud.texttospeech.v1.*
 import com.google.cloud.translate.TranslateOptions
@@ -108,12 +109,15 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
         val json = response.data.decodeToString()
 
         if (!response.isSuccessful) {
-            try {
-                replyToMessage(JSONObject(json).getJSONObject("error").getString("message"))
-            } catch (e: JSONException) {
-                replyToMessage(Strings.CHAT_EXCEPTION)
-                log.error(e.message)
-            }
+            if (response.statusCode != HttpStatusCodes.STATUS_CODE_UNAUTHORIZED) {
+                try {
+                    replyToMessage(JSONObject(json).getJSONObject("error").getString("message"))
+                } catch (e: JSONException) {
+                    replyToMessage(Strings.CHAT_EXCEPTION)
+                    log.error(e.message)
+                }
+            } else
+                replyToMessage(Strings.CHAT_UNAUTHORIZED)
 
             log.error("$response")
             return

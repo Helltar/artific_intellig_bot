@@ -3,6 +3,7 @@ package com.helltar.aibot.commands
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.BotConfig
 import com.helltar.aibot.dao.DatabaseFactory
+import com.helltar.aibot.dao.tables.ApiKeyType
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.InputFile
 import org.telegram.telegrambots.meta.api.objects.Message
@@ -86,8 +87,15 @@ abstract class BotCommand(val ctx: MessageContext) {
             .call(ctx.sender)
     }
 
-    protected fun getApiKey(provider: String) =
-        DatabaseFactory.apiKeys.getApiKey(provider)
+    protected fun getApiKey(provider: String): String? {
+        val apiKeyType = when {
+            isCreator() -> ApiKeyType.CREATOR
+            isAdmin() -> ApiKeyType.ADMIN
+            else -> ApiKeyType.USER
+        }
+
+        return DatabaseFactory.apiKeys.getApiKey(provider, apiKeyType)
+    }
 
     protected fun replyToMessageWithPhoto(file: File, caption: String = "", messageId: Int = message.messageId): Message =
         ctx.replyToMessageWithPhoto()

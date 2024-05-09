@@ -8,7 +8,8 @@ import java.util.regex.Pattern
 
 object Strings {
 
-    const val API_KEY_FAILD_ADD = "⚠\uFE0F Error when update <b>%s</b> api key, available providers:" // ⚠️
+    const val API_KEY_FAIL_ADD = "⚠\uFE0F Error when add <b>%s</b> API Key" // ⚠️
+    const val API_KEY_FAIL_UPDATE = "⚠\uFE0F Error when update <b>%s</b> API Key" // ⚠️
     const val ASR_WHISPER_USE_AS_REPLY = "Use this command as a reply to an voice or video message \uD83D\uDE43" // 🙃
     const val AUDIO_MUST_BE_LESS_THAN = "Audio must be less than %s 😥" // 😥
     const val BAD_REQUEST = "<code>Bad Request</code> \uD83D\uDE10" // 😐
@@ -18,6 +19,7 @@ object Strings {
     const val CHAT_CONTEXT_EMPTY = "▫\uFE0F Empty"
     const val CHAT_CONTEXT_REMOVED = "Context has been removed \uD83D\uDC4C" // 👌
     const val CHAT_EXCEPTION = "Something is broken \uD83E\uDEE1" // 🫡
+    const val CHAT_UNAUTHORIZED = "401 Unauthorized"
     const val CHAT_HELLO = "\uD83D\uDC4B Hello, please ask your questions as replying to my messages" // 👋
     const val COMMAND_ALREADY_DISABLED = "✅ Command <b>%s</b> already disabled"
     const val COMMAND_ALREADY_ENABLED = "✅ Command <b>%s</b> already enabled"
@@ -37,7 +39,8 @@ object Strings {
     const val MANY_CHARACTERS = "Max <b>%d</b> characters \uD83D\uDC40" // 👀
     const val MANY_REQUEST = "Wait, let me deal with the last request \uD83E\uDD16" // 🤖
     const val NO_PHOTO_IN_MESSAGE = "No photo in message \uD83E\uDD14" // 🤔
-    const val PROVIDER_API_KEY_SUCCESS_ADD = "✅ Api Key for <b>%s</b> succesfully updated"
+    const val PROVIDER_API_KEY_SUCCESS_ADD = "✅ API Key for <b>%s</b> succesfully added (type: %s)"
+    const val PROVIDER_API_KEY_SUCCESS_UPDATE = "✅ API Key for <b>%s</b> succesfully updated (type: %s)"
     const val STABLE_DIFFUSION_EMPTY_ARGS = "Please write a description of what you want to receive:\n\n<code>/sdif photo realistic portrait of young woman</code>"
     const val TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE = "TelegramApiException, response saved to file \uD83D\uDE48" // 🙈
     const val UPDATE_API_KEYS_COMMAND_EXAMPLE = "ℹ\uFE0F Example: <code>/%s %s sk-qwertyuiop...</code>" // ℹ️
