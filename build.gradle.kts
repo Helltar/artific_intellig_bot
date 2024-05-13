@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.helltar"
-version = "0.9.6"
+version = "0.9.7"
 
 repositories {
     mavenCentral()
@@ -25,9 +25,6 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:0.44.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3")
     implementation("org.xerial:sqlite-jdbc:3.44.0.0")
-
-    implementation("com.google.cloud:google-cloud-translate:2.23.0")
-    implementation("com.google.cloud:google-cloud-texttospeech:2.24.0")
 }
 
 application {
