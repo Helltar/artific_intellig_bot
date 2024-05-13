@@ -3,10 +3,9 @@ package com.helltar.aibot.commands.user.images
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.FileDataPart
-import com.helltar.aibot.BotConfig.PROVIDER_OPENAI_COM
 import com.helltar.aibot.Strings
-import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
+import com.helltar.aibot.commands.user.chat.ChatGPT
 import com.helltar.aibot.commands.user.images.models.DalleData.DALLE_REQUEST_IMAGE_SIZE
 import com.helltar.aibot.utils.NetworkUtils.httpUpload
 import org.json.JSONException
@@ -20,7 +19,7 @@ import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
 
-class DalleVariations(ctx: MessageContext) : BotCommand(ctx) {
+class DalleVariations(ctx: MessageContext) : ChatGPT(ctx) {
 
     private companion object {
         const val MAX_PHOTO_FILE_SIZE = 1024000
@@ -102,10 +101,9 @@ class DalleVariations(ctx: MessageContext) : BotCommand(ctx) {
 
     private fun uploadImage(byteArrayStream: ByteArrayOutputStream): String {
         val url = "https://api.openai.com/v1/images/variations"
-        val headers = mapOf("Authorization" to "Bearer ${getApiKey(PROVIDER_OPENAI_COM)}")
         val parameters = listOf("n" to "1", "size" to DALLE_REQUEST_IMAGE_SIZE)
         val file = File.createTempFile("tmp", ".png").apply { writeBytes(byteArrayStream.toByteArray()) } // todo: tempFile
         val dataPart = FileDataPart(file, "image")
-        return httpUpload(url, parameters, headers, dataPart).data.decodeToString()
+        return httpUpload(url, parameters, openaiAuthorizationHeader, dataPart).data.decodeToString()
     }
 }

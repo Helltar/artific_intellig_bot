@@ -5,10 +5,9 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.core.isSuccessful
 import com.google.gson.Gson
-import com.helltar.aibot.BotConfig.PROVIDER_OPENAI_COM
 import com.helltar.aibot.Strings
-import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
+import com.helltar.aibot.commands.user.chat.ChatGPT
 import com.helltar.aibot.commands.user.images.models.GPT4VisionData
 import com.helltar.aibot.utils.NetworkUtils.httpPost
 import org.json.JSONException
@@ -18,7 +17,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import java.io.File
 import java.util.*
 
-class GPT4Vision(ctx: MessageContext) : BotCommand(ctx) {
+class GPT4Vision(ctx: MessageContext) : ChatGPT(ctx) {
 
     private companion object {
         const val MAX_PHOTO_FILE_SIZE = 1024000
@@ -92,7 +91,6 @@ class GPT4Vision(ctx: MessageContext) : BotCommand(ctx) {
 
     private fun sendPrompt(text: String, image: File): Response {
         val url = "https://api.openai.com/v1/chat/completions"
-        val headers = mapOf("Content-Type" to "application/json", "Authorization" to "Bearer ${getApiKey(PROVIDER_OPENAI_COM)}")
 
         val requestData =
             GPT4VisionData.RequestData(
