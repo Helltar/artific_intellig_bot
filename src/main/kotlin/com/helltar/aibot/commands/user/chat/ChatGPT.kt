@@ -3,16 +3,13 @@ package com.helltar.aibot.commands.user.chat
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.core.isSuccessful
-import com.google.api.client.http.HttpStatusCodes
-import com.google.api.gax.rpc.ApiException
-import com.google.cloud.texttospeech.v1.*
-import com.google.cloud.translate.TranslateOptions
 import com.google.gson.Gson
 import com.helltar.aibot.BotConfig.PROVIDER_OPENAI_COM
 import com.helltar.aibot.Strings
 import com.helltar.aibot.Strings.localizedString
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
+import com.helltar.aibot.commands.user.chat.models.ChatGPTData
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_GPT_MODEL_3_5
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_GPT_MODEL_4
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_ASSISTANT
@@ -21,6 +18,7 @@ import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_USER
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.ChatData
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.ChatMessageData
 import com.helltar.aibot.utils.NetworkUtils.httpPost
+import org.apache.http.HttpStatus
 import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
@@ -29,7 +27,8 @@ import java.util.*
 
 open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
 
-    private val log = LoggerFactory.getLogger(javaClass)
+    protected val openaiAuthorizationHeader = mapOf("Authorization" to "Bearer ${getApiKey(PROVIDER_OPENAI_COM)}")
+    protected val headers = mapOf("Content-Type" to "application/json") + openaiAuthorizationHeader
 
     companion object {
         val userContextMap = hashMapOf<Long, LinkedList<ChatMessageData>>()
@@ -38,6 +37,8 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
         private const val MAX_CHAT_CONTEXT_LENGH = 8192
         private const val VOICE_OUT_TEXT_TAG = "#voice"
     }
+
+    private val log = LoggerFactory.getLogger(javaClass)
 
     override fun run() {
         var messageId = ctx.messageId()
@@ -109,7 +110,7 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
         val json = response.data.decodeToString()
 
         if (!response.isSuccessful) {
-            if (response.statusCode != HttpStatusCodes.STATUS_CODE_UNAUTHORIZED) {
+            if (response.statusCode != HttpStatus.SC_UNAUTHORIZED) {
                 try {
                     replyToMessage(JSONObject(json).getJSONObject("error").getString("message"))
                 } catch (e: JSONException) {
@@ -139,7 +140,7 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
         userContextMap[userId]?.add(ChatMessageData(CHAT_ROLE_ASSISTANT, answer))
 
         if (isVoiceOut)
-            sendVoice(answer, messageId)
+            sendVoice(textToSpeech(answer), messageId)
         else
             try {
                 replyToMessage(answer, messageId, markdown = true)
@@ -155,53 +156,19 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
     override fun getCommandName() =
         Commands.CMD_CHAT
 
-    private fun sendVoice(text: String, messageId: Int) {
-        textToSpeech(text, detectLanguage(text))?.let { oggBytes ->
-            // todo: tempFile
-            val voice = File.createTempFile("tmp", ".ogg").apply { writeBytes(oggBytes) }
-            sendVoice(voice, messageId)
-        }
-            ?: replyToMessage(Strings.CHAT_EXCEPTION)
-    }
-
-    private fun textToSpeech(text: String, languageCode: String): ByteArray? {
-        TextToSpeechClient.create().use { textToSpeechClient ->
-            val input = SynthesisInput.newBuilder().setText(text).build()
-
-            val language =
-                if (textToSpeechClient.listVoices(languageCode).voicesList.isNotEmpty()) // todo: voicesList request
-                    languageCode
-                else
-                    "uk"
-
-            val voice =
-                VoiceSelectionParams.newBuilder()
-                    .setLanguageCode(language)
-                    .setSsmlGender(SsmlVoiceGender.FEMALE)
-                    .build()
-
-            val audioConfig = AudioConfig.newBuilder().setAudioEncoding(AudioEncoding.OGG_OPUS).build()
-
-            return try {
-                val response = textToSpeechClient.synthesizeSpeech(input, voice, audioConfig)
-                response.audioContent.toByteArray()
-            } catch (e: ApiException) {
-                log.error(e.message)
-                null
-            }
-        }
-    }
-
     private fun getUserDialogContextLengh() =
         userContextMap[userId]!!.sumOf { it.content.length }
 
-    private fun detectLanguage(text: String) =
-        TranslateOptions.getDefaultInstance().getService().detect(text).language
-
     private fun sendPrompt(messages: List<ChatMessageData>, gptModel: String): Response {
         val url = "https://api.openai.com/v1/chat/completions"
-        val headers = mapOf("Content-Type" to "application/json", "Authorization" to "Bearer ${getApiKey(PROVIDER_OPENAI_COM)}")
         val body = Gson().toJson(ChatData(gptModel, messages))
         return httpPost(url, headers, body)
+    }
+
+    private fun textToSpeech(input: String): File {
+        val url = "https://api.openai.com/v1/audio/speech"
+        val body = Gson().toJson(ChatGPTData.SpeechData(input = input))
+        val data = httpPost(url, headers, body).data
+        return File.createTempFile("tmp", ".ogg").apply { writeBytes(data) }
     }
 }
