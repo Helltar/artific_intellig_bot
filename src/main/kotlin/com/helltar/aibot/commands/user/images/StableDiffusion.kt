@@ -3,15 +3,11 @@ package com.helltar.aibot.commands.user.images
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.core.isSuccessful
-import com.google.gson.Gson
 import com.helltar.aibot.BotConfig.PROVIDER_STABILITY_AI
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.commands.user.images.models.StableDiffusionData
-import com.helltar.aibot.commands.user.images.models.StableDiffusionData.ENGINE_ID
-import com.helltar.aibot.commands.user.images.models.StableDiffusionData.TextPromptData
-import com.helltar.aibot.utils.NetworkUtils.httpPost
+import com.helltar.aibot.utils.NetworkUtils.httpUpload
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -31,19 +27,8 @@ class StableDiffusion(ctx: MessageContext) : BotCommand(ctx) {
             return
         }
 
-        // todo: command for show stylePresets
-
-        var stylePreset =
-            if (args.size > 1)
-                args.last()
-            else
-                StableDiffusionData.StylePresets.PHOTOGRAPHIC
-
-        if (stylePreset !in StableDiffusionData.StylePresets.list)
-            stylePreset = StableDiffusionData.StylePresets.PHOTOGRAPHIC
-
-        val response = sendPrompt(argsText, stylePreset)
-        val responseBytes = response.data
+        val response = sendPrompt(argsText)
+        val responseData = response.data
 
         if (response.isSuccessful) {
             try {
@@ -53,34 +38,32 @@ class StableDiffusion(ctx: MessageContext) : BotCommand(ctx) {
                     caption = caption.substring(0, 512)
 
                 File.createTempFile("tmp", ".png").apply { // todo: temp file
-                    writeBytes(responseBytes)
+                    writeBytes(responseData)
                     replyToMessageWithPhoto(this, caption)
                     delete()
                 }
-
-                return
             } catch (e: Exception) {
                 log.error(e.message)
+                replyToMessage(Strings.BAD_REQUEST)
             }
         } else
             try {
-                replyToMessage(JSONObject(response.data.decodeToString()).getString("message"))
-                return
+                val jsonObject = JSONObject(responseData.decodeToString())
+                val errors = jsonObject.getJSONArray("errors")
+                replyToMessage(errors.first().toString())
             } catch (e: Exception) {
                 log.error(e.message)
+                replyToMessage(Strings.BAD_REQUEST)
             }
-
-        replyToMessage(Strings.BAD_REQUEST)
-        log.error("$response: $args")
     }
 
     override fun getCommandName() =
         Commands.CMD_SDIFF
 
-    private fun sendPrompt(prompt: String, stylePreset: String): Response {
-        val url = "https://api.stability.ai/v1/generation/$ENGINE_ID/text-to-image"
-        val headers = mapOf("Accept" to "image/png", "Authorization" to "Bearer ${getApiKey(PROVIDER_STABILITY_AI)}")
-        val body = Gson().toJson(StableDiffusionData.RequestData(style_preset = stylePreset, text_prompts = listOf(TextPromptData(prompt))))
-        return httpPost(url, headers, body)
+    private fun sendPrompt(prompt: String): Response {
+        val url = "https://api.stability.ai/v2beta/stable-image/generate/sd3"
+        val headers = mapOf("Accept" to "image/*", "Authorization" to "Bearer ${getApiKey(PROVIDER_STABILITY_AI)}")
+        val params = listOf("prompt" to prompt, "model" to "sd3-turbo", "aspect_ratio" to "1:1", "output_format" to "jpeg")
+        return httpUpload(url, headers, params)
     }
 }

@@ -19,6 +19,13 @@ object NetworkUtils {
             .jsonBody(jsonBody)
             .response().second
 
+    fun httpUpload(url: String, headers: Map<String, String>, parameters: Parameters) =
+        Fuel.upload(url, Method.POST, parameters)
+            .header(headers)
+            .timeout(TIMEOUT)
+            .timeoutRead(TIMEOUT)
+            .response().second
+
     fun httpUpload(url: String, parameters: Parameters, headers: Map<String, String>, dataPart: FileDataPart) =
         Fuel.upload(url, Method.POST, parameters)
             .add(dataPart)
