@@ -4,8 +4,8 @@ import io.github.cdimascio.dotenv.dotenv
 
 object BotConfig {
 
-    val telegramBotToken = readEnv("TELEGRAM_BOT_TOKEN")
-    val telegramBotUsername = readEnv("TELEGRAM_BOT_USERNAME")
+    val telegramBotToken = readEnv("BOT_TOKEN")
+    val telegramBotUsername = readEnv("BOT_USERNAME")
     val creatorId = readEnv("CREATOR_ID").toLongOrNull() ?: throw RuntimeException("bad CREATOR_ID env")
 
     const val DIR_DB = "data/database"
