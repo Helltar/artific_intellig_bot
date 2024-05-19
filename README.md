@@ -1,72 +1,64 @@
-artific_intellig_bot
+AIBot for Telegram
 --------------------
 
 Demo: https://t.me/+siikRmY3uyE5YTBi
 
-
-Download
---------
-
-- [artific_intellig_bot-0.9.6.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.9.6/artific_intellig_bot-0.9.6.zip) (72.0 MB)
-
 Installation
 ------------
 
-```bash
-unzip artific_intellig_bot-0.9.6.zip && cd artific_intellig_bot-0.9.6/bin
-```
+- CREATOR_ID: your Telegram user-ID
+- BOT_TOKEN: [BotFather](https://t.me/BotFather)
+- BOT_USERNAME: [BotFather](https://t.me/BotFather) (example: artific_intellig_bot)
 
-./_config/_
+NOTE: to get your Telegram ID, you can use [@artific_intellig_bot](https://t.me/artific_intellig_bot) by entering the command /**myid**
 
-**bot_config.yaml**:
-
-- token: 123:xxx ([BotFather](https://t.me/BotFather))
-- username: bot_username ([BotFather](https://t.me/BotFather))
-- creatorId: 1234567890 (your Telegram user-ID)
-
-NOTE: to get your telegram id, you can open [@artific_intellig_bot](https://t.me/artific_intellig_bot) and run the command /**myid**
-
-Install and configure **Google Cloud CLI** for text-to-speech audio responses:
-
-- https://cloud.google.com/sdk/docs/install
+### Docker
 
 ```bash
-gcloud init
+docker pull ghcr.io/helltar/aibot:latest
 ```
 ```bash
-gcloud auth application-default login
+docker run --rm -d \
+  --name aibot_telegram \
+  -e CREATOR_ID=12345 \
+  -e BOT_TOKEN=123:xxx \
+  -e BOT_USERNAME=name_bot \
+  -v aibot_data:/app/data \
+  ghcr.io/helltar/aibot:latest
 ```
 
-Check:
+### Or run without Docker
+
+- [artific_intellig_bot-0.9.8.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.9.8/artific_intellig_bot-0.9.8.zip)
 
 ```bash
-gcloud auth application-default print-access-token
+unzip artific_intellig_bot-0.9.8.zip && cd artific_intellig_bot-0.9.8/bin
 ```
 
-Install **ffmpeg** for **/asr** command support:
-
-- https://ffmpeg.org/
-
-Done, run:
+- Update the environment variables in the **.env** file
+- Install https://ffmpeg.org on your system (for **/asr** command)
 
 ```bash
-./artific_intellig_bot # or artific_intellig_bot.bat for windows
+./artific_intellig_bot # artific_intellig_bot.bat for windows
 ```
 
-Just got to get the api keys:
+Usage
+-----
 
-- [OpenAI API Key](https://platform.openai.com/account/api-keys)
+First obtain API keys:
+
+- [OpenAI API Key](https://platform.openai.com/api-keys)
 - [Stable Diffusion API Key](https://platform.stability.ai/account/keys)
 
-and add them with the /**updatekey** command:
+and add them using the command in the bot:
 
-- /**_updatekey_** _openai.com sk-qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxc_
-- /**_updatekey_** _stability.ai sk-qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxc_
+- /**_updatekey_** _openai.com sk-qwerty_
+- /**_updatekey_** _stability.ai sk-qwerty_
 
-Commands
---------
+### Commands
 
 - /**chat** - ChatGPT
+- /**vision** - GPT-4 Vision
 - /**dalle** - DALL·E 2
 - /**sdif** - Stable Diffusion
 - /**dallevar** - DALL·E 2 Variations
@@ -79,12 +71,11 @@ Additional chat commands:
 - /**chatctx** - view dialogue history
 - /**chatrm** - clear history
 
-For audio responses, add the **#voice** tag to your message, for example:
+For audio responses (TTS), add the **#voice** tag to your message, for example:
 
 `Hello, how are you? #voice`
 
-Admin commands
---------------
+### Admin commands
 
 - /**enable** _commandName_ (example: _/enable chat_)
 - /**disable** _commandName_ (example: _/disable dalle_)
