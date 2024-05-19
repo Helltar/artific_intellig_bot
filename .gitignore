@@ -8,6 +8,5 @@ test/
 data/database
 data/logs
 
-.env
 compose.yml
 Dockerfile
