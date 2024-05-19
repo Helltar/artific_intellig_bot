@@ -113,6 +113,6 @@ class GPT4Vision(ctx: MessageContext) : ChatGPT(ctx) {
                 )
             )
 
-        return httpPost(url, headers, Gson().toJson(requestData))
+        return httpPost(url, getOpenAIHeaders(), Gson().toJson(requestData))
     }
 }

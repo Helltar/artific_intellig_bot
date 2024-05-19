@@ -104,6 +104,6 @@ class DalleVariations(ctx: MessageContext) : ChatGPT(ctx) {
         val parameters = listOf("n" to "1", "size" to DALLE_REQUEST_IMAGE_SIZE)
         val file = File.createTempFile("tmp", ".png").apply { writeBytes(byteArrayStream.toByteArray()) } // todo: tempFile
         val dataPart = FileDataPart(file, "image")
-        return httpUpload(url, parameters, openaiAuthorizationHeader, dataPart).data.decodeToString()
+        return httpUpload(url, parameters, getOpenAIAuthorizationHeader(), dataPart).data.decodeToString()
     }
 }

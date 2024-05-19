@@ -46,6 +46,6 @@ class DallE2(ctx: MessageContext) : ChatGPT(ctx) {
     private fun sendPrompt(prompt: String): String {
         val url = "https://api.openai.com/v1/images/generations"
         val body = Gson().toJson(DalleData.RequestData(prompt, 1))
-        return httpPost(url, headers, body).data.decodeToString()
+        return httpPost(url, getOpenAIHeaders(), body).data.decodeToString()
     }
 }

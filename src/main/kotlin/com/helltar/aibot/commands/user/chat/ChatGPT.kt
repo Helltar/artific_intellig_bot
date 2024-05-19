@@ -27,9 +27,6 @@ import java.util.*
 
 open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
 
-    protected val openaiAuthorizationHeader = mapOf("Authorization" to "Bearer ${getApiKey(PROVIDER_OPENAI_COM)}")
-    protected val headers = mapOf("Content-Type" to "application/json") + openaiAuthorizationHeader
-
     companion object {
         val userContextMap = hashMapOf<Long, LinkedList<ChatMessageData>>()
         private const val MAX_USER_MESSAGE_TEXT_LENGTH = 2048
@@ -156,19 +153,25 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
     override fun getCommandName() =
         Commands.CMD_CHAT
 
+    protected fun getOpenAIAuthorizationHeader() =
+        mapOf("Authorization" to "Bearer ${getApiKey(PROVIDER_OPENAI_COM)}")
+
+    protected fun getOpenAIHeaders() =
+        mapOf("Content-Type" to "application/json") + getOpenAIAuthorizationHeader()
+
     private fun getUserDialogContextLengh() =
         userContextMap[userId]!!.sumOf { it.content.length }
 
     private fun sendPrompt(messages: List<ChatMessageData>, gptModel: String): Response {
         val url = "https://api.openai.com/v1/chat/completions"
         val body = Gson().toJson(ChatData(gptModel, messages))
-        return httpPost(url, headers, body)
+        return httpPost(url, getOpenAIHeaders(), body)
     }
 
     private fun textToSpeech(input: String): File {
         val url = "https://api.openai.com/v1/audio/speech"
         val body = Gson().toJson(ChatGPTData.SpeechData(input = input))
-        val data = httpPost(url, headers, body).data
+        val data = httpPost(url, getOpenAIHeaders(), body).data
         return File.createTempFile("tmp", ".ogg").apply { writeBytes(data) }
     }
 }
