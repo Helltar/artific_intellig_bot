@@ -3,6 +3,7 @@
 
 build/
 deploy/
-database/
 test/
-logs/
+
+data/database
+data/logs
