@@ -1,7 +1,7 @@
 package com.helltar.aibot.dao
 
 import com.helltar.aibot.dao.DatabaseFactory.dbQuery
-import com.helltar.aibot.dao.tables.BanListTable.reason
+import com.helltar.aibot.dao.tables.BannedUsersTable.reason
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertIgnore
@@ -9,9 +9,9 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.telegram.telegrambots.meta.api.objects.User
 import java.time.LocalDateTime
-import com.helltar.aibot.dao.tables.BanListTable as BanListTable
+import com.helltar.aibot.dao.tables.BannedUsersTable as BanListTable
 
-class BanList {
+class BanListDAO {
 
     fun banUser(user: User, reason: String?) = dbQuery {
         BanListTable.insertIgnore {

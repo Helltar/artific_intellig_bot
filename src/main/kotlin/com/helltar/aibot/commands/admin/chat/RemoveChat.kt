@@ -15,7 +15,7 @@ class RemoveChat(ctx: MessageContext) : BotCommand(ctx) {
             else
                 ctx.chatId()
 
-        if (DatabaseFactory.chatWhiteList.remove(chatId))
+        if (DatabaseFactory.chatWhitelistDAO.remove(chatId))
             replyToMessage(Strings.CHAT_REMOVED)
         else
             replyToMessage(Strings.CHAT_NOT_EXISTS)

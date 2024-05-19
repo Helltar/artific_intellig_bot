@@ -1,13 +1,13 @@
 package com.helltar.aibot.dao
 
 import com.helltar.aibot.dao.DatabaseFactory.dbQuery
+import com.helltar.aibot.dao.tables.CommandsStateTable
 import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
 import java.time.LocalDateTime
-import com.helltar.aibot.dao.tables.CommandsStateTable as CommandsStateTable
 
-class CommandsState {
+class CommandsDAO {
 
     fun add(command: String, disable: Boolean = false) = dbQuery {
         CommandsStateTable.insertIgnore {

@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
 import java.time.LocalDateTime
 
-class ApiKeys {
+class ApiKeyDAO {
 
     fun add(provider: String, apiKey: String, type: ApiKeyType) = dbQuery {
         ApiKeysTable.insertIgnore {

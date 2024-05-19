@@ -5,6 +5,9 @@ import com.annimon.tgbotsmodule.commands.CommandRegistry
 import com.annimon.tgbotsmodule.commands.SimpleCommand
 import com.annimon.tgbotsmodule.commands.authority.SimpleAuthority
 import com.annimon.tgbotsmodule.commands.context.MessageContext
+import com.helltar.aibot.BotConfig.creatorId
+import com.helltar.aibot.BotConfig.telegramBotToken
+import com.helltar.aibot.BotConfig.telegramBotUsername
 import com.helltar.aibot.commands.CommandExecutor
 import com.helltar.aibot.commands.Commands.CMD_ABOUT
 import com.helltar.aibot.commands.Commands.CMD_ADD_ADMIN
@@ -33,15 +36,15 @@ import com.helltar.aibot.commands.Commands.CMD_START
 import com.helltar.aibot.commands.Commands.CMD_UNBAN_USER
 import com.helltar.aibot.commands.Commands.CMD_UPDATE_API_KEY
 import com.helltar.aibot.commands.Commands.CMD_UPTIME
-import com.helltar.aibot.commands.admin.admin.AddAdmin
-import com.helltar.aibot.commands.admin.admin.AdminList
-import com.helltar.aibot.commands.admin.admin.RemoveAdmin
+import com.helltar.aibot.commands.admin.sudoers.AddAdmin
+import com.helltar.aibot.commands.admin.sudoers.AdminList
+import com.helltar.aibot.commands.admin.sudoers.RemoveAdmin
 import com.helltar.aibot.commands.admin.ban.BanUser
 import com.helltar.aibot.commands.admin.ban.UnbanUser
 import com.helltar.aibot.commands.admin.chat.AddChat
-import com.helltar.aibot.commands.admin.chat.ChatsWhiteList
+import com.helltar.aibot.commands.admin.chat.ChatsWhitelist
 import com.helltar.aibot.commands.admin.chat.RemoveChat
-import com.helltar.aibot.commands.admin.command.ChangeState
+import com.helltar.aibot.commands.admin.commands.ChangeState
 import com.helltar.aibot.commands.admin.slowmode.SlowMode
 import com.helltar.aibot.commands.admin.slowmode.SlowModeOff
 import com.helltar.aibot.commands.admin.system.UpdateApiKey
@@ -58,7 +61,7 @@ import com.helltar.aibot.commands.user.images.DalleVariations
 import com.helltar.aibot.commands.user.images.GPT4Vision
 import com.helltar.aibot.commands.user.images.StableDiffusion
 import com.helltar.aibot.commands.user.lists.BanList
-import com.helltar.aibot.commands.user.lists.SlowModeList
+import com.helltar.aibot.commands.user.lists.SlowmodeList
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.EntityType
 import org.telegram.telegrambots.meta.api.objects.Message
@@ -66,48 +69,53 @@ import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import java.util.function.Consumer
 
-class ArtificIntelligBotHandler(private val botConfig: BotConfig.JsonData) : BotHandler(botConfig.token) {
+class ArtificIntelligBotHandler : BotHandler(telegramBotToken) {
 
-    private val authority = SimpleAuthority(botConfig.creatorId)
-    private val commands = CommandRegistry(botConfig.username, authority)
-
-    private val ce = CommandExecutor(botConfig)
+    private val authority = SimpleAuthority(creatorId)
+    private val registry = CommandRegistry(telegramBotUsername, authority)
+    private val commandExecutor = CommandExecutor()
 
     init {
-        commands.run {
-            register(simpleCommand(CMD_START) { ce.execute(Start(it), checkRights = false) })
-            register(simpleCommand(CMD_MYID) { ce.execute(MyId(it), checkRights = false) })
-            register(simpleCommand(CMD_ABOUT) { ce.execute(About(it), checkRights = false) })
+        registry.run {
+            register(simpleCommand(CMD_START) { commandExecutor.execute(Start(it), checkRights = false) })
+            register(simpleCommand(CMD_MYID) { commandExecutor.execute(MyId(it), checkRights = false) })
+            register(simpleCommand(CMD_ABOUT) { commandExecutor.execute(About(it), checkRights = false) })
 
-            register(simpleCommand(CMD_CHAT) { ce.execute(ChatGPT(it), isLongtimeCommand = true) })
-            register(simpleCommand(CMD_GPT_VISION) { ce.execute(GPT4Vision(it), isLongtimeCommand = true) })
-            register(simpleCommand(CMD_CHATCTX) { ce.execute(ChatCtx(it)) })
-            register(simpleCommand(CMD_CHAT_CTX_REMOVE) { ce.execute(ChatCtxRemove(it)) })
+            register(simpleCommand(CMD_CHAT) { commandExecutor.execute(ChatGPT(it), isLongtimeCommand = true) })
+            register(simpleCommand(CMD_GPT_VISION) { commandExecutor.execute(GPT4Vision(it), isLongtimeCommand = true) })
+            register(simpleCommand(CMD_CHATCTX) { commandExecutor.execute(ChatCtx(it)) })
+            register(simpleCommand(CMD_CHAT_CTX_REMOVE) { commandExecutor.execute(ChatCtxRemove(it)) })
 
-            register(simpleCommand(CMD_DALLE) { ce.execute(DallE2(it), isLongtimeCommand = true) })
-            register(simpleCommand(CMD_DALLE_VARIATIONS) { ce.execute(DalleVariations(it), isLongtimeCommand = true) })
-            register(simpleCommand(CMD_SDIFF) { ce.execute(StableDiffusion(it), isLongtimeCommand = true) })
-            register(simpleCommand(CMD_ASR) { ce.execute(AsrWhisper(it), isLongtimeCommand = true) })
-            register(simpleCommand(CMD_BAN_LIST) { ce.execute(BanList(it)) })
-            register(simpleCommand(CMD_UPTIME) { ce.execute(Uptime(it)) })
-            register(simpleCommand(CMD_SLOW_MODE_LIST) { ce.execute(SlowModeList(it)) })
+            register(simpleCommand(CMD_DALLE) { commandExecutor.execute(DallE2(it), isLongtimeCommand = true) })
+            register(simpleCommand(CMD_DALLE_VARIATIONS) { commandExecutor.execute(DalleVariations(it), isLongtimeCommand = true) })
+            register(simpleCommand(CMD_SDIFF) { commandExecutor.execute(StableDiffusion(it), isLongtimeCommand = true) })
+            register(simpleCommand(CMD_ASR) { commandExecutor.execute(AsrWhisper(it), isLongtimeCommand = true) })
+            register(simpleCommand(CMD_BAN_LIST) { commandExecutor.execute(BanList(it)) })
+            register(simpleCommand(CMD_UPTIME) { commandExecutor.execute(Uptime(it)) })
+            register(simpleCommand(CMD_SLOW_MODE_LIST) { commandExecutor.execute(SlowmodeList(it)) })
 
-            register(simpleCommand(CMD_ENABLE) { ce.execute(ChangeState(it), true) })
-            register(simpleCommand(CMD_DISABLE) { ce.execute(ChangeState(it, true), true) })
-            register(simpleCommand(CMD_BAN_USER) { ce.execute(BanUser(it), true) })
-            register(simpleCommand(CMD_UNBAN_USER) { ce.execute(UnbanUser(it), true) })
-            register(simpleCommand(CMD_SLOW_MODE) { ce.execute(SlowMode(it), true) })
-            register(simpleCommand(CMD_SLOW_MODE_OFF) { ce.execute(SlowModeOff(it), true) })
+            register(simpleCommand(CMD_ENABLE) { commandExecutor.execute(ChangeState(it), true) })
+            register(simpleCommand(CMD_DISABLE) { commandExecutor.execute(ChangeState(it, true), true) })
+            register(simpleCommand(CMD_BAN_USER) { commandExecutor.execute(BanUser(it), true) })
+            register(simpleCommand(CMD_UNBAN_USER) { commandExecutor.execute(UnbanUser(it), true) })
+            register(simpleCommand(CMD_SLOW_MODE) { commandExecutor.execute(SlowMode(it), true) })
+            register(simpleCommand(CMD_SLOW_MODE_OFF) { commandExecutor.execute(SlowModeOff(it), true) })
 
-            register(simpleCommand(CMD_ADD_ADMIN) { ce.execute(AddAdmin(it), isCreatorCommand = true) })
-            register(simpleCommand(CMD_RM_ADMIN) { ce.execute(RemoveAdmin(it), true) })
-            register(simpleCommand(CMD_ADMIN_LIST) { ce.execute(AdminList(it), true, userChatOnly = true) })
+            register(simpleCommand(CMD_ADD_ADMIN) { commandExecutor.execute(AddAdmin(it), isCreatorCommand = true) })
+            register(simpleCommand(CMD_RM_ADMIN) { commandExecutor.execute(RemoveAdmin(it), true) })
+            register(simpleCommand(CMD_ADMIN_LIST) { commandExecutor.execute(AdminList(it), true, userChatOnly = true) })
 
-            register(simpleCommand(CMD_CHATS_WHITE_LIST) { ce.execute(ChatsWhiteList(it), true, userChatOnly = true) })
-            register(simpleCommand(CMD_ADD_CHAT) { ce.execute(AddChat(it), isCreatorCommand = true) })
-            register(simpleCommand(CMD_RM_CHAT) { ce.execute(RemoveChat(it), true) })
+            register(simpleCommand(CMD_CHATS_WHITE_LIST) { commandExecutor.execute(ChatsWhitelist(it), true, userChatOnly = true) })
+            register(simpleCommand(CMD_ADD_CHAT) { commandExecutor.execute(AddChat(it), isCreatorCommand = true) })
+            register(simpleCommand(CMD_RM_CHAT) { commandExecutor.execute(RemoveChat(it), true) })
 
-            register(simpleCommand(CMD_UPDATE_API_KEY) { ce.execute(UpdateApiKey(it), userChatOnly = true, isCreatorCommand = true) })
+            register(simpleCommand(CMD_UPDATE_API_KEY) {
+                commandExecutor.execute(
+                    UpdateApiKey(it),
+                    userChatOnly = true,
+                    isCreatorCommand = true
+                )
+            })
         }
     }
 
@@ -115,10 +123,10 @@ class ArtificIntelligBotHandler(private val botConfig: BotConfig.JsonData) : Bot
         SimpleCommand("/$command", c)
 
     override fun getBotUsername() =
-        botConfig.username
+        telegramBotUsername
 
-    override fun handleTelegramApiException(ex: TelegramApiException?) {
-        throw ex ?: TelegramApiException("TelegramApiException") // todo: TelegramApiException
+    override fun handleTelegramApiException(tae: TelegramApiException?) {
+        throw tae ?: TelegramApiException("TelegramApiException") // todo: TelegramApiException
     }
 
     override fun onUpdate(update: Update): BotApiMethod<*>? {
@@ -129,7 +137,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotConfig.JsonData) : Bot
             }
 
         fun chatGPT(ctx: MessageContext) =
-            ce.execute(ChatGPT(ctx), isLongtimeCommand = true)
+            commandExecutor.execute(ChatGPT(ctx), isLongtimeCommand = true)
 
         if (update.hasMessage() && update.message.isReply && update.message.hasText()) {
             val message = update.message
@@ -147,7 +155,7 @@ class ArtificIntelligBotHandler(private val botConfig: BotConfig.JsonData) : Bot
             }
         }
 
-        commands.handleUpdate(this, update)
+        registry.handleUpdate(this, update)
 
         return null
     }

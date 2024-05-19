@@ -5,15 +5,15 @@ import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.dao.DatabaseFactory
-import com.helltar.aibot.dao.tables.ChatWhiteListTable
+import com.helltar.aibot.dao.tables.ChatWhitelistTable
 
-class ChatsWhiteList(ctx: MessageContext) : BotCommand(ctx) {
+class ChatsWhitelist(ctx: MessageContext) : BotCommand(ctx) {
 
     override fun run() {
         val text =
-            DatabaseFactory.chatWhiteList.getList().joinToString("\n") {
-                val title = it[ChatWhiteListTable.title]?.let { title -> "<i>($title)</i>" } ?: "null"
-                "<code>${it[ChatWhiteListTable.chatId]}</code> $title <i>(${it[ChatWhiteListTable.datetime]})</i>"
+            DatabaseFactory.chatWhitelistDAO.getList().joinToString("\n") {
+                val title = it[ChatWhitelistTable.title]?.let { title -> "<i>($title)</i>" } ?: "null"
+                "<code>${it[ChatWhitelistTable.chatId]}</code> $title <i>(${it[ChatWhitelistTable.datetime]})</i>"
             }
 
         replyToMessage(text.ifEmpty { Strings.LIST_IS_EMPTY })

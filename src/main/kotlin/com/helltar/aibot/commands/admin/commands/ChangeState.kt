@@ -1,4 +1,4 @@
-package com.helltar.aibot.commands.admin.command
+package com.helltar.aibot.commands.admin.commands
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
@@ -15,7 +15,7 @@ class ChangeState(ctx: MessageContext, private val disable: Boolean = false) : B
                     Commands.disalableCommandsList.forEach { commandName ->
                         append("<code>$commandName</code> ")
 
-                        if (DatabaseFactory.commandsState.isDisabled(commandName))
+                        if (DatabaseFactory.commandsDAO.isDisabled(commandName))
                             append("➖")
                         else
                             append("➕")
@@ -44,19 +44,19 @@ class ChangeState(ctx: MessageContext, private val disable: Boolean = false) : B
         if (disable) Commands.CMD_DISABLE else Commands.CMD_ENABLE
 
     private fun enable(commandName: String) {
-        if (!DatabaseFactory.commandsState.isDisabled(commandName))
+        if (!DatabaseFactory.commandsDAO.isDisabled(commandName))
             replyToMessage(String.format(Strings.COMMAND_ALREADY_ENABLED, commandName))
         else {
-            DatabaseFactory.commandsState.changeState(commandName, false)
+            DatabaseFactory.commandsDAO.changeState(commandName, false)
             replyToMessage(String.format(Strings.COMMAND_ENABLED, commandName))
         }
     }
 
     private fun disable(commandName: String) {
-        if (DatabaseFactory.commandsState.isDisabled(commandName))
+        if (DatabaseFactory.commandsDAO.isDisabled(commandName))
             replyToMessage(String.format(Strings.COMMAND_ALREADY_DISABLED, commandName))
         else {
-            DatabaseFactory.commandsState.changeState(commandName, true)
+            DatabaseFactory.commandsDAO.changeState(commandName, true)
             replyToMessage(String.format(Strings.COMMAND_DISABLED, commandName))
         }
     }

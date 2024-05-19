@@ -1,7 +1,9 @@
 package com.helltar.aibot.commands
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.BotConfig
+import com.helltar.aibot.BotConfig.DIR_FILES
+import com.helltar.aibot.BotConfig.FILE_NAME_LOADING_GIF
+import com.helltar.aibot.BotConfig.creatorId
 import com.helltar.aibot.dao.DatabaseFactory
 import com.helltar.aibot.dao.tables.ApiKeyType
 import org.telegram.telegrambots.meta.api.methods.ParseMode
@@ -29,19 +31,19 @@ abstract class BotCommand(val ctx: MessageContext) {
     abstract fun getCommandName(): String
 
     fun isCommandDisabled(command: String) =
-        DatabaseFactory.commandsState.isDisabled(command)
+        DatabaseFactory.commandsDAO.isDisabled(command)
 
     fun isChatInWhiteList() =
-        DatabaseFactory.chatWhiteList.isChatExists(ctx.chatId())
+        DatabaseFactory.chatWhitelistDAO.isChatExists(ctx.chatId())
 
     fun isUserBanned(userId: Long) =
-        DatabaseFactory.banList.isUserBanned(userId)
+        DatabaseFactory.banListDAO.isUserBanned(userId)
 
     fun isAdmin() =
-        DatabaseFactory.sudoers.isAdmin(userId)
+        DatabaseFactory.sudoersDAO.isAdmin(userId)
 
     fun isCreator(userId: Long = this.userId) =
-        DatabaseFactory.sudoers.isCreator(userId)
+        userId == creatorId
 
     fun replyToMessage(
         text: String,
@@ -69,13 +71,13 @@ abstract class BotCommand(val ctx: MessageContext) {
 
     // todo: getLoadingGifFileId
     fun getLoadingGifFileId() =
-        DatabaseFactory.filesIds.getFileId(BotConfig.FILE_LOADING_GIF)
+        DatabaseFactory.filesDAO.getFileId(FILE_NAME_LOADING_GIF)
             ?: run {
-                val message = sendDocument(File("${BotConfig.DIR_FILES}/${BotConfig.FILE_LOADING_GIF}"))
+                val message = sendDocument(File("$DIR_FILES/$FILE_NAME_LOADING_GIF"))
                 val fileId = message.document.fileId
                 deleteMessage(message.messageId)
 
-                DatabaseFactory.filesIds.add(BotConfig.FILE_LOADING_GIF, fileId)
+                DatabaseFactory.filesDAO.add(FILE_NAME_LOADING_GIF, fileId)
 
                 return fileId
             }
@@ -94,7 +96,7 @@ abstract class BotCommand(val ctx: MessageContext) {
             else -> ApiKeyType.USER
         }
 
-        return DatabaseFactory.apiKeys.getApiKey(provider, apiKeyType) ?: DatabaseFactory.apiKeys.getApiKey(provider, ApiKeyType.USER) // todo: getApiKey
+        return DatabaseFactory.apiKeyDAO.getApiKey(provider, apiKeyType) ?: DatabaseFactory.apiKeyDAO.getApiKey(provider, ApiKeyType.USER) // todo: getApiKey
     }
 
     protected fun replyToMessageWithPhoto(file: File, caption: String = "", messageId: Int = message.messageId): Message =

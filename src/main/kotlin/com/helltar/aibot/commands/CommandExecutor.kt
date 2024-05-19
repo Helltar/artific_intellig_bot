@@ -1,15 +1,15 @@
 package com.helltar.aibot.commands
 
-import com.helltar.aibot.BotConfig
+import com.helltar.aibot.BotConfig.creatorId
 import com.helltar.aibot.RequestExecutor
 import com.helltar.aibot.Strings
 import com.helltar.aibot.dao.DatabaseFactory
-import com.helltar.aibot.dao.tables.SlowModeTable
+import com.helltar.aibot.dao.tables.SlowmodeTable
 import org.slf4j.LoggerFactory
 import org.telegram.telegrambots.meta.api.objects.User
 import java.util.concurrent.TimeUnit
 
-class CommandExecutor(private val botConfig: BotConfig.JsonData) {
+class CommandExecutor {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -36,7 +36,7 @@ class CommandExecutor(private val botConfig: BotConfig.JsonData) {
             if (!checkRights)
                 return@also
 
-            val isCreator = userId == botConfig.creatorId
+            val isCreator = userId == creatorId
             val isAdmin = bc.isAdmin()
 
             if (isCreatorCommand && !isCreator)
@@ -49,7 +49,7 @@ class CommandExecutor(private val botConfig: BotConfig.JsonData) {
                 return@also
 
             if (bc.isUserBanned(userId)) {
-                val reason = DatabaseFactory.banList.getReason(userId) ?: "\uD83E\uDD37\u200D♂️" // 🤷‍♂️
+                val reason = DatabaseFactory.banListDAO.getReason(userId) ?: "\uD83E\uDD37\u200D♂️" // 🤷‍♂️
                 bc.replyToMessage(String.format(Strings.BAN_AND_REASON, reason))
                 return
             }
@@ -101,14 +101,14 @@ class CommandExecutor(private val botConfig: BotConfig.JsonData) {
     }
 
     private fun checkSlowMode(user: User): Long {
-        val slowModeState = DatabaseFactory.slowMode.getSlowModeState(user.id) ?: return 0
+        val slowModeState = DatabaseFactory.slowmodeDAO.getSlowModeState(user.id) ?: return 0
 
-        var userRequests = slowModeState[SlowModeTable.requests]
-        val limit = slowModeState[SlowModeTable.limit]
+        var userRequests = slowModeState[SlowmodeTable.requests]
+        val limit = slowModeState[SlowmodeTable.limit]
 
         if (userRequests >= limit) {
             val timestamp = System.currentTimeMillis()
-            val lastRequest = slowModeState[SlowModeTable.lastRequestTimestamp]
+            val lastRequest = slowModeState[SlowmodeTable.lastRequestTimestamp]
 
             if ((lastRequest + TimeUnit.HOURS.toMillis(1)) > timestamp)
                 return TimeUnit.MILLISECONDS.toSeconds((lastRequest + TimeUnit.HOURS.toMillis(1)) - timestamp)
@@ -116,7 +116,7 @@ class CommandExecutor(private val botConfig: BotConfig.JsonData) {
                 userRequests = 0
         }
 
-        DatabaseFactory.slowMode.update(user, limit, userRequests + 1)
+        DatabaseFactory.slowmodeDAO.update(user, limit, userRequests + 1)
 
         return 0
     }

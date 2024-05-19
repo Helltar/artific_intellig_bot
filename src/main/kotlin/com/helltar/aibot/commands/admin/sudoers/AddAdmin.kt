@@ -1,4 +1,4 @@
-package com.helltar.aibot.commands.admin.admin
+package com.helltar.aibot.commands.admin.sudoers
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
@@ -17,7 +17,7 @@ class AddAdmin(ctx: MessageContext) : BotCommand(ctx) {
 
         val username = if (args.size >= 2) args[1] else null
 
-        if (DatabaseFactory.sudoers.add(userId, username))
+        if (DatabaseFactory.sudoersDAO.add(userId, username))
             replyToMessage(Strings.ADMIN_ADDED)
         else
             replyToMessage(Strings.ADMIN_EXISTS)

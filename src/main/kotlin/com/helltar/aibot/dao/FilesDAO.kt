@@ -3,9 +3,9 @@ package com.helltar.aibot.dao
 import com.helltar.aibot.dao.DatabaseFactory.dbQuery
 import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.select
-import com.helltar.aibot.dao.tables.FilesIdsTable as FilesIdsTable
+import com.helltar.aibot.dao.tables.FilesTable as FilesIdsTable
 
-class FilesIds {
+class FilesDAO {
 
     fun add(name: String, fileId: String) = dbQuery {
         FilesIdsTable.insertIgnore {

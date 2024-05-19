@@ -1,4 +1,4 @@
-package com.helltar.aibot.commands.admin.admin
+package com.helltar.aibot.commands.admin.sudoers
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
@@ -18,7 +18,7 @@ class RemoveAdmin(ctx: MessageContext) : BotCommand(ctx) {
         if (isCreator(userId))
             return
 
-        if (DatabaseFactory.sudoers.remove(userId))
+        if (DatabaseFactory.sudoersDAO.remove(userId))
             replyToMessage(Strings.ADMIN_REMOVED)
         else
             replyToMessage(Strings.ADMIN_NOT_EXISTS)

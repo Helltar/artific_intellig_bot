@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.time.LocalDateTime
 
-class Sudoers {
+class SudoersDAO {
 
     fun add(userId: Long, username: String?) = dbQuery {
         SudoersTable.insertIgnore {
@@ -30,9 +30,5 @@ class Sudoers {
 
     fun isAdmin(userId: Long) = dbQuery {
         SudoersTable.select { SudoersTable.userId eq userId }.count() > 0
-    }
-
-    fun isCreator(userId: Long) = dbQuery {
-        userId == SudoersTable.selectAll().first()[SudoersTable.userId] // todo: isCreator (first())
     }
 }

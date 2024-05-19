@@ -3,7 +3,7 @@ package com.helltar.aibot.dao.tables
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.datetime
 
-object ChatWhiteListTable : Table() {
+object ChatWhitelistTable : Table() {
 
     val chatId = long("id")
     val title = varchar("title", 64).nullable()

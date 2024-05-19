@@ -1,4 +1,4 @@
-package com.helltar.aibot.commands.admin.admin
+package com.helltar.aibot.commands.admin.sudoers
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
@@ -11,7 +11,7 @@ class AdminList(ctx: MessageContext) : BotCommand(ctx) {
 
     override fun run() {
         val list =
-            DatabaseFactory.sudoers.getList().joinToString("\n") {
+            DatabaseFactory.sudoersDAO.getList().joinToString("\n") {
                 "<code>${it[SudoersTable.userId]}</code> <b>${it[SudoersTable.username]}</b> <i>(${it[SudoersTable.datetime]})</i>"
             }
 

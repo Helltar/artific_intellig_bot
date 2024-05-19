@@ -13,11 +13,11 @@ class SlowMode(ctx: MessageContext) : BotCommand(ctx) {
             val user = message.replyToMessage?.from ?: return
             val limit = args.first().toIntOrNull() ?: return
 
-            if (DatabaseFactory.slowMode.add(user, limit))
+            if (DatabaseFactory.slowmodeDAO.add(user, limit))
                 replyToMessage(String.format(Strings.SLOW_MODE_ON, limit))
             else {
                 replyToMessage(String.format(Strings.SLOW_MODE_ON_UPDATE, limit))
-                DatabaseFactory.slowMode.update(user, limit)
+                DatabaseFactory.slowmodeDAO.update(user, limit)
             }
         } else {
             val userId =
@@ -28,10 +28,10 @@ class SlowMode(ctx: MessageContext) : BotCommand(ctx) {
 
             val limit = args[1].toIntOrNull() ?: return
 
-            if (DatabaseFactory.slowMode.add(userId, limit))
+            if (DatabaseFactory.slowmodeDAO.add(userId, limit))
                 replyToMessage(String.format(Strings.SLOW_MODE_ON, limit))
             else
-                if (DatabaseFactory.slowMode.update(userId, limit))
+                if (DatabaseFactory.slowmodeDAO.update(userId, limit))
                     replyToMessage(String.format(Strings.SLOW_MODE_ON_UPDATE, limit))
         }
     }

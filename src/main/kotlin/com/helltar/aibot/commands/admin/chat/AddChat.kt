@@ -17,7 +17,7 @@ class AddChat(ctx: MessageContext) : BotCommand(ctx) {
 
         val title = if (args.size >= 2) args[1] else ctx.message().chat.title
 
-        if (DatabaseFactory.chatWhiteList.add(chatId, title))
+        if (DatabaseFactory.chatWhitelistDAO.add(chatId, title))
             replyToMessage(Strings.CHAT_ADDED)
         else
             replyToMessage(Strings.CHAT_EXISTS)
