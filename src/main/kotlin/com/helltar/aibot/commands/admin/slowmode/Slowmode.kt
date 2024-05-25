@@ -6,7 +6,7 @@ import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.dao.DatabaseFactory
 
-class SlowMode(ctx: MessageContext) : BotCommand(ctx) {
+class Slowmode(ctx: MessageContext) : BotCommand(ctx) {
 
     override fun run() {
         if (isReply) {

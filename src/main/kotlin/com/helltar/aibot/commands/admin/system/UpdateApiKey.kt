@@ -38,13 +38,13 @@ class UpdateApiKey(ctx: MessageContext) : BotCommand(ctx) {
                 }
         }
 
-        if (DatabaseFactory.apiKeyDAO.getApiKey(provider, type) != null) {
-            if (DatabaseFactory.apiKeyDAO.update(provider, apiKey, type)) {
+        if (DatabaseFactory.apiKeysDAO.getApiKey(provider, type) != null) {
+            if (DatabaseFactory.apiKeysDAO.update(provider, apiKey, type)) {
                 replyToMessage(Strings.PROVIDER_API_KEY_SUCCESS_UPDATE.format(provider, type.toString()))
             } else
                 replyToMessage(Strings.API_KEY_FAIL_UPDATE.format("$provider $type $apiKey"))
         } else {
-            if (DatabaseFactory.apiKeyDAO.add(provider, apiKey, type))
+            if (DatabaseFactory.apiKeysDAO.add(provider, apiKey, type))
                 replyToMessage(Strings.PROVIDER_API_KEY_SUCCESS_ADD.format(provider, type.toString()))
             else
                 replyToMessage(Strings.API_KEY_FAIL_ADD.format("$provider $type $apiKey"))

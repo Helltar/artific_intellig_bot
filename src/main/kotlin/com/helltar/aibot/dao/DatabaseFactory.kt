@@ -1,7 +1,5 @@
 package com.helltar.aibot.dao
 
-import com.helltar.aibot.BotConfig.DIR_DB
-import com.helltar.aibot.BotConfig.FILENAME_DATABASE
 import com.helltar.aibot.BotConfig.creatorId
 import com.helltar.aibot.commands.Commands.disalableCommandsList
 import com.helltar.aibot.dao.tables.*
@@ -17,13 +15,15 @@ import java.io.File
 
 object DatabaseFactory {
 
-    val apiKeyDAO = ApiKeyDAO()
+    val apiKeysDAO = ApiKeyDAO()
     val banListDAO = BanListDAO()
     val chatWhitelistDAO = ChatWhitelistDAO()
     val commandsDAO = CommandsDAO()
     val filesDAO = FilesDAO()
     val slowmodeDAO = SlowmodeDAO()
     val sudoersDAO = SudoersDAO()
+
+    private const val DIR_DB = "data/database"
 
     fun init() {
         val databaseDir = File(DIR_DB)
@@ -32,7 +32,7 @@ object DatabaseFactory {
             throw RuntimeException("error when create database-dir: $DIR_DB")
 
         val driver = "org.sqlite.JDBC"
-        val url = "jdbc:sqlite:$FILENAME_DATABASE"
+        val url = "jdbc:sqlite:$DIR_DB/database.db"
         val database = Database.connect(url, driver)
 
         transaction(database) {

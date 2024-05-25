@@ -96,7 +96,7 @@ abstract class BotCommand(val ctx: MessageContext) {
             else -> ApiKeyType.USER
         }
 
-        return DatabaseFactory.apiKeyDAO.getApiKey(provider, apiKeyType) ?: DatabaseFactory.apiKeyDAO.getApiKey(provider, ApiKeyType.USER) // todo: getApiKey
+        return DatabaseFactory.apiKeysDAO.getApiKey(provider, apiKeyType) ?: DatabaseFactory.apiKeysDAO.getApiKey(provider, ApiKeyType.USER) // todo: getApiKey
     }
 
     protected fun replyToMessageWithPhoto(file: File, caption: String = "", messageId: Int = message.messageId): Message =

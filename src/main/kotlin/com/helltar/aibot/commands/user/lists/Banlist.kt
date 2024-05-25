@@ -8,7 +8,7 @@ import com.helltar.aibot.dao.DatabaseFactory
 import com.helltar.aibot.dao.tables.BannedUsersTable
 import com.helltar.aibot.dao.tables.BannedUsersTable.reason
 
-class BanList(ctx: MessageContext) : BotCommand(ctx) {
+class Banlist(ctx: MessageContext) : BotCommand(ctx) {
 
     override fun run() {
         val list =

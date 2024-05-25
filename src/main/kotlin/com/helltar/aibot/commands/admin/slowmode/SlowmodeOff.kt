@@ -6,7 +6,7 @@ import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.dao.DatabaseFactory
 
-class SlowModeOff(ctx: MessageContext) : BotCommand(ctx) {
+class SlowmodeOff(ctx: MessageContext) : BotCommand(ctx) {
 
     override fun run() {
         val userId =

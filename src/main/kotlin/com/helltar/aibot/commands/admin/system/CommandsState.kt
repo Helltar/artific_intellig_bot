@@ -1,4 +1,4 @@
-package com.helltar.aibot.commands.admin.commands
+package com.helltar.aibot.commands.admin.system
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
@@ -6,7 +6,7 @@ import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.dao.DatabaseFactory
 
-class ChangeState(ctx: MessageContext, private val disable: Boolean = false) : BotCommand(ctx) {
+class CommandsState(ctx: MessageContext, private val disable: Boolean = false) : BotCommand(ctx) {
 
     override fun run() {
         if (args.isEmpty()) {

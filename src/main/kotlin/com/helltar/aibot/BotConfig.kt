@@ -4,15 +4,14 @@ import io.github.cdimascio.dotenv.dotenv
 
 object BotConfig {
 
-    val telegramBotToken = readEnv("BOT_TOKEN")
-    val telegramBotUsername = readEnv("BOT_USERNAME")
+    val telegramBotToken = readEnv("BOT_TOKEN").ifBlank { throw RuntimeException("bad BOT_TOKEN env") }
+    val telegramBotUsername = readEnv("BOT_USERNAME").ifBlank { throw RuntimeException("bad BOT_USERNAME env") }
     val creatorId = readEnv("CREATOR_ID").toLongOrNull() ?: throw RuntimeException("bad CREATOR_ID env")
 
-    const val DIR_DB = "data/database"
+
     const val DIR_LOCALE = "data/locale"
     const val DIR_FILES = "data/files"
 
-    const val FILENAME_DATABASE = "$DIR_DB/database.db"
     const val FILE_NAME_LOADING_GIF = "loading.gif"
 
     const val PROVIDER_OPENAI_COM = "openai.com"
