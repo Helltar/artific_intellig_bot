@@ -21,86 +21,91 @@ class CommandExecutor {
         userChatOnly: Boolean = false,
         isLongtimeCommand: Boolean = false
     ) {
-
         val user = botCommand.ctx.user()
         val userId = user.id
         val chat = botCommand.ctx.message().chat
         val commandName = botCommand.getCommandName()
 
-        log.info("$commandName: ${chat.id} $userId ${user.userName} ${user.firstName} ${chat.title} : ${botCommand.ctx.message().text}")
+        val logMessage = "$commandName: ${chat.id} $userId ${user.userName} ${user.firstName} ${chat.title} : ${botCommand.ctx.message().text}"
+        log.info(logMessage)
 
         if (userChatOnly && !chat.isUserChat)
             return
 
-        botCommand.also { bc ->
-            if (!checkRights)
-                return@also
+        if (!checkRights) {
+            addRequest(botCommand, isLongtimeCommand)
+            return
+        }
 
-            val isCreator = userId == creatorId
-            val isAdmin = bc.isAdmin()
+        val isCreator = userId == creatorId
 
-            if (isCreatorCommand && !isCreator)
+        if (isCreatorCommand && !isCreator)
+            return
+
+        val isAdmin = botCommand.isAdmin()
+
+        if (isAdminCommand && !isAdmin)
+            return
+
+        if (isCreator or isAdmin) {
+            addRequest(botCommand, isLongtimeCommand)
+            return
+        }
+
+        if (botCommand.isUserBanned(userId)) {
+            val reason = DatabaseFactory.banListDAO.getReason(userId) ?: "\uD83E\uDD37\u200D♂️" // 🤷‍♂️
+            botCommand.replyToMessage(Strings.BAN_AND_REASON.format(reason))
+            return
+        }
+
+        if (!botCommand.isChatInWhiteList()) {
+            botCommand.replyToMessage(Strings.COMMAND_NOT_SUPPORTED_IN_CHAT)
+            return
+        }
+
+        if (botCommand.isCommandDisabled(commandName)) {
+            botCommand.replyToMessage(Strings.COMMAND_TEMPORARY_DISABLED)
+            return
+        }
+
+        if (commandName in Commands.disalableCommandsList) {
+            val slowmodeRemainingSeconds = checkSlowmode(user)
+
+            if (slowmodeRemainingSeconds > 0) {
+                botCommand.replyToMessage(Strings.SLOW_MODE_PLEASE_WAIT.format(slowmodeRemainingSeconds))
                 return
-
-            if (isAdminCommand && !isAdmin)
-                return
-
-            if (isCreator or isAdmin)
-                return@also
-
-            if (bc.isUserBanned(userId)) {
-                val reason = DatabaseFactory.banListDAO.getReason(userId) ?: "\uD83E\uDD37\u200D♂️" // 🤷‍♂️
-                bc.replyToMessage(String.format(Strings.BAN_AND_REASON, reason))
-                return
-            }
-
-            if (!bc.isChatInWhiteList()) {
-                bc.replyToMessage(Strings.COMMAND_NOT_SUPPORTED_IN_CHAT)
-                return
-            }
-
-            if (bc.isCommandDisabled(commandName)) {
-                bc.replyToMessage(Strings.COMMAND_TEMPORARY_DISABLED)
-                return
-            }
-
-            if (commandName in Commands.disalableCommandsList) {
-                val slowModeRemainingSeconds = checkSlowMode(user)
-
-                if (slowModeRemainingSeconds > 0) {
-                    bc.replyToMessage(String.format(Strings.SLOW_MODE_PLEASE_WAIT, slowModeRemainingSeconds))
-                    return
-                }
             }
         }
 
-        val requestKey = "${botCommand.javaClass.simpleName}@$userId"
+        addRequest(botCommand, isLongtimeCommand)
+    }
 
-        if (!RequestExecutor.addRequest(requestKey) { runCommand(botCommand, isLongtimeCommand) }) {
-            botCommand.ctx
+    private fun addRequest(command: BotCommand, isLongtimeCommand: Boolean) {
+        val requestKey = "${command.javaClass.simpleName}@${command.ctx.user().id}"
+
+        if (!RequestExecutor.addRequest(requestKey) { runCommand(command, isLongtimeCommand) }) {
+            command.ctx
                 .replyToMessage()
                 .setText(Strings.MANY_REQUEST)
-                .callAsync(botCommand.ctx.sender)
+                .callAsync(command.ctx.sender)
         }
     }
 
-    private fun runCommand(botCommand: BotCommand, isLongtimeCommand: Boolean) {
-        botCommand.also { bc ->
-            if (isLongtimeCommand) {
-                val gifCaption = Strings.localizedString(Strings.CHAT_WAIT_MESSAGE, bc.userLanguageCode)
-                val waitMessageId = bc.replyToMessageWithDocument(bc.getLoadingGifFileId(), gifCaption)
+    private fun runCommand(command: BotCommand, isLongtimeCommand: Boolean) {
+        if (isLongtimeCommand) {
+            val gifCaption = Strings.localizedString(Strings.CHAT_WAIT_MESSAGE, command.userLanguageCode)
+            val waitMessageId = command.replyToMessageWithDocument(command.getLoadingGifFileId(), gifCaption)
 
-                try {
-                    bc.run()
-                } finally {
-                    bc.deleteMessage(waitMessageId)
-                }
-            } else
-                bc.run()
-        }
+            try {
+                command.run()
+            } finally {
+                command.deleteMessage(waitMessageId)
+            }
+        } else
+            command.run()
     }
 
-    private fun checkSlowMode(user: User): Long {
+    private fun checkSlowmode(user: User): Long {
         val slowModeState = DatabaseFactory.slowmodeDAO.getSlowModeState(user.id) ?: return 0
 
         var userRequests = slowModeState[SlowmodeTable.requests]

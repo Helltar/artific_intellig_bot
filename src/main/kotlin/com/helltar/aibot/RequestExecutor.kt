@@ -7,14 +7,14 @@ import kotlinx.coroutines.launch
 
 object RequestExecutor {
 
-    private val requestsList = hashMapOf<String, Job>()
+    private val requestsMap = hashMapOf<String, Job>()
 
-    fun addRequest(requestKey: String, block: () -> Unit): Boolean {
-        if (requestsList.containsKey(requestKey))
-            if (requestsList[requestKey]?.isCompleted == false)
+    fun addRequest(key: String, block: () -> Unit): Boolean {
+        if (requestsMap.containsKey(key))
+            if (requestsMap[key]?.isCompleted == false)
                 return false
 
-        requestsList[requestKey] = CoroutineScope(Dispatchers.IO).launch { block() }
+        requestsMap[key] = CoroutineScope(Dispatchers.IO).launch { block() }
 
         return true
     }
