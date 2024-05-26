@@ -15,11 +15,8 @@ NOTE: to get your Telegram ID, you can use [@artific_intellig_bot](https://t.me/
 ### Docker
 
 ```bash
-docker pull ghcr.io/helltar/aibot:latest
-```
-```bash
 docker run --rm -d \
-  --name aibot_telegram \
+  --name aibot \
   -e CREATOR_ID=12345 \
   -e BOT_TOKEN=123:xxx \
   -e BOT_USERNAME=name_bot \
