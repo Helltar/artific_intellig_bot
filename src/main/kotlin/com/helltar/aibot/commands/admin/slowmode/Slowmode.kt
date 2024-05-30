@@ -9,32 +9,45 @@ import com.helltar.aibot.dao.DatabaseFactory
 class Slowmode(ctx: MessageContext) : BotCommand(ctx) {
 
     override fun run() {
-        if (isReply) {
-            val user = message.replyToMessage?.from ?: return
-            val limit = args.first().toIntOrNull() ?: return
+        if (args.isEmpty()) {
+            helpMessage()
+            return
+        }
 
-            if (DatabaseFactory.slowmodeDAO.add(user, limit))
-                replyToMessage(String.format(Strings.SLOW_MODE_ON, limit))
-            else {
-                replyToMessage(String.format(Strings.SLOW_MODE_ON_UPDATE, limit))
-                DatabaseFactory.slowmodeDAO.update(user, limit)
+        if (isReply) {
+            message.replyToMessage?.from?.let { user ->
+                args.first().toIntOrNull()?.let { limit ->
+                    if (DatabaseFactory.slowmodeDAO.add(user, limit))
+                        replyToMessage(String.format(Strings.SLOW_MODE_ON, limit))
+                    else {
+                        DatabaseFactory.slowmodeDAO.update(user, limit)
+                        replyToMessage(String.format(Strings.SLOW_MODE_ON_UPDATE, limit))
+                    }
+                }
             }
         } else {
-            val userId =
-                if (args.size >= 2)
-                    args.first().toLongOrNull() ?: return
+            if (args.size < 3) {
+                helpMessage()
+                return
+            }
+
+            val userId = args[0].toLongOrNull()
+            val limit = args[1].toIntOrNull()
+            val username = args[2]
+
+            if (userId != null && limit != null && username.isNotBlank()) {
+                if (DatabaseFactory.slowmodeDAO.add(userId, username, limit))
+                    replyToMessage(Strings.SLOW_MODE_ON.format(limit))
                 else
-                    return
-
-            val limit = args[1].toIntOrNull() ?: return
-
-            if (DatabaseFactory.slowmodeDAO.add(userId, limit))
-                replyToMessage(String.format(Strings.SLOW_MODE_ON, limit))
-            else
-                if (DatabaseFactory.slowmodeDAO.update(userId, limit))
-                    replyToMessage(String.format(Strings.SLOW_MODE_ON_UPDATE, limit))
+                    if (DatabaseFactory.slowmodeDAO.update(userId, username, limit))
+                        replyToMessage(Strings.SLOW_MODE_ON_UPDATE.format(limit))
+            } else
+                helpMessage()
         }
     }
+
+    private fun helpMessage() =
+        replyToMessage(Strings.SLOW_MODE_BAD_ARG)
 
     override fun getCommandName() =
         Commands.CMD_SLOW_MODE

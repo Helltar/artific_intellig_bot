@@ -2,8 +2,11 @@ package com.helltar.aibot.dao
 
 import com.helltar.aibot.dao.DatabaseFactory.dbQuery
 import com.helltar.aibot.dao.tables.SlowmodeTable
-import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insertIgnore
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.update
 import org.telegram.telegrambots.meta.api.objects.User
 
 class SlowmodeDAO {
@@ -20,10 +23,10 @@ class SlowmodeDAO {
             .insertedCount > 0
     }
 
-    fun add(userId: Long, limit: Int) = dbQuery {
+    fun add(userId: Long, username: String, limit: Int) = dbQuery {
         SlowmodeTable.insertIgnore {
             it[this.userId] = userId
-            it[username] = null
+            it[this.username] = username
             it[firstName] = "null"
             it[this.limit] = limit
             it[requests] = 0
@@ -44,14 +47,15 @@ class SlowmodeDAO {
         }
     }
 
-    fun update(userId: Long, limit: Int) = dbQuery {
+    fun update(userId: Long, username: String, limit: Int) = dbQuery {
         SlowmodeTable.update({ SlowmodeTable.userId eq userId }) {
             it[this.limit] = limit
+            it[this.username] = username
         } > 0
     }
 
     fun getSlowModeState(userId: Long) = dbQuery {
-        SlowmodeTable.select { SlowmodeTable.userId eq userId }.singleOrNull()
+        SlowmodeTable.selectAll().where { SlowmodeTable.userId eq userId }.singleOrNull()
     }
 
     fun offSlowMode(userId: Long) = dbQuery {

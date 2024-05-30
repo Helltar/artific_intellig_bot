@@ -74,6 +74,7 @@ object Strings {
     const val SLOW_MODE_ON_UPDATE = "\uD83D\uDD04 Slow mode already on, update, <b>%d</b> requests per hour" // 🔄
     const val SLOW_MODE_OFF = "✅ Slow mode off"
     const val SLOW_MODE_OFF_NOT_ENABLED = "ℹ\uFE0F Slow mode not enabled for this user" // ℹ️
+    const val SLOW_MODE_BAD_ARG = "\uD83E\uDD2D Bad args., example: <code>/slowmode 123456789 2 username</code> (userId, limit, username), or if this is a reply: <code>/slowmode 2</code> (limit only)" // 🤭
 
     private val log = LoggerFactory.getLogger(Strings.javaClass)
 
