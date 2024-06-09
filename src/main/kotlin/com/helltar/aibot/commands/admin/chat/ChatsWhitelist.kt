@@ -9,7 +9,7 @@ import com.helltar.aibot.dao.tables.ChatWhitelistTable
 
 class ChatsWhitelist(ctx: MessageContext) : BotCommand(ctx) {
 
-    override fun run() {
+    override suspend fun run() {
         val text =
             DatabaseFactory.chatWhitelistDAO.getList().joinToString("\n") {
                 val title = it[ChatWhitelistTable.title]?.let { title -> "<i>($title)</i>" } ?: "null"

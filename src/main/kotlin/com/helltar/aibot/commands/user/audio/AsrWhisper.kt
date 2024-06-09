@@ -3,11 +3,13 @@ package com.helltar.aibot.commands.user.audio
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.FileDataPart
-import com.helltar.aibot.BotConfig.PROVIDER_OPENAI_COM
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
+import com.helltar.aibot.dao.DatabaseFactory.PROVIDER_OPENAI_COM
 import com.helltar.aibot.utils.NetworkUtils.httpUpload
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
@@ -32,7 +34,7 @@ class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    override fun run() {
+    override suspend fun run() {
         if (isNotReply) {
             replyToMessage(Strings.ASR_WHISPER_USE_AS_REPLY)
             return
@@ -47,7 +49,7 @@ class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
 
         val fileId = fileData.first?.first ?: return
         val fileName = fileData.first?.second ?: return
-        var outFile = File.createTempFile("file", fileName)
+        var outFile = withContext(Dispatchers.IO) { File.createTempFile("file", fileName) }
 
         try {
             ctx.sender.downloadFile(Methods.getFile(fileId).call(ctx.sender), outFile)
@@ -154,7 +156,7 @@ class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
         }
     }
 
-    private fun uploadAudio(file: File): String {
+    private suspend fun uploadAudio(file: File): String {
         val url = "https://api.openai.com/v1/audio/transcriptions"
         val headers = mapOf("Authorization" to "Bearer ${getApiKey(PROVIDER_OPENAI_COM)}")
         val parameters = listOf("model" to "whisper-1")

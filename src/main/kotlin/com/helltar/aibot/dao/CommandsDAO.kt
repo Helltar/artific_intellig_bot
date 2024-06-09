@@ -2,30 +2,22 @@ package com.helltar.aibot.dao
 
 import com.helltar.aibot.dao.DatabaseFactory.dbQuery
 import com.helltar.aibot.dao.tables.CommandsStateTable
-import org.jetbrains.exposed.sql.insertIgnore
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
-import java.time.LocalDateTime
+import java.time.Clock
+import java.time.Instant
 
 class CommandsDAO {
 
-    fun add(command: String, disable: Boolean = false) = dbQuery {
-        CommandsStateTable.insertIgnore {
-            it[name] = command
-            it[isDisabled] = disable
-            it[datetime] = LocalDateTime.now()
-        }
-    }
-
-    fun changeState(command: String, disable: Boolean) = dbQuery {
+    suspend fun changeState(command: String, disable: Boolean) = dbQuery {
         CommandsStateTable.update({ CommandsStateTable.name eq command }) {
             it[name] = command
             it[isDisabled] = disable
-            it[datetime] = LocalDateTime.now()
+            it[datetime] = Instant.now(Clock.systemUTC())
         }
     }
 
-    fun isDisabled(command: String) = dbQuery {
-        CommandsStateTable.select { CommandsStateTable.name eq command }.singleOrNull()?.get(CommandsStateTable.isDisabled) ?: false
+    suspend fun isDisabled(command: String) = dbQuery {
+        CommandsStateTable.selectAll().where { CommandsStateTable.name eq command }.singleOrNull()?.get(CommandsStateTable.isDisabled) ?: false
     }
 }

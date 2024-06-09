@@ -10,9 +10,9 @@ import com.helltar.aibot.dao.tables.BannedUsersTable.reason
 
 class Banlist(ctx: MessageContext) : BotCommand(ctx) {
 
-    override fun run() {
+    override suspend fun run() {
         val list =
-            DatabaseFactory.banListDAO.getList().joinToString("\n") {
+            DatabaseFactory.banlistDAO.getList().joinToString("\n") {
                 val username = it[BannedUsersTable.username] ?: it[BannedUsersTable.firstName]
                 val reason = it[reason]?.let { reason -> "<i>($reason)</i>" } ?: ""
                 "<code>${it[BannedUsersTable.userId]}</code> <b>$username</b> $reason <i>(${it[BannedUsersTable.datetime]})</i>"

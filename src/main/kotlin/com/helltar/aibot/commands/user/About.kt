@@ -6,7 +6,7 @@ import com.helltar.aibot.commands.Commands
 
 class About(ctx: MessageContext) : BotCommand(ctx) {
 
-    override fun run() {
+    override suspend fun run() {
         replyToMessage(
             """
             <a href="https://github.com/Helltar/artific_intellig_bot">AᎥ</a>

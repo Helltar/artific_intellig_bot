@@ -8,11 +8,11 @@ import com.helltar.aibot.dao.DatabaseFactory
 
 class BanUser(ctx: MessageContext) : BotCommand(ctx) {
 
-    override fun run() {
+    override suspend fun run() {
         val user = ctx.message().replyToMessage?.from ?: return
         val reason = argsText.ifEmpty { null }
 
-        if (DatabaseFactory.banListDAO.banUser(user, reason))
+        if (DatabaseFactory.banlistDAO.banUser(user, reason))
             replyToMessage(Strings.USER_BANNED)
         else
             replyToMessage(Strings.USER_ALREADY_BANNED)

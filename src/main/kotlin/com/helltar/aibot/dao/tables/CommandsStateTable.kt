@@ -1,13 +1,13 @@
 package com.helltar.aibot.dao.tables
 
 import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.javatime.datetime
+import org.jetbrains.exposed.sql.javatime.timestamp
 
 object CommandsStateTable : Table() {
 
-    val name = varchar("name", 32)
-    val isDisabled = bool("isDisabled")
-    val datetime = datetime("datetime")
+    val name = varchar("name", 40)
+    val isDisabled = bool("is_disabled")
+    val datetime = timestamp("datetime")
 
     override val primaryKey = PrimaryKey(name)
 }

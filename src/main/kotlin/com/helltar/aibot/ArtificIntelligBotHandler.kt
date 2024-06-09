@@ -5,9 +5,9 @@ import com.annimon.tgbotsmodule.commands.CommandRegistry
 import com.annimon.tgbotsmodule.commands.SimpleCommand
 import com.annimon.tgbotsmodule.commands.authority.SimpleAuthority
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.BotConfig.creatorId
-import com.helltar.aibot.BotConfig.telegramBotToken
-import com.helltar.aibot.BotConfig.telegramBotUsername
+import com.helltar.aibot.EnvConfig.creatorId
+import com.helltar.aibot.EnvConfig.telegramBotToken
+import com.helltar.aibot.EnvConfig.telegramBotUsername
 import com.helltar.aibot.commands.CommandExecutor
 import com.helltar.aibot.commands.Commands.CMD_ABOUT
 import com.helltar.aibot.commands.Commands.CMD_ADD_ADMIN
@@ -73,6 +73,7 @@ class ArtificIntelligBotHandler : BotHandler(telegramBotToken) {
 
     private val authority = SimpleAuthority(creatorId)
     private val registry = CommandRegistry(telegramBotUsername, authority)
+
     private val commandExecutor = CommandExecutor()
 
     init {
@@ -109,28 +110,11 @@ class ArtificIntelligBotHandler : BotHandler(telegramBotToken) {
             register(simpleCommand(CMD_ADD_CHAT) { commandExecutor.execute(AddChat(it), isCreatorCommand = true) })
             register(simpleCommand(CMD_RM_CHAT) { commandExecutor.execute(RemoveChat(it), true) })
 
-            register(simpleCommand(CMD_UPDATE_API_KEY) {
-                commandExecutor.execute(
-                    UpdateApiKey(it),
-                    userChatOnly = true,
-                    isCreatorCommand = true
-                )
-            })
+            register(simpleCommand(CMD_UPDATE_API_KEY) { commandExecutor.execute(UpdateApiKey(it), userChatOnly = true, isCreatorCommand = true) })
         }
     }
 
-    private fun simpleCommand(command: String, c: Consumer<MessageContext>) =
-        SimpleCommand("/$command", c)
-
-    override fun getBotUsername() =
-        telegramBotUsername
-
-    override fun handleTelegramApiException(tae: TelegramApiException?) {
-        throw tae ?: TelegramApiException("TelegramApiException") // todo: TelegramApiException
-    }
-
     override fun onUpdate(update: Update): BotApiMethod<*>? {
-
         fun Message.hasMentions() =
             this.entities.stream().anyMatch { e ->
                 setOf(EntityType.MENTION, EntityType.TEXTMENTION).contains(e.type)
@@ -159,4 +143,14 @@ class ArtificIntelligBotHandler : BotHandler(telegramBotToken) {
 
         return null
     }
+
+    override fun getBotUsername() =
+        telegramBotUsername
+
+    override fun handleTelegramApiException(tae: TelegramApiException?) {
+        throw tae ?: TelegramApiException("TelegramApiException") // todo: TelegramApiException
+    }
+
+    private fun simpleCommand(command: String, consumer: Consumer<MessageContext>) =
+        SimpleCommand("/$command", consumer)
 }

@@ -8,7 +8,7 @@ import com.helltar.aibot.dao.DatabaseFactory
 
 class CommandsState(ctx: MessageContext, private val disable: Boolean = false) : BotCommand(ctx) {
 
-    override fun run() {
+    override suspend fun run() {
         if (args.isEmpty()) {
             val text =
                 buildString {
@@ -43,7 +43,7 @@ class CommandsState(ctx: MessageContext, private val disable: Boolean = false) :
     override fun getCommandName() =
         if (disable) Commands.CMD_DISABLE else Commands.CMD_ENABLE
 
-    private fun enable(commandName: String) {
+    private suspend fun enable(commandName: String) {
         if (!DatabaseFactory.commandsDAO.isDisabled(commandName))
             replyToMessage(String.format(Strings.COMMAND_ALREADY_ENABLED, commandName))
         else {
@@ -52,7 +52,7 @@ class CommandsState(ctx: MessageContext, private val disable: Boolean = false) :
         }
     }
 
-    private fun disable(commandName: String) {
+    private suspend fun disable(commandName: String) {
         if (DatabaseFactory.commandsDAO.isDisabled(commandName))
             replyToMessage(String.format(Strings.COMMAND_ALREADY_DISABLED, commandName))
         else {

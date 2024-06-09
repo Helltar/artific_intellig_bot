@@ -1,16 +1,16 @@
 package com.helltar.aibot.dao.tables
 
 import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.javatime.datetime
+import org.jetbrains.exposed.sql.javatime.timestamp
 
 enum class ApiKeyType { CREATOR, ADMIN, USER }
 
 object ApiKeysTable : Table() {
 
-    val provider = varchar("provider", 64)
-    val apiKey = varchar("apiKey", 128)
+    val provider = varchar("provider", 40)
+    val apiKey = varchar("key", 150)
     val type = enumeration<ApiKeyType>("type")
-    val datetime = datetime("datetime")
+    val datetime = timestamp("datetime")
 
     override val primaryKey = PrimaryKey(apiKey)
 }

@@ -1,65 +1,66 @@
 package com.helltar.aibot.dao
 
-import com.helltar.aibot.BotConfig.creatorId
+import com.helltar.aibot.EnvConfig.creatorId
+import com.helltar.aibot.EnvConfig.databaseName
+import com.helltar.aibot.EnvConfig.databasePassword
+import com.helltar.aibot.EnvConfig.databaseUser
+import com.helltar.aibot.EnvConfig.postgresqlHost
 import com.helltar.aibot.commands.Commands.disalableCommandsList
 import com.helltar.aibot.dao.tables.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.addLogger
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.io.File
+import java.time.Clock
+import java.time.Instant
 
 object DatabaseFactory {
 
+    const val FILE_NAME_LOADING_GIF = "loading.gif"
+    const val PROVIDER_OPENAI_COM = "openai.com"
+    const val PROVIDER_STABILITY_AI = "stability.ai"
+
+    val apiKeysProviders = setOf(PROVIDER_OPENAI_COM, PROVIDER_STABILITY_AI)
+
     val apiKeysDAO = ApiKeyDAO()
-    val banListDAO = BanListDAO()
+    val banlistDAO = BanlistDAO()
     val chatWhitelistDAO = ChatWhitelistDAO()
     val commandsDAO = CommandsDAO()
     val filesDAO = FilesDAO()
     val slowmodeDAO = SlowmodeDAO()
     val sudoersDAO = SudoersDAO()
 
-    private const val DIR_DB = "data/database"
-
     fun init() {
-        val databaseDir = File(DIR_DB)
-
-        if (!databaseDir.exists() && !databaseDir.mkdirs())
-            throw RuntimeException("error when create database-dir: $DIR_DB")
-
-        val driver = "org.sqlite.JDBC"
-        val url = "jdbc:sqlite:$DIR_DB/database.db"
-        val database = Database.connect(url, driver)
+        val driverClassName = "org.postgresql.Driver"
+        val jdbcURL = "jdbc:postgresql://$postgresqlHost:5432/$databaseName"
+        val database = Database.connect(jdbcURL, driverClassName, databaseUser, databasePassword)
 
         transaction(database) {
-            SchemaUtils.create(
-                ApiKeysTable,
-                BannedUsersTable,
-                ChatWhitelistTable,
-                CommandsStateTable,
-                FilesTable,
-                SlowmodeTable,
-                SudoersTable
-            )
-        }
+            SchemaUtils.create(ApiKeysTable, BannedUsersTable, ChatWhitelistTable, CommandsStateTable, FilesTable, SlowmodeTable, SudoersTable)
 
-        setup(creatorId)
-    }
+            if (SudoersTable.selectAll().count() == 0L) {
+                SudoersTable.insert {
+                    it[this.userId] = creatorId
+                    it[this.username] = "Owner"
+                    it[datetime] = Instant.now(Clock.systemUTC())
+                }
+            }
 
-    fun <T> dbQuery(block: () -> T): T =
-        runBlocking {
-            newSuspendedTransaction(Dispatchers.IO) {
-                addLogger(StdOutSqlLogger)
-                block()
+            if (CommandsStateTable.selectAll().count() == 0L) {
+                disalableCommandsList.forEach { command ->
+                    CommandsStateTable.insert {
+                        it[name] = command
+                        it[isDisabled] = false
+                        it[datetime] = Instant.now(Clock.systemUTC())
+                    }
+                }
             }
         }
-
-    private fun setup(creatorId: Long) {
-        sudoersDAO.add(creatorId, "Owner")
-        disalableCommandsList.forEach { commandsDAO.add(it) }
     }
+
+    suspend fun <T> dbQuery(block: suspend () -> T): T =
+        newSuspendedTransaction(Dispatchers.IO) { block() }
 }

@@ -6,7 +6,7 @@ import com.helltar.aibot.commands.Commands
 
 class ChatCtxRemove(ctx: MessageContext) : ChatGPT(ctx) {
 
-    override fun run() {
+    override suspend fun run() {
         var username = ""
 
         val userId =

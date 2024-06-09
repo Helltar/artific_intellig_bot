@@ -8,7 +8,7 @@ import com.helltar.aibot.dao.DatabaseFactory
 
 class RemoveChat(ctx: MessageContext) : BotCommand(ctx) {
 
-    override fun run() {
+    override suspend fun run() {
         val chatId =
             if (args.isNotEmpty())
                 args[0].toLongOrNull() ?: return

@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit
 
 class Uptime(ctx: MessageContext) : BotCommand(ctx) {
 
-    override fun run() {
+    override suspend fun run() {
         replyToMessage(getSysStat())
     }
 

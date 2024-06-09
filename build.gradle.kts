@@ -1,3 +1,6 @@
+val exposed_version: String by project
+val postgresql_driver_version: String by project
+
 plugins {
     kotlin("jvm") version "1.9.24"
     id("com.github.johnrengelman.shadow") version "8.1.1"
@@ -5,7 +8,7 @@ plugins {
 }
 
 group = "com.helltar"
-version = "0.9.8"
+version = "0.9.9"
 
 repositories {
     mavenCentral()
@@ -22,10 +25,12 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.1")
     implementation("org.json:json:20231013")
 
-    implementation("org.xerial:sqlite-jdbc:3.45.3.0")
-    implementation("org.jetbrains.exposed:exposed-core:0.50.1")
-    implementation("org.jetbrains.exposed:exposed-java-time:0.50.1")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.50.1")
+    implementation("org.postgresql:postgresql:$postgresql_driver_version")
+    implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-json:$exposed_version")
 
     implementation("org.slf4j:slf4j-api:2.0.6")
     implementation("ch.qos.logback:logback-classic:1.4.12")

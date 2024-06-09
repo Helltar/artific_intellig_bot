@@ -5,30 +5,30 @@ import com.helltar.aibot.dao.tables.SudoersTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertIgnore
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
-import java.time.LocalDateTime
+import java.time.Clock
+import java.time.Instant
 
 class SudoersDAO {
 
-    fun add(userId: Long, username: String?) = dbQuery {
+    suspend fun add(userId: Long, username: String?) = dbQuery {
         SudoersTable.insertIgnore {
             it[this.userId] = userId
             it[this.username] = username
-            it[datetime] = LocalDateTime.now()
+            it[datetime] = Instant.now(Clock.systemUTC())
         }
     }
         .insertedCount > 0
 
-    fun remove(userId: Long) = dbQuery {
+    suspend fun remove(userId: Long) = dbQuery {
         SudoersTable.deleteWhere { this.userId eq userId } > 0
     }
 
-    fun getList() = dbQuery {
+    suspend fun getList() = dbQuery {
         SudoersTable.selectAll().toList()
     }
 
-    fun isAdmin(userId: Long) = dbQuery {
-        SudoersTable.select { SudoersTable.userId eq userId }.count() > 0
+    suspend fun isAdmin(userId: Long) = dbQuery {
+        SudoersTable.selectAll().where { SudoersTable.userId eq userId }.count() > 0
     }
 }

@@ -1,13 +1,13 @@
 package com.helltar.aibot.dao.tables
 
 import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.javatime.datetime
+import org.jetbrains.exposed.sql.javatime.timestamp
 
 object SudoersTable : Table() {
 
-    val userId = long("id")
+    val userId = long("user_id")
     val username = varchar("username", 32).nullable()
-    val datetime = datetime("datetime")
+    val datetime = timestamp("datetime")
 
     override val primaryKey = PrimaryKey(userId)
 }

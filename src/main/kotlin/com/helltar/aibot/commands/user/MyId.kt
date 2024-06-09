@@ -6,7 +6,7 @@ import com.helltar.aibot.commands.Commands
 
 class MyId(ctx: MessageContext) : BotCommand(ctx) {
 
-    override fun run() {
+    override suspend fun run() {
         replyToMessage("<code>$userId</code>")
     }
 

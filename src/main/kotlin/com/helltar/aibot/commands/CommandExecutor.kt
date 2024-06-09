@@ -1,19 +1,26 @@
 package com.helltar.aibot.commands
 
-import com.helltar.aibot.BotConfig.creatorId
-import com.helltar.aibot.RequestExecutor
+import com.helltar.aibot.EnvConfig
+import com.helltar.aibot.PathConstants.DIR_FILES
 import com.helltar.aibot.Strings
 import com.helltar.aibot.dao.DatabaseFactory
+import com.helltar.aibot.dao.DatabaseFactory.FILE_NAME_LOADING_GIF
 import com.helltar.aibot.dao.tables.SlowmodeTable
+import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import org.telegram.telegrambots.meta.api.objects.User
-import java.util.concurrent.TimeUnit
+import java.io.File
+import java.time.Clock
+import java.time.Duration
+import java.time.Instant
 
 class CommandExecutor {
 
+    private val scope = CoroutineScope(Dispatchers.IO)
+    private val requestsMap = hashMapOf<String, Job>()
     private val log = LoggerFactory.getLogger(javaClass)
 
-    fun execute( // todo: -> BotCommand (?)
+    fun execute(
         botCommand: BotCommand,
         isAdminCommand: Boolean = false,
         isCreatorCommand: Boolean = false,
@@ -26,75 +33,75 @@ class CommandExecutor {
         val chat = botCommand.ctx.message().chat
         val commandName = botCommand.getCommandName()
 
-        val logMessage = "$commandName: ${chat.id} $userId ${user.userName} ${user.firstName} ${chat.title} : ${botCommand.ctx.message().text}"
+        val logMessage = "$commandName: ${chat.id} $userId ${user.userName} ${user.firstName} ${chat.title}: ${botCommand.ctx.message().text}"
         log.info(logMessage)
 
-        if (userChatOnly && !chat.isUserChat)
-            return
+        val requestKey = "$commandName@$userId"
 
-        if (!checkRights) {
-            addRequest(botCommand, isLongtimeCommand)
-            return
-        }
-
-        val isCreator = userId == creatorId
-
-        if (isCreatorCommand && !isCreator)
-            return
-
-        val isAdmin = botCommand.isAdmin()
-
-        if (isAdminCommand && !isAdmin)
-            return
-
-        if (isCreator or isAdmin) {
-            addRequest(botCommand, isLongtimeCommand)
-            return
-        }
-
-        if (botCommand.isUserBanned(userId)) {
-            val reason = DatabaseFactory.banListDAO.getReason(userId) ?: "\uD83E\uDD37\u200D♂️" // 🤷‍♂️
-            botCommand.replyToMessage(Strings.BAN_AND_REASON.format(reason))
-            return
-        }
-
-        if (!botCommand.isChatInWhiteList()) {
-            botCommand.replyToMessage(Strings.COMMAND_NOT_SUPPORTED_IN_CHAT)
-            return
-        }
-
-        if (botCommand.isCommandDisabled(commandName)) {
-            botCommand.replyToMessage(Strings.COMMAND_TEMPORARY_DISABLED)
-            return
-        }
-
-        if (commandName in Commands.disalableCommandsList) {
-            val slowmodeRemainingSeconds = checkSlowmode(user)
-
-            if (slowmodeRemainingSeconds > 0) {
-                botCommand.replyToMessage(Strings.SLOW_MODE_PLEASE_WAIT.format(slowmodeRemainingSeconds))
+        if (requestsMap.containsKey(requestKey)) {
+            if (requestsMap[requestKey]?.isCompleted == false) {
+                botCommand.replyToMessage(Strings.MANY_REQUEST)
                 return
             }
         }
 
-        addRequest(botCommand, isLongtimeCommand)
-    }
+        requestsMap[requestKey] = scope.launch(CoroutineName(requestKey)) {
+            if (userChatOnly && !chat.isUserChat)
+                return@launch
 
-    private fun addRequest(command: BotCommand, isLongtimeCommand: Boolean) {
-        val requestKey = "${command.javaClass.simpleName}@${command.ctx.user().id}"
+            if (!checkRights) {
+                runCommand(botCommand, isLongtimeCommand)
+                return@launch
+            }
 
-        if (!RequestExecutor.addRequest(requestKey) { runCommand(command, isLongtimeCommand) }) {
-            command.ctx
-                .replyToMessage()
-                .setText(Strings.MANY_REQUEST)
-                .callAsync(command.ctx.sender)
+            val isCreator = userId == EnvConfig.creatorId
+
+            if (isCreatorCommand && !isCreator)
+                return@launch
+
+            val isAdmin = botCommand.isAdmin()
+
+            if (isAdminCommand && !isAdmin)
+                return@launch
+
+            if (isCreator or isAdmin) {
+                runCommand(botCommand, isLongtimeCommand)
+                return@launch
+            }
+
+            if (botCommand.isUserBanned(userId)) {
+                val reason = DatabaseFactory.banlistDAO.getReason(userId) ?: "\uD83E\uDD37\u200D♂️" // 🤷‍♂️
+                botCommand.replyToMessage(Strings.BAN_AND_REASON.format(reason))
+                return@launch
+            }
+
+            if (!botCommand.isChatInWhiteList()) {
+                botCommand.replyToMessage(Strings.COMMAND_NOT_SUPPORTED_IN_CHAT)
+                return@launch
+            }
+
+            if (botCommand.isCommandDisabled(commandName)) {
+                botCommand.replyToMessage(Strings.COMMAND_TEMPORARY_DISABLED)
+                return@launch
+            }
+
+            if (commandName in Commands.disalableCommandsList) {
+                val slowmodeRemainingSeconds = checkSlowmode(user)
+
+                if (slowmodeRemainingSeconds > 0) {
+                    botCommand.replyToMessage(Strings.SLOW_MODE_PLEASE_WAIT.format(slowmodeRemainingSeconds))
+                    return@launch
+                }
+            }
+
+            runCommand(botCommand, isLongtimeCommand)
         }
     }
 
-    private fun runCommand(command: BotCommand, isLongtimeCommand: Boolean) {
+    private suspend fun runCommand(command: BotCommand, isLongtimeCommand: Boolean) {
         if (isLongtimeCommand) {
             val gifCaption = Strings.localizedString(Strings.CHAT_WAIT_MESSAGE, command.userLanguageCode)
-            val waitMessageId = command.replyToMessageWithDocument(command.getLoadingGifFileId(), gifCaption)
+            val waitMessageId = sendWaitingGif(command, gifCaption)
 
             try {
                 command.run()
@@ -105,24 +112,47 @@ class CommandExecutor {
             command.run()
     }
 
-    private fun checkSlowmode(user: User): Long {
-        val slowModeState = DatabaseFactory.slowmodeDAO.getSlowModeState(user.id) ?: return 0
+    private suspend fun checkSlowmode(user: User): Long {
+        val slowmodeState = DatabaseFactory.slowmodeDAO.getSlowModeState(user.id) ?: return 0
 
-        var userRequests = slowModeState[SlowmodeTable.requests]
-        val limit = slowModeState[SlowmodeTable.limit]
+        var requests = slowmodeState[SlowmodeTable.requests]
+        val limit = slowmodeState[SlowmodeTable.limit]
+        val lastRequest = slowmodeState[SlowmodeTable.lastRequest]
 
-        if (userRequests >= limit) {
-            val timestamp = System.currentTimeMillis()
-            val lastRequest = slowModeState[SlowmodeTable.lastRequestTimestamp]
+        if (requests >= limit) {
+            lastRequest?.let {
+                val now = Instant.now(Clock.systemUTC())
+                val timeElapsed = Duration.between(it, now)
 
-            if ((lastRequest + TimeUnit.HOURS.toMillis(1)) > timestamp)
-                return TimeUnit.MILLISECONDS.toSeconds((lastRequest + TimeUnit.HOURS.toMillis(1)) - timestamp)
-            else
-                userRequests = 0
+                if (timeElapsed.toHours() < 1) {
+                    val remainingTime = 3600 - timeElapsed.seconds
+                    return remainingTime
+                } else
+                    requests = 0
+            }
         }
 
-        DatabaseFactory.slowmodeDAO.update(user, limit, userRequests + 1)
+        DatabaseFactory.slowmodeDAO.update(user, limit, requests + 1)
 
         return 0
+    }
+
+    private suspend fun sendWaitingGif(botCommand: BotCommand, gifCaption: String): Int {
+
+        suspend fun sendGifAndSaveFileId(): Int {
+            val message = botCommand.sendDocument(File("$DIR_FILES/$FILE_NAME_LOADING_GIF"))
+            message.document.fileId?.let { DatabaseFactory.filesDAO.add(FILE_NAME_LOADING_GIF, it) }
+            return message.messageId
+        }
+
+        return DatabaseFactory.filesDAO.getFileId(FILE_NAME_LOADING_GIF)?.let { fileId ->
+            try {
+                botCommand.replyToMessageWithDocument(fileId, gifCaption)
+            } catch (e: Exception) {
+                log.error(e.message)
+                DatabaseFactory.filesDAO.delete(FILE_NAME_LOADING_GIF)
+                sendGifAndSaveFileId()
+            }
+        } ?: sendGifAndSaveFileId()
     }
 }

@@ -1,9 +1,7 @@
 package com.helltar.aibot.commands
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.BotConfig.DIR_FILES
-import com.helltar.aibot.BotConfig.FILE_NAME_LOADING_GIF
-import com.helltar.aibot.BotConfig.creatorId
+import com.helltar.aibot.EnvConfig.creatorId
 import com.helltar.aibot.dao.DatabaseFactory
 import com.helltar.aibot.dao.tables.ApiKeyType
 import org.telegram.telegrambots.meta.api.methods.ParseMode
@@ -27,19 +25,19 @@ abstract class BotCommand(val ctx: MessageContext) {
     protected val isNotReply = !isReply
     protected val argsText: String = ctx.argumentsAsString()
 
-    abstract fun run()
+    abstract suspend fun run()
     abstract fun getCommandName(): String
 
-    fun isCommandDisabled(command: String) =
+    suspend fun isCommandDisabled(command: String) =
         DatabaseFactory.commandsDAO.isDisabled(command)
 
-    fun isChatInWhiteList() =
+    suspend fun isChatInWhiteList() =
         DatabaseFactory.chatWhitelistDAO.isChatExists(ctx.chatId())
 
-    fun isUserBanned(userId: Long) =
-        DatabaseFactory.banListDAO.isUserBanned(userId)
+    suspend fun isUserBanned(userId: Long) =
+        DatabaseFactory.banlistDAO.isUserBanned(userId)
 
-    fun isAdmin() =
+    suspend fun isAdmin() =
         DatabaseFactory.sudoersDAO.isAdmin(userId)
 
     fun isCreator(userId: Long = this.userId) =
@@ -69,18 +67,10 @@ abstract class BotCommand(val ctx: MessageContext) {
     fun deleteMessage(messageId: Int) =
         ctx.deleteMessage().setMessageId(messageId).callAsync(ctx.sender)
 
-    // todo: getLoadingGifFileId
-    fun getLoadingGifFileId() =
-        DatabaseFactory.filesDAO.getFileId(FILE_NAME_LOADING_GIF)
-            ?: run {
-                val message = sendDocument(File("$DIR_FILES/$FILE_NAME_LOADING_GIF"))
-                val fileId = message.document.fileId
-                deleteMessage(message.messageId)
-
-                DatabaseFactory.filesDAO.add(FILE_NAME_LOADING_GIF, fileId)
-
-                return fileId
-            }
+    fun sendDocument(file: File): Message =
+        ctx.replyWithDocument()
+            .setFile(file)
+            .call(ctx.sender)
 
     protected fun reply(text: String) {
         ctx.reply()
@@ -89,14 +79,14 @@ abstract class BotCommand(val ctx: MessageContext) {
             .call(ctx.sender)
     }
 
-    protected fun getApiKey(provider: String): String? {
+    protected suspend fun getApiKey(provider: String): String? {
         val apiKeyType = when {
             isCreator() -> ApiKeyType.CREATOR
             isAdmin() -> ApiKeyType.ADMIN
             else -> ApiKeyType.USER
         }
 
-        return DatabaseFactory.apiKeysDAO.getApiKey(provider, apiKeyType) ?: DatabaseFactory.apiKeysDAO.getApiKey(provider, ApiKeyType.USER) // todo: getApiKey
+        return DatabaseFactory.apiKeysDAO.getKey(provider, apiKeyType) ?: DatabaseFactory.apiKeysDAO.getKey(provider, ApiKeyType.USER) // todo: getApiKey
     }
 
     protected fun replyToMessageWithPhoto(file: File, caption: String = "", messageId: Int = message.messageId): Message =
@@ -127,10 +117,5 @@ abstract class BotCommand(val ctx: MessageContext) {
         ctx.replyToMessageWithAudio()
             .setFile(file)
             .setReplyToMessageId(messageId)
-            .call(ctx.sender)
-
-    private fun sendDocument(file: File): Message =
-        ctx.replyWithDocument()
-            .setFile(file)
             .call(ctx.sender)
 }

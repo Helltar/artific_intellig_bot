@@ -1,15 +1,15 @@
 package com.helltar.aibot.dao.tables
 
 import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.javatime.datetime
+import org.jetbrains.exposed.sql.javatime.timestamp
 
 object BannedUsersTable : Table() {
 
-    val userId = long("id")
+    val userId = long("user_id")
     val username = varchar("username", 32).nullable()
-    val firstName = varchar("firstName", 64)
-    val reason = varchar("reason", 128).nullable()
-    val datetime = datetime("datetime")
+    val firstName = varchar("first_name", 64)
+    val reason = varchar("reason", 150).nullable()
+    val datetime = timestamp("datetime")
 
     override val primaryKey = PrimaryKey(userId)
 }

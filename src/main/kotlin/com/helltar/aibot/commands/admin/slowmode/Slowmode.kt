@@ -8,7 +8,7 @@ import com.helltar.aibot.dao.DatabaseFactory
 
 class Slowmode(ctx: MessageContext) : BotCommand(ctx) {
 
-    override fun run() {
+    override suspend fun run() {
         if (args.isEmpty()) {
             helpMessage()
             return

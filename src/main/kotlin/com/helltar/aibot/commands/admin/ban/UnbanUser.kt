@@ -8,14 +8,14 @@ import com.helltar.aibot.dao.DatabaseFactory
 
 class UnbanUser(ctx: MessageContext) : BotCommand(ctx) {
 
-    override fun run() {
+    override suspend fun run() {
         val userId =
             if (args.isNotEmpty())
                 args[0].toLongOrNull()
             else
                 ctx.message().replyToMessage?.from?.id
 
-        if (DatabaseFactory.banListDAO.unbanUser(userId ?: return))
+        if (DatabaseFactory.banlistDAO.unbanUser(userId ?: return))
             replyToMessage(Strings.USER_UNBANNED)
         else
             replyToMessage(Strings.USER_NOT_BANNED)

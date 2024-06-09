@@ -4,7 +4,6 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.core.isSuccessful
 import com.google.gson.Gson
-import com.helltar.aibot.BotConfig.PROVIDER_OPENAI_COM
 import com.helltar.aibot.Strings
 import com.helltar.aibot.Strings.localizedString
 import com.helltar.aibot.commands.BotCommand
@@ -17,7 +16,10 @@ import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_SYSTEM
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_USER
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.ChatData
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.ChatMessageData
+import com.helltar.aibot.dao.DatabaseFactory.PROVIDER_OPENAI_COM
 import com.helltar.aibot.utils.NetworkUtils.httpPost
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.apache.http.HttpStatus
 import org.json.JSONException
 import org.json.JSONObject
@@ -37,7 +39,7 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    override fun run() {
+    override suspend fun run() {
         var messageId = ctx.messageId()
         var text = argsText
         var isVoiceOut = false
@@ -143,9 +145,10 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
                 replyToMessage(answer, messageId, markdown = true)
             } catch (e: Exception) { // todo: TelegramApiRequestException
                 replyToMessageWithDocument(
-                    File.createTempFile("answer", ".txt").apply { writeText(answer) },
+                    withContext(Dispatchers.IO) { File.createTempFile("answer", ".txt") }.apply { writeText(answer) },
                     Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE
                 )
+
                 log.error(e.message)
             }
     }
@@ -153,25 +156,25 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
     override fun getCommandName() =
         Commands.CMD_CHAT
 
-    protected fun getOpenAIAuthorizationHeader() =
+    protected suspend fun getOpenAIAuthorizationHeader() =
         mapOf("Authorization" to "Bearer ${getApiKey(PROVIDER_OPENAI_COM)}")
 
-    protected fun getOpenAIHeaders() =
+    protected suspend fun getOpenAIHeaders() =
         mapOf("Content-Type" to "application/json") + getOpenAIAuthorizationHeader()
 
     private fun getUserDialogContextLengh() =
         userContextMap[userId]!!.sumOf { it.content.length }
 
-    private fun sendPrompt(messages: List<ChatMessageData>, gptModel: String): Response {
+    private suspend fun sendPrompt(messages: List<ChatMessageData>, gptModel: String): Response {
         val url = "https://api.openai.com/v1/chat/completions"
         val body = Gson().toJson(ChatData(gptModel, messages))
         return httpPost(url, getOpenAIHeaders(), body)
     }
 
-    private fun textToSpeech(input: String): File {
+    private suspend fun textToSpeech(input: String): File {
         val url = "https://api.openai.com/v1/audio/speech"
         val body = Gson().toJson(ChatGPTData.SpeechData(input = input))
         val data = httpPost(url, getOpenAIHeaders(), body).data
-        return File.createTempFile("tmp", ".ogg").apply { writeBytes(data) }
+        return withContext(Dispatchers.IO) { File.createTempFile("tmp", ".ogg") }.apply { writeBytes(data) }
     }
 }

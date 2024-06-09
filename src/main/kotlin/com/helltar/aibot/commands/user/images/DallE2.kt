@@ -15,7 +15,7 @@ class DallE2(ctx: MessageContext) : ChatGPT(ctx) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    override fun run() {
+    override suspend fun run() {
         if (args.isEmpty()) {
             replyToMessage(Strings.EMPTY_ARGS)
             return
@@ -43,7 +43,7 @@ class DallE2(ctx: MessageContext) : ChatGPT(ctx) {
     override fun getCommandName() =
         Commands.CMD_DALLE
 
-    private fun sendPrompt(prompt: String): String {
+    private suspend fun sendPrompt(prompt: String): String {
         val url = "https://api.openai.com/v1/images/generations"
         val body = Gson().toJson(DalleData.RequestData(prompt, 1))
         return httpPost(url, getOpenAIHeaders(), body).data.decodeToString()

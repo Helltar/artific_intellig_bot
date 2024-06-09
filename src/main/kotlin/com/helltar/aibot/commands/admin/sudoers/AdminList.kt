@@ -9,7 +9,7 @@ import com.helltar.aibot.dao.tables.SudoersTable
 
 class AdminList(ctx: MessageContext) : BotCommand(ctx) {
 
-    override fun run() {
+    override suspend fun run() {
         val list =
             DatabaseFactory.sudoersDAO.getList().joinToString("\n") {
                 "<code>${it[SudoersTable.userId]}</code> <b>${it[SudoersTable.username]}</b> <i>(${it[SudoersTable.datetime]})</i>"

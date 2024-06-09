@@ -10,6 +10,8 @@ import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.user.chat.ChatGPT
 import com.helltar.aibot.commands.user.images.models.GPT4VisionData
 import com.helltar.aibot.utils.NetworkUtils.httpPost
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
@@ -25,7 +27,7 @@ class GPT4Vision(ctx: MessageContext) : ChatGPT(ctx) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    override fun run() {
+    override suspend fun run() {
         if (isNotReply) {
             replyToMessage(Strings.GPT_VISION_USE_AS_REPLY)
             return
@@ -68,7 +70,7 @@ class GPT4Vision(ctx: MessageContext) : ChatGPT(ctx) {
                 replyToMessage(answer, markdown = true)
             } catch (e: Exception) { // todo: TelegramApiRequestException
                 replyToMessageWithDocument(
-                    File.createTempFile("answer", ".txt").apply { writeText(answer) },
+                    withContext(Dispatchers.IO) { File.createTempFile("answer", ".txt") }.apply { writeText(answer) },
                     Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE
                 )
 
@@ -89,7 +91,7 @@ class GPT4Vision(ctx: MessageContext) : ChatGPT(ctx) {
     override fun getCommandName() =
         Commands.CMD_GPT_VISION
 
-    private fun sendPrompt(text: String, image: File): Response {
+    private suspend fun sendPrompt(text: String, image: File): Response {
         val url = "https://api.openai.com/v1/chat/completions"
 
         val requestData =

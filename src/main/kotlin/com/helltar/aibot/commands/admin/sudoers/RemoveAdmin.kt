@@ -8,7 +8,7 @@ import com.helltar.aibot.dao.DatabaseFactory
 
 class RemoveAdmin(ctx: MessageContext) : BotCommand(ctx) {
 
-    override fun run() {
+    override suspend fun run() {
         val userId =
             if (args.isNotEmpty())
                 args[0].toLongOrNull() ?: return
