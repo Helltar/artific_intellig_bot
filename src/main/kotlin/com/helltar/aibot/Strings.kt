@@ -1,6 +1,6 @@
 package com.helltar.aibot
 
-import com.helltar.aibot.BotConfig.DIR_LOCALE
+import com.helltar.aibot.PathConstants.DIR_LOCALE
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileReader
@@ -43,6 +43,7 @@ object Strings {
     const val PROVIDER_API_KEY_SUCCESS_UPDATE = "✅ API Key for <b>%s</b> succesfully updated (type: %s)"
     const val STABLE_DIFFUSION_EMPTY_ARGS = "Please write a description of what you want to receive:\n\n<code>/sdif photo realistic portrait of young woman</code>"
     const val TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE = "TelegramApiException, response saved to file \uD83D\uDE48" // 🙈
+    const val TELEGRAM_API_EXCEPTION_CONTEXT_SAVED_TO_FILE = "TelegramApiException, context saved to file. Use /chatrm for fix ☺\uFE0F" // ☺️
     const val UPDATE_API_KEYS_COMMAND_EXAMPLE = "ℹ\uFE0F Example: <code>/%s %s sk-qwertyuiop...</code>" // ℹ️
     const val VIDEO_OR_AUDIO_NOT_FOUND = "Message does not contain audio or video \uD83E\uDD14" // 🤔
     const val VOICE_MUST_BE_LESS_THAN = "Voice must be less than %s 😥" // 😥

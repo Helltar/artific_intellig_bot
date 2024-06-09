@@ -4,10 +4,14 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_USER
+import org.slf4j.LoggerFactory
+import java.io.File
 
 class ChatCtx(ctx: MessageContext) : ChatGPT(ctx) {
 
-    override fun run() {
+    private val log = LoggerFactory.getLogger(javaClass)
+
+    override suspend fun run() {
         val userId =
             if (!isReply)
                 this.userId
@@ -31,7 +35,19 @@ class ChatCtx(ctx: MessageContext) : ChatGPT(ctx) {
             else
                 Strings.CHAT_CONTEXT_EMPTY
 
-        replyToMessage("$text", markdown = true)
+        try {
+            replyToMessage("$text", markdown = true)
+        } catch (e: Exception) { // todo: TelegramApiRequestException
+            text?.let {
+                replyToMessageWithDocument(
+                    File.createTempFile("context", ".txt").apply { writeText(it) },
+                    Strings.TELEGRAM_API_EXCEPTION_CONTEXT_SAVED_TO_FILE
+                )
+            }
+
+            log.error(e.message)
+        }
+
     }
 
     override fun getCommandName() =
