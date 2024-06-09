@@ -8,5 +8,4 @@ test/
 data/database
 data/logs
 
-compose.yml
 Dockerfile
