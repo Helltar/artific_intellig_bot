@@ -116,9 +116,7 @@ class ArtificIntelligBotHandler : BotHandler(telegramBotToken) {
 
     override fun onUpdate(update: Update): BotApiMethod<*>? {
         fun Message.hasMentions() =
-            this.entities.stream().anyMatch { e ->
-                setOf(EntityType.MENTION, EntityType.TEXTMENTION).contains(e.type)
-            }
+            this.entities.any { it.type == EntityType.MENTION || it.type == EntityType.TEXTMENTION }
 
         fun chatGPT(ctx: MessageContext) =
             commandExecutor.execute(ChatGPT(ctx), isLongtimeCommand = true)
