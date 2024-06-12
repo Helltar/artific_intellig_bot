@@ -12,7 +12,6 @@ RUN apk add --no-cache ffmpeg
 WORKDIR /app
 # todo: user
 COPY --from=builder /app/build/libs/*.jar aibot.jar
-COPY data/files/ data/files/
-COPY data/locale/ data/locale/
+COPY data data
 
 ENTRYPOINT ["java", "-jar", "aibot.jar"]
