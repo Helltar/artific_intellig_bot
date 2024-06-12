@@ -35,7 +35,6 @@ import com.helltar.aibot.commands.Commands.CMD_SLOW_MODE_OFF
 import com.helltar.aibot.commands.Commands.CMD_START
 import com.helltar.aibot.commands.Commands.CMD_UNBAN_USER
 import com.helltar.aibot.commands.Commands.CMD_UPDATE_API_KEY
-import com.helltar.aibot.commands.Commands.CMD_UPTIME
 import com.helltar.aibot.commands.admin.ban.BanUser
 import com.helltar.aibot.commands.admin.ban.UnbanUser
 import com.helltar.aibot.commands.admin.chat.AddChat
@@ -51,7 +50,6 @@ import com.helltar.aibot.commands.admin.system.UpdateApiKey
 import com.helltar.aibot.commands.user.About
 import com.helltar.aibot.commands.user.MyId
 import com.helltar.aibot.commands.user.Start
-import com.helltar.aibot.commands.user.Uptime
 import com.helltar.aibot.commands.user.audio.AsrWhisper
 import com.helltar.aibot.commands.user.chat.ChatCtx
 import com.helltar.aibot.commands.user.chat.ChatCtxRemove
@@ -92,7 +90,6 @@ class ArtificIntelligBotHandler : BotHandler(telegramBotToken) {
             register(simpleCommand(CMD_SDIFF) { commandExecutor.execute(StableDiffusion(it), isLongtimeCommand = true) })
             register(simpleCommand(CMD_ASR) { commandExecutor.execute(AsrWhisper(it), isLongtimeCommand = true) })
             register(simpleCommand(CMD_BAN_LIST) { commandExecutor.execute(Banlist(it)) })
-            register(simpleCommand(CMD_UPTIME) { commandExecutor.execute(Uptime(it)) })
             register(simpleCommand(CMD_SLOW_MODE_LIST) { commandExecutor.execute(SlowmodeList(it)) })
 
             register(simpleCommand(CMD_ENABLE) { commandExecutor.execute(CommandsState(it), true) })

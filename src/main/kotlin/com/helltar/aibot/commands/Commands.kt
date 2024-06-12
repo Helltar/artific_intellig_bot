@@ -14,7 +14,6 @@ object Commands {
     const val CMD_DALLE_VARIATIONS = "dallevar"
 
     const val CMD_ABOUT = "about"
-    const val CMD_UPTIME = "uptime"
     const val CMD_MYID = "myid"
 
     const val CMD_ADD_ADMIN = "addadmin"

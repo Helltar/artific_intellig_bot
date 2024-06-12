@@ -60,7 +60,6 @@ and add them using the command in the bot:
 - /**sdif** - Stable Diffusion
 - /**dallevar** - DALL·E 2 Variations
 - /**asr** - Automatic Speech Recognition (openai-Whisper)
-- /**uptime**
 - /**about**
 
 Additional chat commands:
