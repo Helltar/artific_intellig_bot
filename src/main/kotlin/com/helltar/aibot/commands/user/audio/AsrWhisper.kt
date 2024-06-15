@@ -13,7 +13,11 @@ import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
-import org.telegram.telegrambots.meta.api.objects.*
+import org.telegram.telegrambots.meta.api.objects.Audio
+import org.telegram.telegrambots.meta.api.objects.Video
+import org.telegram.telegrambots.meta.api.objects.VideoNote
+import org.telegram.telegrambots.meta.api.objects.Voice
+import org.telegram.telegrambots.meta.api.objects.message.Message
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import java.io.File
 import java.util.*
@@ -52,7 +56,7 @@ class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
         var outFile = withContext(Dispatchers.IO) { File.createTempFile("file", fileName) }
 
         try {
-            ctx.sender.downloadFile(Methods.getFile(fileId).call(ctx.sender), outFile)
+            ctx.sender.downloadFile(Methods.getFile(fileId).call(ctx.sender)).renameTo(outFile)
         } catch (e: TelegramApiException) {
             log.error(e.message)
             return

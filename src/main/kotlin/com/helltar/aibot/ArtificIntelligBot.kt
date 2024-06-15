@@ -1,8 +1,10 @@
 package com.helltar.aibot
 
 import com.annimon.tgbotsmodule.BotModule
+import com.annimon.tgbotsmodule.BotModuleOptions
 import com.annimon.tgbotsmodule.Runner
 import com.annimon.tgbotsmodule.beans.Config
+import com.helltar.aibot.EnvConfig.telegramBotToken
 import com.helltar.aibot.dao.DatabaseFactory
 
 class ArtificIntelligBot : BotModule {
@@ -16,5 +18,5 @@ class ArtificIntelligBot : BotModule {
     }
 
     override fun botHandler(config: Config) =
-        ArtificIntelligBotHandler()
+        ArtificIntelligBotHandler(BotModuleOptions.createDefault(telegramBotToken))
 }

@@ -2,12 +2,14 @@ package com.helltar.aibot.commands
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.EnvConfig.creatorId
+import com.helltar.aibot.EnvConfig.telegramBotUsername
 import com.helltar.aibot.dao.DatabaseFactory
 import com.helltar.aibot.dao.tables.ApiKeyType
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.InputFile
-import org.telegram.telegrambots.meta.api.objects.Message
+import org.telegram.telegrambots.meta.api.objects.message.Message
 import java.io.File
+import java.util.concurrent.CompletableFuture
 
 abstract class BotCommand(val ctx: MessageContext) {
 
@@ -43,6 +45,9 @@ abstract class BotCommand(val ctx: MessageContext) {
     fun isCreator(userId: Long = this.userId) =
         userId == creatorId
 
+    fun isNotMe(username: String?) =
+        username != telegramBotUsername
+
     fun replyToMessage(
         text: String,
         messageId: Int = message.messageId,
@@ -64,7 +69,7 @@ abstract class BotCommand(val ctx: MessageContext) {
             .call(ctx.sender)
             .messageId
 
-    fun deleteMessage(messageId: Int) =
+    fun deleteMessage(messageId: Int): CompletableFuture<Boolean> =
         ctx.deleteMessage().setMessageId(messageId).callAsync(ctx.sender)
 
     fun sendDocument(file: File): Message =

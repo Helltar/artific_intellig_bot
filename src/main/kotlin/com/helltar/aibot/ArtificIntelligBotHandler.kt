@@ -1,12 +1,12 @@
 package com.helltar.aibot
 
 import com.annimon.tgbotsmodule.BotHandler
+import com.annimon.tgbotsmodule.BotModuleOptions
 import com.annimon.tgbotsmodule.commands.CommandRegistry
 import com.annimon.tgbotsmodule.commands.SimpleCommand
 import com.annimon.tgbotsmodule.commands.authority.SimpleAuthority
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.EnvConfig.creatorId
-import com.helltar.aibot.EnvConfig.telegramBotToken
 import com.helltar.aibot.EnvConfig.telegramBotUsername
 import com.helltar.aibot.commands.CommandExecutor
 import com.helltar.aibot.commands.Commands.CMD_ABOUT
@@ -60,14 +60,14 @@ import com.helltar.aibot.commands.user.images.GPT4Vision
 import com.helltar.aibot.commands.user.images.StableDiffusion
 import com.helltar.aibot.commands.user.lists.Banlist
 import com.helltar.aibot.commands.user.lists.SlowmodeList
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.EntityType
-import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
+import org.telegram.telegrambots.meta.api.objects.message.Message
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import java.util.function.Consumer
 
-class ArtificIntelligBotHandler : BotHandler(telegramBotToken) {
+class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler(botModuleOptions) {
 
     private val authority = SimpleAuthority(creatorId)
     private val registry = CommandRegistry(telegramBotUsername, authority)
@@ -122,8 +122,9 @@ class ArtificIntelligBotHandler : BotHandler(telegramBotToken) {
             val message = update.message
             val replyToMessage = message.replyToMessage
             val text = message.text
+            val isMe = replyToMessage.from.userName == telegramBotUsername
 
-            if (!replyToMessage.hasPhoto() && replyToMessage.from.id == me.id && !text.startsWith("/")) {
+            if (isMe && !replyToMessage.hasPhoto() && !text.startsWith("/")) {
                 val ctx = MessageContext(this, update, "")
 
                 if (!message.hasEntities()) // if it doesn't have text formatting, @username, etc...
@@ -138,9 +139,6 @@ class ArtificIntelligBotHandler : BotHandler(telegramBotToken) {
 
         return null
     }
-
-    override fun getBotUsername() =
-        telegramBotUsername
 
     override fun handleTelegramApiException(tae: TelegramApiException?) {
         throw tae ?: TelegramApiException("TelegramApiException") // todo: TelegramApiException

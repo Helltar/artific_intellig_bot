@@ -20,7 +20,6 @@ import com.helltar.aibot.dao.DatabaseFactory.PROVIDER_OPENAI_COM
 import com.helltar.aibot.utils.NetworkUtils.httpPost
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.apache.http.HttpStatus
 import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
@@ -47,7 +46,7 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
         /* todo: refact. */
 
         if (isReply) {
-            if (replyMessage?.from?.id != ctx.sender.me.id) {
+            if (isNotMe(replyMessage?.from?.userName)) {
                 text = replyMessage?.text ?: return
                 isVoiceOut = argsText == VOICE_OUT_TEXT_TAG
                 messageId = replyMessage.messageId
@@ -109,7 +108,7 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
         val json = response.data.decodeToString()
 
         if (!response.isSuccessful) {
-            if (response.statusCode != HttpStatus.SC_UNAUTHORIZED) {
+            if (response.statusCode != 401) { // Unauthorized
                 try {
                     replyToMessage(JSONObject(json).getJSONObject("error").getString("message"))
                 } catch (e: JSONException) {
