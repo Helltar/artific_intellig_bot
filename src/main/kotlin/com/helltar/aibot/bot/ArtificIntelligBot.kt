@@ -1,4 +1,4 @@
-package com.helltar.aibot
+package com.helltar.aibot.bot
 
 import com.annimon.tgbotsmodule.BotModule
 import com.annimon.tgbotsmodule.BotModuleOptions
