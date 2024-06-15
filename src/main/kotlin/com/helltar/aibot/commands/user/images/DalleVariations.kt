@@ -40,16 +40,16 @@ class DalleVariations(ctx: MessageContext) : ChatGPT(ctx) {
             return
         }
 
-        val photo = replyMessage.photo
-        val photoSize = photo.last()
+        val photos = replyMessage.photo
+        val photo = photos.last()
 
-        if (photoSize.fileSize > MAX_PHOTO_FILE_SIZE) {
+        if (photo.fileSize > MAX_PHOTO_FILE_SIZE) {
             replyToMessage(Strings.IMAGE_MUST_BE_LESS_THAN.format("1MB"))
             return
         }
 
-        val inputStream = try {
-            ctx.sender.downloadFileAsStream(Methods.getFile(photoSize.fileId).call(ctx.sender))
+        val photoFile = try {
+            ctx.sender.downloadFile(Methods.getFile(photo.fileId).call(ctx.sender))
         } catch (e: TelegramApiException) {
             log.error(e.message)
             return
@@ -58,7 +58,7 @@ class DalleVariations(ctx: MessageContext) : ChatGPT(ctx) {
         val squarePngImage = ByteArrayOutputStream()
 
         try {
-            withContext(Dispatchers.IO) { ImageIO.write(resizeImage(ImageIO.read(inputStream)), "png", squarePngImage) }
+            withContext(Dispatchers.IO) { ImageIO.write(resizeImage(ImageIO.read(photoFile)), "png", squarePngImage) }
         } catch (e: IOException) {
             log.error(e.message)
             return
