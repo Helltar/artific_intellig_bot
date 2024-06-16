@@ -2,20 +2,20 @@ val exposed_version: String by project
 val postgresql_driver_version: String by project
 
 plugins {
-    kotlin("jvm") version "1.9.24"
+    kotlin("jvm") version "2.0.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     application
 }
 
 group = "com.helltar"
-version = "0.9.9"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation("com.annimon:tgbots-module:7.1.0")
+    implementation("com.annimon:tgbots-module:7.3.9")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2")
     implementation("com.github.kittinunf.fuel:fuel:2.3.1")
@@ -30,12 +30,11 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
-    implementation("org.jetbrains.exposed:exposed-json:$exposed_version")
 
-    implementation("org.slf4j:slf4j-api:2.0.6")
-    implementation("ch.qos.logback:logback-classic:1.4.12")
+    implementation("org.slf4j:slf4j-api:2.0.13")
+    implementation("ch.qos.logback:logback-classic:1.5.6")
 }
 
 application {
-    mainClass.set("com.helltar.aibot.ArtificIntelligBot")
+    mainClass.set("com.helltar.aibot.bot.ArtificIntelligBot")
 }
