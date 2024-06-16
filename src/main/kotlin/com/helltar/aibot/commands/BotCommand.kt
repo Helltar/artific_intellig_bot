@@ -13,12 +13,8 @@ import java.util.concurrent.CompletableFuture
 
 abstract class BotCommand(val ctx: MessageContext) {
 
-    private companion object {
-        const val DEFAULT_LANG_CODE = "en"
-    }
-
     val args: Array<String> = ctx.arguments()
-    val userLanguageCode = ctx.user().languageCode ?: DEFAULT_LANG_CODE
+    val userLanguageCode = ctx.user().languageCode ?: "en"
 
     protected val userId = ctx.user().id
     protected val message = ctx.message()
