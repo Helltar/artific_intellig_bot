@@ -6,22 +6,20 @@ Demo: https://t.me/+siikRmY3uyE5YTBi
 Installation
 ------------
 
+Edit the **.env** file where:
+
 - CREATOR_ID: your Telegram user-ID
 - BOT_TOKEN: [BotFather](https://t.me/BotFather)
 - BOT_USERNAME: [BotFather](https://t.me/BotFather) (example: artific_intellig_bot)
+
+and also include the data for connecting to **PostgreSQL**.
 
 NOTE: to get your Telegram ID, you can use [@artific_intellig_bot](https://t.me/artific_intellig_bot) by entering the command /**myid**
 
 ### Docker
 
 ```bash
-docker run --rm -d \
-  --name aibot \
-  -e CREATOR_ID=12345 \
-  -e BOT_TOKEN=123:xxx \
-  -e BOT_USERNAME=name_bot \
-  -v aibot_data:/app/data \
-  ghcr.io/helltar/aibot:latest
+docker run --rm -d --name aibot --env-file .env ghcr.io/helltar/aibot:latest
 ```
 
 ### Or run without Docker
@@ -35,8 +33,10 @@ unzip artific_intellig_bot-0.9.8.zip && cd artific_intellig_bot-0.9.8/bin
 - Update the environment variables in the **.env** file
 - Install https://ffmpeg.org on your system (for **/asr** command)
 
+Run:
+
 ```bash
-./artific_intellig_bot # artific_intellig_bot.bat for windows
+./artific_intellig_bot # .bat for windows
 ```
 
 Usage
