@@ -38,21 +38,21 @@ class GPT4Vision(ctx: MessageContext) : ChatGPT(ctx) {
             return
         }
 
-        val lastPhoto = replyMessage.photo.last()
+        val photo = replyMessage.photo.last()
 
-        if (lastPhoto.fileSize > MAX_PHOTO_FILE_SIZE) {
+        if (photo.fileSize > MAX_PHOTO_FILE_SIZE) {
             replyToMessage(Strings.IMAGE_MUST_BE_LESS_THAN.format("${MAX_PHOTO_FILE_SIZE / 1000} kb."))
             return
         }
 
-        val imageFile = try {
-            ctx.sender.downloadFile(Methods.getFile(lastPhoto.fileId).call(ctx.sender))
+        val photoFile = try {
+            ctx.sender.downloadFile(Methods.getFile(photo.fileId).call(ctx.sender))
         } catch (e: TelegramApiException) {
             log.error(e.message)
             return
         }
 
-        val response = sendPrompt(argsText, imageFile)
+        val response = sendPrompt(argsText, photoFile)
         val responseJson = response.data.decodeToString()
 
         if (response.isSuccessful) {
