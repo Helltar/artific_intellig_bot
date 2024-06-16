@@ -1,7 +1,6 @@
 package com.helltar.aibot.commands
 
 import com.helltar.aibot.EnvConfig
-import com.helltar.aibot.PathConstants.DIR_FILES
 import com.helltar.aibot.Strings
 import com.helltar.aibot.dao.DatabaseFactory
 import com.helltar.aibot.dao.DatabaseFactory.FILE_NAME_LOADING_GIF
@@ -140,7 +139,7 @@ class CommandExecutor {
     private suspend fun sendWaitingGif(botCommand: BotCommand, gifCaption: String): Int {
 
         suspend fun sendGifAndSaveFileId(): Int {
-            val message = botCommand.sendDocument(File("$DIR_FILES/$FILE_NAME_LOADING_GIF"))
+            val message = botCommand.sendDocument(File("data/files/$FILE_NAME_LOADING_GIF"))
             message.document.fileId?.let { DatabaseFactory.filesDAO.add(FILE_NAME_LOADING_GIF, it) }
             return message.messageId
         }
