@@ -1,10 +1,6 @@
 package com.helltar.aibot
 
-import com.helltar.aibot.PathConstants.DIR_LOCALE
-import org.slf4j.LoggerFactory
-import java.io.File
-import java.io.FileReader
-import java.util.regex.Pattern
+import com.annimon.tgbotsmodule.services.ResourceBundleLocalizationService
 
 object Strings {
 
@@ -77,29 +73,8 @@ object Strings {
     const val SLOW_MODE_OFF_NOT_ENABLED = "ℹ\uFE0F Slow mode not enabled for this user" // ℹ️
     const val SLOW_MODE_BAD_ARG = "\uD83E\uDD2D Bad args., example: <code>/slowmode 123456789 2 username</code> (userId, limit, username), or if this is a reply: <code>/slowmode 2</code> (limit only)" // 🤭
 
-    private val log = LoggerFactory.getLogger(Strings.javaClass)
+    private val localization = ResourceBundleLocalizationService("language")
 
-    fun localizedString(key: String, languageCode: String): String {
-
-        fun getFirstRegexGroup(text: String, regex: String): String {
-            val m = Pattern.compile(regex).matcher(text)
-
-            return if (m.find()) {
-                if (m.groupCount() >= 1) m.group(1) else ""
-            } else ""
-        }
-
-        return try {
-            var filename = "$DIR_LOCALE/${languageCode.lowercase()}.xml"
-
-            if (!File(filename).exists())
-                filename = "$DIR_LOCALE/en.xml"
-
-            val regex = """<string name="$key">(\X*?)<\/string>"""
-            getFirstRegexGroup(FileReader(filename).readText(), regex).trimIndent().ifEmpty { key }
-        } catch (e: Exception) {
-            log.error(e.message)
-            key
-        }
-    }
+    fun localizedString(key: String, languageCode: String): String =
+        localization.getString(key, languageCode)
 }
