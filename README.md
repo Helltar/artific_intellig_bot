@@ -24,7 +24,7 @@ docker run --rm -d --name aibot --env-file .env ghcr.io/helltar/aibot:latest
 
 ### Or run without Docker
 
-NOTE: your need to install https://ffmpeg.org on your system (for **/asr** command)
+NOTE: you need to install https://ffmpeg.org on your system (for **/asr** command)
 
 Build & Run:
 
