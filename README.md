@@ -24,19 +24,13 @@ docker run --rm -d --name aibot --env-file .env ghcr.io/helltar/aibot:latest
 
 ### Or run without Docker
 
-- [artific_intellig_bot-0.9.8.zip](https://github.com/Helltar/artific_intellig_bot/releases/download/0.9.8/artific_intellig_bot-0.9.8.zip)
+NOTE: your need to install https://ffmpeg.org on your system (for **/asr** command)
+
+Build & Run:
 
 ```bash
-unzip artific_intellig_bot-0.9.8.zip && cd artific_intellig_bot-0.9.8/bin
-```
-
-- Update the environment variables in the **.env** file
-- Install https://ffmpeg.org on your system (for **/asr** command)
-
-Run:
-
-```bash
-./artific_intellig_bot # .bat for windows
+./gradlew shadowJar
+java -jar build/libs/artific_intellig_bot-version.jar
 ```
 
 Usage
@@ -83,17 +77,17 @@ NOTE: run _/enable_ or _/disable_ with no arguments for view supported commands
 - /**ban** (use as reply to user message, example: _/ban reason_)
 - /**unban** (use as reply to user message or by user ID)
 - /**banlist**
-<br>
+  <br>
 
 - /**slowmode** (use as reply to user message, example: _/slowmode 5_) (requests per. hour)
 - /**slowmodeoff** (use as reply to user message or by user ID)
 - /**slowmodelist**
-<br>
+  <br>
 
 - /**addadmin** (add admin by ID, example: _/addadmin 123456789 username_) (creator-only command)
 - /**rmadmin** (remove admin by ID)
 - /**sudoers** (view admin list, run it only in private chat)
-<br>
+  <br>
 
 - /**addchat** (add chat to white list, use in chat or by ID) (creator-only command)
 - /**rmchat** (remove chat from white list, use in chat or by ID)
