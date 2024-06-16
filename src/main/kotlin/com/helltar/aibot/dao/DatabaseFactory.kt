@@ -5,6 +5,7 @@ import com.helltar.aibot.EnvConfig.databaseName
 import com.helltar.aibot.EnvConfig.databasePassword
 import com.helltar.aibot.EnvConfig.databaseUser
 import com.helltar.aibot.EnvConfig.postgresqlHost
+import com.helltar.aibot.EnvConfig.postgresqlPort
 import com.helltar.aibot.commands.Commands.disalableCommandsList
 import com.helltar.aibot.dao.tables.*
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +36,7 @@ object DatabaseFactory {
 
     fun init() {
         val driverClassName = "org.postgresql.Driver"
-        val jdbcURL = "jdbc:postgresql://$postgresqlHost:5432/$databaseName"
+        val jdbcURL = "jdbc:postgresql://$postgresqlHost:$postgresqlPort/$databaseName"
         val database = Database.connect(jdbcURL, driverClassName, databaseUser, databasePassword)
 
         transaction(database) {
