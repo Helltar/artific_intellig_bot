@@ -15,6 +15,7 @@ object Commands {
 
     const val CMD_ABOUT = "about"
     const val CMD_MYID = "myid"
+    const val CMD_PRIVACY = "privacy"
 
     const val CMD_ADD_ADMIN = "addadmin"
     const val CMD_RM_ADMIN = "rmadmin"
@@ -36,6 +37,7 @@ object Commands {
     const val CMD_SLOW_MODE_LIST = "slowmodelist"
 
     const val CMD_UPDATE_API_KEY = "updatekey"
+    const val CMD_UPDATE_PRIVACY_POLICY = "updateprivacy"
 
     val disalableCommandsList =
         setOf(

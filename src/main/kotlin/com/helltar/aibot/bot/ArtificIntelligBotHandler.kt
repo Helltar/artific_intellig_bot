@@ -26,6 +26,7 @@ import com.helltar.aibot.commands.Commands.CMD_DISABLE
 import com.helltar.aibot.commands.Commands.CMD_ENABLE
 import com.helltar.aibot.commands.Commands.CMD_GPT_VISION
 import com.helltar.aibot.commands.Commands.CMD_MYID
+import com.helltar.aibot.commands.Commands.CMD_PRIVACY
 import com.helltar.aibot.commands.Commands.CMD_RM_ADMIN
 import com.helltar.aibot.commands.Commands.CMD_RM_CHAT
 import com.helltar.aibot.commands.Commands.CMD_SDIFF
@@ -35,6 +36,7 @@ import com.helltar.aibot.commands.Commands.CMD_SLOW_MODE_OFF
 import com.helltar.aibot.commands.Commands.CMD_START
 import com.helltar.aibot.commands.Commands.CMD_UNBAN_USER
 import com.helltar.aibot.commands.Commands.CMD_UPDATE_API_KEY
+import com.helltar.aibot.commands.Commands.CMD_UPDATE_PRIVACY_POLICY
 import com.helltar.aibot.commands.admin.ban.BanUser
 import com.helltar.aibot.commands.admin.ban.UnbanUser
 import com.helltar.aibot.commands.admin.chat.AddChat
@@ -47,8 +49,10 @@ import com.helltar.aibot.commands.admin.sudoers.AdminList
 import com.helltar.aibot.commands.admin.sudoers.RemoveAdmin
 import com.helltar.aibot.commands.admin.system.CommandsState
 import com.helltar.aibot.commands.admin.system.UpdateApiKey
+import com.helltar.aibot.commands.admin.system.UpdatePrivacyPolicy
 import com.helltar.aibot.commands.user.About
 import com.helltar.aibot.commands.user.MyId
+import com.helltar.aibot.commands.user.Privacy
 import com.helltar.aibot.commands.user.Start
 import com.helltar.aibot.commands.user.audio.AsrWhisper
 import com.helltar.aibot.commands.user.chat.ChatCtx
@@ -79,6 +83,7 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
             register(simpleCommand(CMD_START) { commandExecutor.execute(Start(it), checkRights = false) })
             register(simpleCommand(CMD_MYID) { commandExecutor.execute(MyId(it), checkRights = false) })
             register(simpleCommand(CMD_ABOUT) { commandExecutor.execute(About(it), checkRights = false) })
+            register(simpleCommand(CMD_PRIVACY) { commandExecutor.execute(Privacy(it), checkRights = false) })
 
             register(simpleCommand(CMD_CHAT) { commandExecutor.execute(ChatGPT(it), isLongtimeCommand = true) })
             register(simpleCommand(CMD_GPT_VISION) { commandExecutor.execute(GPT4Vision(it), isLongtimeCommand = true) })
@@ -108,6 +113,7 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
             register(simpleCommand(CMD_RM_CHAT) { commandExecutor.execute(RemoveChat(it), true) })
 
             register(simpleCommand(CMD_UPDATE_API_KEY) { commandExecutor.execute(UpdateApiKey(it), userChatOnly = true, isCreatorCommand = true) })
+            register(simpleCommand(CMD_UPDATE_PRIVACY_POLICY) { commandExecutor.execute(UpdatePrivacyPolicy(it), userChatOnly = true, isCreatorCommand = true) })
         }
     }
 

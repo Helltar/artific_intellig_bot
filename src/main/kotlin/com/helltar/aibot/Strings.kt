@@ -1,6 +1,11 @@
 package com.helltar.aibot
 
 import com.annimon.tgbotsmodule.services.ResourceBundleLocalizationService
+import com.helltar.aibot.commands.Commands.CMD_CHAT_CTX_REMOVE
+import com.helltar.aibot.commands.Commands.CMD_PRIVACY
+import com.helltar.aibot.commands.Commands.CMD_SDIFF
+import com.helltar.aibot.commands.Commands.CMD_SLOW_MODE
+import com.helltar.aibot.commands.Commands.CMD_UPDATE_PRIVACY_POLICY
 
 object Strings {
 
@@ -37,9 +42,9 @@ object Strings {
     const val NO_PHOTO_IN_MESSAGE = "No photo in message \uD83E\uDD14" // 🤔
     const val PROVIDER_API_KEY_SUCCESS_ADD = "✅ API Key for <b>%s</b> succesfully added (type: %s)"
     const val PROVIDER_API_KEY_SUCCESS_UPDATE = "✅ API Key for <b>%s</b> succesfully updated (type: %s)"
-    const val STABLE_DIFFUSION_EMPTY_ARGS = "Please write a description of what you want to receive:\n\n<code>/sdif photo realistic portrait of young woman</code>"
+    const val STABLE_DIFFUSION_EMPTY_ARGS = "Please write a description of what you want to receive:\n\n<code>/$CMD_SDIFF photo realistic portrait of young woman</code>"
     const val TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE = "TelegramApiException, response saved to file \uD83D\uDE48" // 🙈
-    const val TELEGRAM_API_EXCEPTION_CONTEXT_SAVED_TO_FILE = "TelegramApiException, context saved to file. Use /chatrm for fix ☺\uFE0F" // ☺️
+    const val TELEGRAM_API_EXCEPTION_CONTEXT_SAVED_TO_FILE = "TelegramApiException, context saved to file. Use /$CMD_CHAT_CTX_REMOVE for fix ☺\uFE0F" // ☺️
     const val UPDATE_API_KEYS_COMMAND_EXAMPLE = "ℹ\uFE0F Example: <code>/%s %s sk-qwertyuiop...</code>" // ℹ️
     const val VIDEO_OR_AUDIO_NOT_FOUND = "Message does not contain audio or video \uD83E\uDD14" // 🤔
     const val VOICE_MUST_BE_LESS_THAN = "Voice must be less than %s 😥" // 😥
@@ -71,7 +76,10 @@ object Strings {
     const val SLOW_MODE_ON_UPDATE = "\uD83D\uDD04 Slow mode already on, update, <b>%d</b> requests per hour" // 🔄
     const val SLOW_MODE_OFF = "✅ Slow mode off"
     const val SLOW_MODE_OFF_NOT_ENABLED = "ℹ\uFE0F Slow mode not enabled for this user" // ℹ️
-    const val SLOW_MODE_BAD_ARG = "\uD83E\uDD2D Bad args., example: <code>/slowmode 123456789 2 username</code> (userId, limit, username), or if this is a reply: <code>/slowmode 2</code> (limit only)" // 🤭
+    const val SLOW_MODE_BAD_ARG = "\uD83E\uDD2D Bad args., example: <code>/$CMD_SLOW_MODE 123456789 2 username</code> (userId, limit, username), or if this is a reply: <code>/$CMD_SLOW_MODE 2</code> (limit only)" // 🤭
+
+    const val UPDATE_PRIVACY_POLICY_EXAMPLE = "<code>/$CMD_UPDATE_PRIVACY_POLICY</code> text"
+    const val PRIVACY_POLICY_SUCCESFULLY_UPDATED = "✅ Privacy Policy succesfully updated, to view use /$CMD_PRIVACY"
 
     private val localization = ResourceBundleLocalizationService("language")
 

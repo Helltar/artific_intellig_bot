@@ -40,7 +40,11 @@ object DatabaseFactory {
         val database = Database.connect(jdbcURL, driverClassName, databaseUser, databasePassword)
 
         transaction(database) {
-            SchemaUtils.create(ApiKeysTable, BannedUsersTable, ChatWhitelistTable, CommandsStateTable, FilesTable, SlowmodeTable, SudoersTable)
+            SchemaUtils.create(
+                ApiKeysTable, BannedUsersTable, ChatWhitelistTable,
+                CommandsStateTable, FilesTable, SlowmodeTable,
+                SudoersTable, PrivacyPoliciesTable
+            )
 
             if (SudoersTable.selectAll().count() == 0L) {
                 SudoersTable.insert {
