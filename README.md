@@ -19,7 +19,7 @@ NOTE: to get your Telegram ID, you can use [@artific_intellig_bot](https://t.me/
 ### Docker
 
 ```bash
-docker run --rm -d --name aibot --env-file .env ghcr.io/helltar/aibot:latest
+docker run --rm -d --name aibot --env-file .env ghcr.io/helltar/aibot:0.9.9
 ```
 
 ### Or run without Docker
@@ -54,6 +54,7 @@ and add them using the command in the bot:
 - /**sdif** - Stable Diffusion
 - /**dallevar** - DALL·E 2 Variations
 - /**asr** - Automatic Speech Recognition (openai-Whisper)
+- /**privacy**
 - /**about**
 
 Additional chat commands:
@@ -92,6 +93,9 @@ NOTE: run _/enable_ or _/disable_ with no arguments for view supported commands
 - /**addchat** (add chat to white list, use in chat or by ID) (creator-only command)
 - /**rmchat** (remove chat from white list, use in chat or by ID)
 - /**chats** (view chats list, run it only in private chat)
+<br>
+
+- /**updateprivacy** (update bot privacy policy (**/privacy**), run it only in private chat)
 
 <br>
 <a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA.png" alt="IntelliJ IDEA logo." width="32%"></a>
