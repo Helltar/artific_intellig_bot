@@ -9,8 +9,8 @@ import com.helltar.aibot.Strings.localizedString
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData
-import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_GPT_MODEL_3_5
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_GPT_MODEL_4
+import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_GPT_MODEL_4_MINI
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_ASSISTANT
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_SYSTEM
 import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_USER
@@ -103,7 +103,7 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
                 contextLengh = getUserDialogContextLengh()
             }
 
-        val gptModel = if (!isCreator()) CHAT_GPT_MODEL_3_5 else CHAT_GPT_MODEL_4
+        val gptModel = if (!isCreator()) CHAT_GPT_MODEL_4_MINI else CHAT_GPT_MODEL_4
         val response = sendPrompt(userContextMap[userId]!!, gptModel)
         val json = response.data.decodeToString()
 
