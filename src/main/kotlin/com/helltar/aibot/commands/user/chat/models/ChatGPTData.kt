@@ -2,7 +2,7 @@ package com.helltar.aibot.commands.user.chat.models
 
 object ChatGPTData {
 
-    const val CHAT_GPT_MODEL_3_5 = "gpt-3.5-turbo"
+    const val CHAT_GPT_MODEL_3_5 = "gpt-4o-mini"
     const val CHAT_GPT_MODEL_4 = "gpt-4o"
 
     const val CHAT_ROLE_USER = "user"
