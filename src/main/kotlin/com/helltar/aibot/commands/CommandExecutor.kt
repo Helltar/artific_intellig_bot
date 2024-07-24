@@ -4,6 +4,7 @@ import com.helltar.aibot.EnvConfig
 import com.helltar.aibot.Strings
 import com.helltar.aibot.dao.DatabaseFactory
 import com.helltar.aibot.dao.DatabaseFactory.FILE_NAME_LOADING_GIF
+import com.helltar.aibot.dao.DatabaseFactory.slowmodeDAO
 import com.helltar.aibot.dao.tables.SlowmodeTable
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
@@ -85,7 +86,7 @@ class CommandExecutor {
             }
 
             if (commandName in Commands.disalableCommandsList) {
-                val slowmodeRemainingSeconds = checkSlowmode(user)
+                val slowmodeRemainingSeconds = getRemainingSlowmodeTime(user)
 
                 if (slowmodeRemainingSeconds > 0) {
                     botCommand.replyToMessage(Strings.SLOW_MODE_PLEASE_WAIT.format(slowmodeRemainingSeconds))
@@ -111,35 +112,29 @@ class CommandExecutor {
             command.run()
     }
 
-    private suspend fun checkSlowmode(user: User): Long {
+    private suspend fun getRemainingSlowmodeTime(user: User): Long {
+        var resultRow = slowmodeDAO.getSlowmodeState(user.id)
 
-        /* todo: refact. */
-
-        val resultRow =
-            DatabaseFactory.slowmodeDAO.getSlowmodeState(user.id)
-                ?: run {
-                    DatabaseFactory.slowmodeDAO.add(user, 10)
-                    DatabaseFactory.slowmodeDAO.getSlowmodeState(user.id)
-                } ?: return 0
+        if (resultRow == null) {
+            slowmodeDAO.add(user, 10)
+            resultRow = slowmodeDAO.getSlowmodeState(user.id) ?: return 0
+        }
 
         var requests = resultRow[SlowmodeTable.requests]
         val limit = resultRow[SlowmodeTable.limit]
         val lastRequest = resultRow[SlowmodeTable.lastRequest]
 
-        if (requests >= limit) {
-            lastRequest?.let {
-                val now = Instant.now(Clock.systemUTC())
-                val timeElapsed = Duration.between(it, now)
+        lastRequest?.let {
+            val now = Instant.now(Clock.systemUTC())
+            val timeElapsed = Duration.between(it, now)
 
-                if (timeElapsed.toHours() < 1) {
-                    val remainingTime = 3600 - timeElapsed.seconds
-                    return remainingTime
-                } else
-                    requests = 0
-            }
+            if (requests >= limit && timeElapsed.toHours() < 1)
+                return 3600 - timeElapsed.seconds
+            else if (timeElapsed.toHours() >= 1)
+                requests = 0
         }
 
-        DatabaseFactory.slowmodeDAO.update(user, limit, requests + 1)
+        slowmodeDAO.update(user, limit, requests + 1)
 
         return 0
     }
