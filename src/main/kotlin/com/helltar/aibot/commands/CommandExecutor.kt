@@ -112,11 +112,19 @@ class CommandExecutor {
     }
 
     private suspend fun checkSlowmode(user: User): Long {
-        val slowmodeState = DatabaseFactory.slowmodeDAO.getSlowModeState(user.id) ?: return 0
 
-        var requests = slowmodeState[SlowmodeTable.requests]
-        val limit = slowmodeState[SlowmodeTable.limit]
-        val lastRequest = slowmodeState[SlowmodeTable.lastRequest]
+        /* todo: refact. */
+
+        val resultRow =
+            DatabaseFactory.slowmodeDAO.getSlowmodeState(user.id)
+                ?: run {
+                    DatabaseFactory.slowmodeDAO.add(user, 10)
+                    DatabaseFactory.slowmodeDAO.getSlowmodeState(user.id)
+                } ?: return 0
+
+        var requests = resultRow[SlowmodeTable.requests]
+        val limit = resultRow[SlowmodeTable.limit]
+        val lastRequest = resultRow[SlowmodeTable.lastRequest]
 
         if (requests >= limit) {
             lastRequest?.let {
