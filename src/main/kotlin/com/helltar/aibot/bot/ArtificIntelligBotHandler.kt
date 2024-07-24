@@ -32,7 +32,6 @@ import com.helltar.aibot.commands.Commands.CMD_RM_CHAT
 import com.helltar.aibot.commands.Commands.CMD_SDIFF
 import com.helltar.aibot.commands.Commands.CMD_SLOW_MODE
 import com.helltar.aibot.commands.Commands.CMD_SLOW_MODE_LIST
-import com.helltar.aibot.commands.Commands.CMD_SLOW_MODE_OFF
 import com.helltar.aibot.commands.Commands.CMD_START
 import com.helltar.aibot.commands.Commands.CMD_UNBAN_USER
 import com.helltar.aibot.commands.Commands.CMD_UPDATE_API_KEY
@@ -42,12 +41,13 @@ import com.helltar.aibot.commands.admin.ban.UnbanUser
 import com.helltar.aibot.commands.admin.chat.AddChat
 import com.helltar.aibot.commands.admin.chat.ChatsWhitelist
 import com.helltar.aibot.commands.admin.chat.RemoveChat
-import com.helltar.aibot.commands.admin.slowmode.Slowmode
-import com.helltar.aibot.commands.admin.slowmode.SlowmodeOff
+import com.helltar.aibot.commands.admin.lists.Banlist
+import com.helltar.aibot.commands.admin.lists.SlowmodeList
 import com.helltar.aibot.commands.admin.sudoers.AddAdmin
 import com.helltar.aibot.commands.admin.sudoers.AdminList
 import com.helltar.aibot.commands.admin.sudoers.RemoveAdmin
 import com.helltar.aibot.commands.admin.system.CommandsState
+import com.helltar.aibot.commands.admin.system.Slowmode
 import com.helltar.aibot.commands.admin.system.UpdateApiKey
 import com.helltar.aibot.commands.admin.system.UpdatePrivacyPolicy
 import com.helltar.aibot.commands.user.About
@@ -62,8 +62,6 @@ import com.helltar.aibot.commands.user.images.DallE2
 import com.helltar.aibot.commands.user.images.DalleVariations
 import com.helltar.aibot.commands.user.images.GPT4Vision
 import com.helltar.aibot.commands.user.images.StableDiffusion
-import com.helltar.aibot.commands.user.lists.Banlist
-import com.helltar.aibot.commands.user.lists.SlowmodeList
 import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.EntityType
 import org.telegram.telegrambots.meta.api.objects.Update
@@ -94,15 +92,14 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
             register(simpleCommand(CMD_DALLE_VARIATIONS) { commandExecutor.execute(DalleVariations(it), isLongtimeCommand = true) })
             register(simpleCommand(CMD_SDIFF) { commandExecutor.execute(StableDiffusion(it), isLongtimeCommand = true) })
             register(simpleCommand(CMD_ASR) { commandExecutor.execute(AsrWhisper(it), isLongtimeCommand = true) })
-            register(simpleCommand(CMD_BAN_LIST) { commandExecutor.execute(Banlist(it)) })
-            register(simpleCommand(CMD_SLOW_MODE_LIST) { commandExecutor.execute(SlowmodeList(it)) })
 
+            register(simpleCommand(CMD_BAN_LIST) { commandExecutor.execute(Banlist(it), true) })
+            register(simpleCommand(CMD_SLOW_MODE_LIST) { commandExecutor.execute(SlowmodeList(it), true) })
             register(simpleCommand(CMD_ENABLE) { commandExecutor.execute(CommandsState(it), true) })
             register(simpleCommand(CMD_DISABLE) { commandExecutor.execute(CommandsState(it, true), true) })
             register(simpleCommand(CMD_BAN_USER) { commandExecutor.execute(BanUser(it), true) })
             register(simpleCommand(CMD_UNBAN_USER) { commandExecutor.execute(UnbanUser(it), true) })
             register(simpleCommand(CMD_SLOW_MODE) { commandExecutor.execute(Slowmode(it), true) })
-            register(simpleCommand(CMD_SLOW_MODE_OFF) { commandExecutor.execute(SlowmodeOff(it), true) })
 
             register(simpleCommand(CMD_ADD_ADMIN) { commandExecutor.execute(AddAdmin(it), isCreatorCommand = true) })
             register(simpleCommand(CMD_RM_ADMIN) { commandExecutor.execute(RemoveAdmin(it), true) })
