@@ -4,7 +4,9 @@ import com.helltar.aibot.EnvConfig
 import com.helltar.aibot.Strings
 import com.helltar.aibot.dao.DatabaseFactory
 import com.helltar.aibot.dao.DatabaseFactory.FILE_NAME_LOADING_GIF
+import com.helltar.aibot.dao.DatabaseFactory.globalSlowmodeDAO
 import com.helltar.aibot.dao.DatabaseFactory.slowmodeDAO
+import com.helltar.aibot.dao.tables.GlobalSlowmodeTable
 import com.helltar.aibot.dao.tables.SlowmodeTable
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
@@ -13,12 +15,17 @@ import java.io.File
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
+import kotlin.time.Duration.Companion.hours
 
 class CommandExecutor {
 
     private val scope = CoroutineScope(Dispatchers.IO)
     private val requestsMap = hashMapOf<String, Job>()
     private val log = LoggerFactory.getLogger(javaClass)
+
+    private companion object {
+        const val SLOWMODE_BOUNDS_HOURS = 1
+    }
 
     fun execute(
         botCommand: BotCommand,
@@ -86,7 +93,7 @@ class CommandExecutor {
             }
 
             if (commandName in Commands.disalableCommandsList) {
-                val slowmodeRemainingSeconds = getRemainingSlowmodeTime(user)
+                val slowmodeRemainingSeconds = getSlowmodeRemainingSeconds(user)
 
                 if (slowmodeRemainingSeconds > 0) {
                     botCommand.replyToMessage(Strings.SLOW_MODE_PLEASE_WAIT.format(slowmodeRemainingSeconds))
@@ -112,29 +119,50 @@ class CommandExecutor {
             command.run()
     }
 
-    private suspend fun getRemainingSlowmodeTime(user: User): Long {
-        var resultRow = slowmodeDAO.getSlowmodeState(user.id)
+    private suspend fun getSlowmodeRemainingSeconds(user: User): Long {
+        val resultRow =
+            slowmodeDAO.getSlowmodeState(user.id)
+                ?: return getGlobalSlowmodeRemainingSeconds(user.id)
 
-        if (resultRow == null) {
-            slowmodeDAO.add(user, 10)
-            resultRow = slowmodeDAO.getSlowmodeState(user.id) ?: return 0
-        }
-
-        var requests = resultRow[SlowmodeTable.requests]
+        var requestsCount = resultRow[SlowmodeTable.requests]
         val limit = resultRow[SlowmodeTable.limit]
         val lastRequest = resultRow[SlowmodeTable.lastRequest]
 
         lastRequest?.let {
-            val now = Instant.now(Clock.systemUTC())
-            val timeElapsed = Duration.between(it, now)
+            val timeElapsed = Duration.between(it, Instant.now(Clock.systemUTC()))
 
-            if (requests >= limit && timeElapsed.toHours() < 1)
-                return 3600 - timeElapsed.seconds
-            else if (timeElapsed.toHours() >= 1)
-                requests = 0
+            if (requestsCount >= limit && timeElapsed.toHours() < SLOWMODE_BOUNDS_HOURS)
+                return SLOWMODE_BOUNDS_HOURS.hours.inWholeSeconds - timeElapsed.seconds
+            else if (timeElapsed.toHours() >= SLOWMODE_BOUNDS_HOURS)
+                requestsCount = 0
         }
 
-        slowmodeDAO.update(user, limit, requests + 1)
+        slowmodeDAO.update(user, limit, requestsCount + 1)
+
+        return 0
+    }
+
+    private suspend fun getGlobalSlowmodeRemainingSeconds(userId: Long): Long {
+        var resultRow = globalSlowmodeDAO.getUsageState(userId)
+
+        if (resultRow == null) {
+            globalSlowmodeDAO.add(userId)
+            resultRow = globalSlowmodeDAO.getUsageState(userId) ?: return 0
+        }
+
+        var usageCount = resultRow[GlobalSlowmodeTable.usageCount]
+        val lastUsage = resultRow[GlobalSlowmodeTable.lastUsage]
+
+        lastUsage?.let {
+            val timeElapsed = Duration.between(it, Instant.now(Clock.systemUTC()))
+
+            if (usageCount >= 10 && timeElapsed.toHours() < SLOWMODE_BOUNDS_HOURS)
+                return SLOWMODE_BOUNDS_HOURS.hours.inWholeSeconds - timeElapsed.seconds
+            else if (timeElapsed.toHours() >= SLOWMODE_BOUNDS_HOURS)
+                usageCount = 0
+        }
+
+        globalSlowmodeDAO.update(userId, usageCount + 1)
 
         return 0
     }

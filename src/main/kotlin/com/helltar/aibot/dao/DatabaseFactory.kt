@@ -32,6 +32,7 @@ object DatabaseFactory {
     val commandsDAO = CommandsDAO()
     val filesDAO = FilesDAO()
     val slowmodeDAO = SlowmodeDAO()
+    val globalSlowmodeDAO = GlobalSlowmodeDAO()
     val sudoersDAO = SudoersDAO()
 
     fun init() {
@@ -42,8 +43,8 @@ object DatabaseFactory {
         transaction(database) {
             SchemaUtils.create(
                 ApiKeysTable, BannedUsersTable, ChatWhitelistTable,
-                CommandsStateTable, FilesTable, SlowmodeTable,
-                SudoersTable, PrivacyPoliciesTable
+                CommandsStateTable, FilesTable, GlobalSlowmodeTable,
+                SlowmodeTable, SudoersTable, PrivacyPoliciesTable
             )
 
             if (SudoersTable.selectAll().count() == 0L) {

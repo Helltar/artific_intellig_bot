@@ -2,6 +2,8 @@ package com.helltar.aibot.dao
 
 import com.helltar.aibot.dao.DatabaseFactory.dbQuery
 import com.helltar.aibot.dao.tables.SlowmodeTable
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
@@ -22,18 +24,22 @@ class SlowmodeDAO {
         }.insertedCount > 0
     }
 
-    suspend fun update(user: User, limit: Int, requests: Int? = null) = dbQuery {
+    suspend fun update(user: User, limit: Int, requestsCount: Int? = null) = dbQuery {
         SlowmodeTable.update({ SlowmodeTable.userId eq user.id }) {
             it[username] = user.userName
             it[firstName] = user.firstName
             it[this.limit] = limit
             it[lastRequest] = Instant.now(Clock.systemUTC())
-            requests?.let { r -> it[this.requests] = r }
+            requestsCount?.let { rc -> it[requests] = rc }
         }
     }
 
     suspend fun update(userId: Long, limit: Int) = dbQuery {
         SlowmodeTable.update({ SlowmodeTable.userId eq userId }) { it[this.limit] = limit } > 0
+    }
+
+    suspend fun offSlowMode(userId: Long) = dbQuery {
+        SlowmodeTable.deleteWhere { SlowmodeTable.userId eq userId } > 0
     }
 
     suspend fun getSlowmodeState(userId: Long) = dbQuery {

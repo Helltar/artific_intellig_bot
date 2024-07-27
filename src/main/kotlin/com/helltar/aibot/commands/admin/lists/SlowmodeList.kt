@@ -19,10 +19,7 @@ class SlowmodeList(ctx: MessageContext) : BotCommand(ctx) {
                 "<code>${it[SlowmodeTable.userId]}</code> <b>$username</b> <code>$limit</code> <i>($requests - $lastRequest)</i>"
             }
 
-        if (list.isNotEmpty())
-            list.chunked(2048).forEach { replyToMessage(it) }
-        else
-            replyToMessage(Strings.LIST_IS_EMPTY)
+        replyToMessage(list.ifEmpty { Strings.LIST_IS_EMPTY })
     }
 
     override fun getCommandName() =

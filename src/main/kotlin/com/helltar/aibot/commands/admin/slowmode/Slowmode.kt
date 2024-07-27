@@ -1,4 +1,4 @@
-package com.helltar.aibot.commands.admin.system
+package com.helltar.aibot.commands.admin.slowmode
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
