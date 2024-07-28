@@ -68,6 +68,8 @@ For audio responses (TTS), add the **#voice** tag to your message, for example:
 
 ### Admin commands
 
+Change command state:
+
 - /**enable** _commandName_ (example: _/enable chat_)
 - /**disable** _commandName_ (example: _/disable dalle_)
 
@@ -75,27 +77,41 @@ NOTE: run _/enable_ or _/disable_ with no arguments for view supported commands
 <br>
 <br>
 
+Ban user:
+
 - /**ban** (use as reply to user message, example: _/ban reason_)
 - /**unban** (use as reply to user message or by user ID)
 - /**banlist**
 <br>
 
-- /**slowmode** (use as reply to user message, example: _/slowmode 5_) (requests per. hour)
+Slowmode for user:
+
+- /**slowmode** (use as reply to user message, example: _/slowmode 5_) (requests per hour)
 - /**slowmodeoff** (use as reply to user message or by user ID)
 - /**slowmodelist**
 <br>
 
-- /**addadmin** (add admin by ID, example: _/addadmin 123456789 username_) (creator-only command)
+Global slowmode (default 10 requests per hour per user)
+
+- /**globalslowmode**
+
+Manage admins:
+
+- /**addadmin** (add admin by ID, example: _/addadmin 123456789 username_)
 - /**rmadmin** (remove admin by ID)
-- /**sudoers** (view admin list, run it only in private chat)
+- /**sudoers** (view admin list)
 <br>
 
-- /**addchat** (add chat to white list, use in chat or by ID) (creator-only command)
+Manage chats:
+
+- /**addchat** (add chat to white list, use in chat or by ID)
 - /**rmchat** (remove chat from white list, use in chat or by ID)
-- /**chats** (view chats list, run it only in private chat)
+- /**chats** (view chats list)
 <br>
 
-- /**updateprivacy** (update bot privacy policy (**/privacy**), run it only in private chat)
+Other:
+
+- /**updateprivacy** (update bot privacy policy **/privacy**)
 
 <br>
 <a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA.png" alt="IntelliJ IDEA logo." width="32%"></a>
