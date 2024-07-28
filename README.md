@@ -94,6 +94,7 @@ Slowmode for user:
 Global slowmode (default 10 requests per hour per user)
 
 - /**globalslowmode**
+<br>
 
 Manage admins:
 
