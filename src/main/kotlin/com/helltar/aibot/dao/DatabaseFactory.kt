@@ -30,10 +30,9 @@ object DatabaseFactory {
     val banlistDAO = BanlistDAO()
     val chatWhitelistDAO = ChatWhitelistDAO()
     val commandsDAO = CommandsDAO()
-    val filesDAO = FilesDAO()
     val slowmodeDAO = SlowmodeDAO()
-    val globalSlowmodeDAO = GlobalSlowmodeDAO()
     val sudoersDAO = SudoersDAO()
+    val configurationsDAO = ConfigurationsDAO()
 
     fun init() {
         val driverClassName = "org.postgresql.Driver"
@@ -44,7 +43,8 @@ object DatabaseFactory {
             SchemaUtils.create(
                 ApiKeysTable, BannedUsersTable, ChatWhitelistTable,
                 CommandsStateTable, FilesTable, GlobalSlowmodeTable,
-                SlowmodeTable, SudoersTable, PrivacyPoliciesTable
+                SlowmodeTable, SudoersTable, PrivacyPoliciesTable,
+                ConfigurationsTable
             )
 
             if (SudoersTable.selectAll().count() == 0L) {

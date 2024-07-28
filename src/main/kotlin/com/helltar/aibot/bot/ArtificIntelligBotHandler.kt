@@ -24,6 +24,7 @@ import com.helltar.aibot.commands.Commands.CMD_DALLE
 import com.helltar.aibot.commands.Commands.CMD_DALLE_VARIATIONS
 import com.helltar.aibot.commands.Commands.CMD_DISABLE
 import com.helltar.aibot.commands.Commands.CMD_ENABLE
+import com.helltar.aibot.commands.Commands.CMD_GLOBAL_SLOW_MODE
 import com.helltar.aibot.commands.Commands.CMD_GPT_VISION
 import com.helltar.aibot.commands.Commands.CMD_MYID
 import com.helltar.aibot.commands.Commands.CMD_PRIVACY
@@ -50,6 +51,7 @@ import com.helltar.aibot.commands.admin.sudoers.AddAdmin
 import com.helltar.aibot.commands.admin.sudoers.AdminList
 import com.helltar.aibot.commands.admin.sudoers.RemoveAdmin
 import com.helltar.aibot.commands.admin.system.CommandsState
+import com.helltar.aibot.commands.admin.system.GlobalSlowmode
 import com.helltar.aibot.commands.admin.system.UpdateApiKey
 import com.helltar.aibot.commands.admin.system.UpdatePrivacyPolicy
 import com.helltar.aibot.commands.user.About
@@ -106,14 +108,15 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
             register(simpleCommand(CMD_SLOW_MODE_OFF) { commandExecutor.execute(SlowmodeOff(it), true) })
             register(simpleCommand(CMD_SLOW_MODE_LIST) { commandExecutor.execute(SlowmodeList(it), true) })
 
-            register(simpleCommand(CMD_ADD_ADMIN) { commandExecutor.execute(AddAdmin(it), isCreatorCommand = true) })
             register(simpleCommand(CMD_RM_ADMIN) { commandExecutor.execute(RemoveAdmin(it), true) })
             register(simpleCommand(CMD_ADMIN_LIST) { commandExecutor.execute(AdminList(it), true, userChatOnly = true) })
 
             register(simpleCommand(CMD_CHATS_WHITE_LIST) { commandExecutor.execute(ChatsWhitelist(it), true, userChatOnly = true) })
-            register(simpleCommand(CMD_ADD_CHAT) { commandExecutor.execute(AddChat(it), isCreatorCommand = true) })
             register(simpleCommand(CMD_RM_CHAT) { commandExecutor.execute(RemoveChat(it), true) })
 
+            register(simpleCommand(CMD_GLOBAL_SLOW_MODE) { commandExecutor.execute(GlobalSlowmode(it), isCreatorCommand = true) })
+            register(simpleCommand(CMD_ADD_ADMIN) { commandExecutor.execute(AddAdmin(it), isCreatorCommand = true) })
+            register(simpleCommand(CMD_ADD_CHAT) { commandExecutor.execute(AddChat(it), isCreatorCommand = true) })
             register(simpleCommand(CMD_UPDATE_API_KEY) { commandExecutor.execute(UpdateApiKey(it), userChatOnly = true, isCreatorCommand = true) })
             register(simpleCommand(CMD_UPDATE_PRIVACY_POLICY) { commandExecutor.execute(UpdatePrivacyPolicy(it), userChatOnly = true, isCreatorCommand = true) })
         }

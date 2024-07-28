@@ -4,8 +4,10 @@ import com.helltar.aibot.EnvConfig
 import com.helltar.aibot.Strings
 import com.helltar.aibot.dao.DatabaseFactory
 import com.helltar.aibot.dao.DatabaseFactory.FILE_NAME_LOADING_GIF
-import com.helltar.aibot.dao.DatabaseFactory.globalSlowmodeDAO
+import com.helltar.aibot.dao.DatabaseFactory.configurationsDAO
 import com.helltar.aibot.dao.DatabaseFactory.slowmodeDAO
+import com.helltar.aibot.dao.FilesDAO
+import com.helltar.aibot.dao.GlobalSlowmodeDAO
 import com.helltar.aibot.dao.tables.GlobalSlowmodeTable
 import com.helltar.aibot.dao.tables.SlowmodeTable
 import kotlinx.coroutines.*
@@ -22,6 +24,9 @@ class CommandExecutor {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val requestsMap = hashMapOf<String, Job>()
     private val log = LoggerFactory.getLogger(javaClass)
+
+    private val filesDAO = FilesDAO()
+    private val globalSlowmodeDAO = GlobalSlowmodeDAO()
 
     private companion object {
         const val SLOWMODE_BOUNDS_HOURS = 1
@@ -155,8 +160,9 @@ class CommandExecutor {
 
         lastUsage?.let {
             val timeElapsed = Duration.between(it, Instant.now(Clock.systemUTC()))
+            val globalSlowmodeMaxUsageCount = configurationsDAO.getGlobalSlowmodeMaxUsageCount()
 
-            if (usageCount >= 10 && timeElapsed.toHours() < SLOWMODE_BOUNDS_HOURS)
+            if (usageCount >= globalSlowmodeMaxUsageCount && timeElapsed.toHours() < SLOWMODE_BOUNDS_HOURS)
                 return SLOWMODE_BOUNDS_HOURS.hours.inWholeSeconds - timeElapsed.seconds
             else if (timeElapsed.toHours() >= SLOWMODE_BOUNDS_HOURS)
                 usageCount = 0
@@ -171,16 +177,16 @@ class CommandExecutor {
 
         suspend fun sendGifAndSaveFileId(): Int {
             val message = botCommand.sendDocument(File("data/files/$FILE_NAME_LOADING_GIF"))
-            message.document.fileId?.let { DatabaseFactory.filesDAO.add(FILE_NAME_LOADING_GIF, it) }
+            message.document.fileId?.let { filesDAO.add(FILE_NAME_LOADING_GIF, it) }
             return message.messageId
         }
 
-        return DatabaseFactory.filesDAO.getFileId(FILE_NAME_LOADING_GIF)?.let { fileId ->
+        return filesDAO.getFileId(FILE_NAME_LOADING_GIF)?.let { fileId ->
             try {
                 botCommand.replyToMessageWithDocument(fileId, gifCaption)
             } catch (e: Exception) {
                 log.error(e.message)
-                DatabaseFactory.filesDAO.delete(FILE_NAME_LOADING_GIF)
+                filesDAO.delete(FILE_NAME_LOADING_GIF)
                 sendGifAndSaveFileId()
             }
         } ?: sendGifAndSaveFileId()
