@@ -39,6 +39,13 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
     private val log = LoggerFactory.getLogger(javaClass)
 
     override suspend fun run() {
+        processUserMessage()
+    }
+
+    override fun getCommandName() =
+        Commands.CMD_CHAT
+
+    private suspend fun processUserMessage() {
         var messageId = ctx.messageId()
         var text = argsText
         var isVoiceOut = false
@@ -99,26 +106,33 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
                 contextLengh = getUserDialogContextLengh()
             }
 
-        val gptModel = if (!isAdmin()) CHAT_GPT_MODEL_4_MINI else CHAT_GPT_MODEL_4
-        val response = sendPrompt(userChatContextMap[userId]!!, gptModel)
-        val json = response.data.decodeToString()
+        getBotReply()?.let { answer ->
+            userChatContextMap[userId]?.add(ChatMessageData(CHAT_ROLE_ASSISTANT, answer))
 
-        if (!response.isSuccessful) {
-            if (response.statusCode != 401) { // Unauthorized
+            if (!isVoiceOut) {
                 try {
-                    replyToMessage(JSONObject(json).getJSONObject("error").getString("message"))
-                } catch (e: JSONException) {
-                    replyToMessage(Strings.CHAT_EXCEPTION)
+                    replyToMessage(answer, messageId, markdown = true)
+                } catch (e: Exception) { // todo: TelegramApiRequestException
+                    replyToMessageWithDocument(
+                        withContext(Dispatchers.IO) { File.createTempFile("answer", ".txt") }.apply { writeText(answer) },
+                        Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE
+                    )
+
                     log.error(e.message)
                 }
             } else
-                replyToMessage(Strings.CHAT_UNAUTHORIZED)
-
-            log.error("$response")
-            return
+                sendVoice(textToSpeech(answer), messageId)
         }
+            ?: replyToMessage(Strings.CHAT_EXCEPTION)
+    }
 
-        val answer =
+    private suspend fun getBotReply(): String? {
+        val gptModel = if (!isAdmin()) CHAT_GPT_MODEL_4_MINI else CHAT_GPT_MODEL_4
+
+        val response = sendPrompt(userChatContextMap[userId]!!, gptModel)
+        val json = response.data.decodeToString()
+
+        return if (response.isSuccessful) {
             try {
                 JSONObject(json)
                     .getJSONArray("choices")
@@ -126,30 +140,21 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
                     .getJSONObject("message")
                     .getString("content")
             } catch (e: JSONException) {
-                replyToMessage(Strings.CHAT_EXCEPTION)
                 log.error(e.message)
-                return
+                null
             }
+        } else {
+            log.error("$response")
 
-        userChatContextMap[userId]?.add(ChatMessageData(CHAT_ROLE_ASSISTANT, answer))
-
-        if (!isVoiceOut) {
             try {
-                replyToMessage(answer, messageId, markdown = true)
-            } catch (e: Exception) { // todo: TelegramApiRequestException
-                replyToMessageWithDocument(
-                    withContext(Dispatchers.IO) { File.createTempFile("answer", ".txt") }.apply { writeText(answer) },
-                    Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE
-                )
-
+                replyToMessage(JSONObject(json).getJSONObject("error").getString("message"))
+            } catch (e: JSONException) {
                 log.error(e.message)
             }
-        } else
-            sendVoice(textToSpeech(answer), messageId)
-    }
 
-    override fun getCommandName() =
-        Commands.CMD_CHAT
+            null
+        }
+    }
 
     protected suspend fun getOpenAIAuthorizationHeader() =
         mapOf("Authorization" to "Bearer ${getApiKey(PROVIDER_OPENAI_COM)}")
