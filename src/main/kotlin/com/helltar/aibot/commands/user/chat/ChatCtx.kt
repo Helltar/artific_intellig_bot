@@ -30,8 +30,8 @@ class ChatCtx(ctx: MessageContext) : ChatGPT(ctx) {
             }
 
         val text =
-            if (userContextMap.containsKey(userId))
-                userContextMap[userId]?.filter { it.role == CHAT_ROLE_USER }?.joinToString("\n") { "- ${it.content}" }
+            if (userChatContextMap.containsKey(userId))
+                userChatContextMap[userId]?.filter { it.role == CHAT_ROLE_USER }?.joinToString("\n") { "- ${it.content}" }
             else
                 Strings.CHAT_CONTEXT_EMPTY
 

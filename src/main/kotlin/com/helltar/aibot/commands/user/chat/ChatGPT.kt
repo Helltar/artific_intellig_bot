@@ -29,7 +29,7 @@ import java.util.*
 open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
 
     companion object {
-        val userContextMap = hashMapOf<Long, LinkedList<ChatMessageData>>()
+        val userChatContextMap = hashMapOf<Long, LinkedList<ChatMessageData>>()
         private const val MAX_USER_MESSAGE_TEXT_LENGTH = 2048
         private const val MAX_ADMIN_MESSAGE_TEXT_LENGTH = 4096
         private const val MAX_CHAT_CONTEXT_LENGH = 8192
@@ -43,11 +43,14 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
         var text = argsText
         var isVoiceOut = false
 
-        /* todo: refact. */
-
         if (isReply) {
-            if (isNotMe(replyMessage?.from?.userName)) {
-                text = replyMessage?.text ?: return
+            if (isNotMe(replyMessage!!.from?.userName)) {
+                text =
+                    replyMessage.text ?: replyMessage.caption ?: run {
+                        replyToMessage(Strings.MESSAGE_TEXT_NOT_FOUND)
+                        return
+                    }
+
                 isVoiceOut = argsText == VOICE_OUT_TEXT_TAG
                 messageId = replyMessage.messageId
             } else
@@ -82,29 +85,22 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
 
         val chatSystemMessage = localizedString(Strings.CHAT_GPT_SYSTEM_MESSAGE, userLanguageCode)
 
-        if (!userContextMap.containsKey(userId))
-            userContextMap[userId] =
-                LinkedList(
-                    listOf(
-                        ChatMessageData(
-                            CHAT_ROLE_SYSTEM,
-                            String.format(chatSystemMessage, chatTitle, username, userId)
-                        )
-                    )
-                )
+        if (!userChatContextMap.containsKey(userId))
+            userChatContextMap[userId] =
+                LinkedList(listOf(ChatMessageData(CHAT_ROLE_SYSTEM, String.format(chatSystemMessage, chatTitle, username, userId))))
 
-        userContextMap[userId]?.add(ChatMessageData(CHAT_ROLE_USER, text))
+        userChatContextMap[userId]?.add(ChatMessageData(CHAT_ROLE_USER, text))
 
         var contextLengh = getUserDialogContextLengh()
 
         if (contextLengh > MAX_CHAT_CONTEXT_LENGH)
             while (contextLengh > MAX_CHAT_CONTEXT_LENGH) {
-                userContextMap[userId]?.removeAt(1) // todo: removeAt
+                userChatContextMap[userId]?.removeAt(1) // todo: removeAt
                 contextLengh = getUserDialogContextLengh()
             }
 
-        val gptModel = if (!isCreator()) CHAT_GPT_MODEL_4_MINI else CHAT_GPT_MODEL_4
-        val response = sendPrompt(userContextMap[userId]!!, gptModel)
+        val gptModel = if (!isAdmin()) CHAT_GPT_MODEL_4_MINI else CHAT_GPT_MODEL_4
+        val response = sendPrompt(userChatContextMap[userId]!!, gptModel)
         val json = response.data.decodeToString()
 
         if (!response.isSuccessful) {
@@ -135,11 +131,9 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
                 return
             }
 
-        userContextMap[userId]?.add(ChatMessageData(CHAT_ROLE_ASSISTANT, answer))
+        userChatContextMap[userId]?.add(ChatMessageData(CHAT_ROLE_ASSISTANT, answer))
 
-        if (isVoiceOut)
-            sendVoice(textToSpeech(answer), messageId)
-        else
+        if (!isVoiceOut) {
             try {
                 replyToMessage(answer, messageId, markdown = true)
             } catch (e: Exception) { // todo: TelegramApiRequestException
@@ -150,6 +144,8 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
 
                 log.error(e.message)
             }
+        } else
+            sendVoice(textToSpeech(answer), messageId)
     }
 
     override fun getCommandName() =
@@ -162,7 +158,7 @@ open class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
         mapOf("Content-Type" to "application/json") + getOpenAIAuthorizationHeader()
 
     private fun getUserDialogContextLengh() =
-        userContextMap[userId]!!.sumOf { it.content.length }
+        userChatContextMap[userId]!!.sumOf { it.content.length }
 
     private suspend fun sendPrompt(messages: List<ChatMessageData>, gptModel: String): Response {
         val url = "https://api.openai.com/v1/chat/completions"

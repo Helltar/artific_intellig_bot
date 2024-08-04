@@ -27,7 +27,7 @@ class ChatCtxRemove(ctx: MessageContext) : ChatGPT(ctx) {
                 return
             }
 
-        userContextMap.remove(userId)
+        userChatContextMap.remove(userId)
 
         replyToMessage(Strings.CHAT_CONTEXT_REMOVED + username)
     }
