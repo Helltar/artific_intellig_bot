@@ -4,18 +4,18 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.dao.DatabaseFactory
+import com.helltar.aibot.db.dao.chatWhitelistDao
 
 class RemoveChat(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
         val chatId =
-            if (args.isNotEmpty())
-                args[0].toLongOrNull() ?: return
+            if (arguments.isNotEmpty())
+                arguments[0].toLongOrNull() ?: return
             else
                 ctx.chatId()
 
-        if (DatabaseFactory.chatWhitelistDAO.remove(chatId))
+        if (chatWhitelistDao.remove(chatId))
             replyToMessage(Strings.CHAT_REMOVED)
         else
             replyToMessage(Strings.CHAT_NOT_EXISTS)

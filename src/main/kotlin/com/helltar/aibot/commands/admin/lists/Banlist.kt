@@ -4,18 +4,16 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.dao.DatabaseFactory
-import com.helltar.aibot.dao.tables.BannedUsersTable
-import com.helltar.aibot.dao.tables.BannedUsersTable.reason
+import com.helltar.aibot.db.dao.banlistDao
 
 class Banlist(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
         val list =
-            DatabaseFactory.banlistDAO.getList().joinToString("\n") {
-                val username = it[BannedUsersTable.username] ?: it[BannedUsersTable.firstName]
-                val reason = it[reason]?.let { reason -> "<i>($reason)</i>" } ?: ""
-                "<code>${it[BannedUsersTable.userId]}</code> <b>$username</b> $reason <i>(${it[BannedUsersTable.datetime]})</i>"
+            banlistDao.getList().joinToString("\n") {
+                val username = it.username ?: it.firstName
+                val reason = it.reason?.let { reason -> "<i>($reason)</i>" } ?: ""
+                "<code>${it.userId}</code> <b>$username</b> $reason <i>(${it.datetime})</i>"
             }
 
         replyToMessage(list.ifEmpty { Strings.LIST_IS_EMPTY })

@@ -4,15 +4,15 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.dao.DatabaseFactory
+import com.helltar.aibot.db.dao.banlistDao
 
 class BanUser(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
         val user = ctx.message().replyToMessage?.from ?: return
-        val reason = argsText.ifEmpty { null }
+        val reason = argumentsString.ifEmpty { null }
 
-        if (DatabaseFactory.banlistDAO.banUser(user, reason))
+        if (banlistDao.banUser(user, reason))
             replyToMessage(Strings.USER_BANNED)
         else
             replyToMessage(Strings.USER_ALREADY_BANNED)

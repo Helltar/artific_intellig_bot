@@ -4,18 +4,18 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.dao.DatabaseFactory
+import com.helltar.aibot.db.dao.slowmodeDao
 
 class SlowmodeOff(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
         val userId =
-            if (args.isNotEmpty())
-                args[0].toLongOrNull()
+            if (arguments.isNotEmpty())
+                arguments[0].toLongOrNull()
             else
                 message.replyToMessage?.from?.id
 
-        if (DatabaseFactory.slowmodeDAO.offSlowMode(userId ?: return))
+        if (slowmodeDao.offSlowMode(userId ?: return))
             replyToMessage(Strings.SLOW_MODE_OFF)
         else
             replyToMessage(Strings.SLOW_MODE_OFF_NOT_ENABLED)

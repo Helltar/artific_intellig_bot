@@ -1,4 +1,4 @@
-package com.helltar.aibot.dao.tables
+package com.helltar.aibot.db.tables
 
 import org.jetbrains.exposed.sql.Table
 

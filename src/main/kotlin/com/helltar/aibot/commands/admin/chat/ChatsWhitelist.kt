@@ -4,16 +4,15 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.dao.DatabaseFactory
-import com.helltar.aibot.dao.tables.ChatWhitelistTable
+import com.helltar.aibot.db.dao.chatWhitelistDao
 
 class ChatsWhitelist(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
         val text =
-            DatabaseFactory.chatWhitelistDAO.getList().joinToString("\n") {
-                val title = it[ChatWhitelistTable.title]?.let { title -> "<i>($title)</i>" } ?: "null"
-                "<code>${it[ChatWhitelistTable.chatId]}</code> $title <i>(${it[ChatWhitelistTable.datetime]})</i>"
+            chatWhitelistDao.getList().joinToString("\n") {
+                val title = it.title?.let { title -> "<i>($title)</i>" } ?: "null"
+                "<code>${it.chatId}</code> $title <i>(${it.datetime})</i>"
             }
 
         replyToMessage(text.ifEmpty { Strings.LIST_IS_EMPTY })

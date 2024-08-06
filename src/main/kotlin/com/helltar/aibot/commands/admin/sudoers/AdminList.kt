@@ -4,15 +4,14 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.dao.DatabaseFactory
-import com.helltar.aibot.dao.tables.SudoersTable
+import com.helltar.aibot.db.dao.sudoersDao
 
 class AdminList(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
         val list =
-            DatabaseFactory.sudoersDAO.getList().joinToString("\n") {
-                "<code>${it[SudoersTable.userId]}</code> <b>${it[SudoersTable.username]}</b> <i>(${it[SudoersTable.datetime]})</i>"
+            sudoersDao.getList().joinToString("\n") {
+                "<code>${it.userId}</code> <b>${it.username}</b> <i>(${it.datetime})</i>"
             }
 
         replyToMessage(list.ifEmpty { Strings.LIST_IS_EMPTY })

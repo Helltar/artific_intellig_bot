@@ -1,29 +1,19 @@
 package com.helltar.aibot.commands.user.images
 
-import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.core.isSuccessful
-import com.google.gson.Gson
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.commands.user.chat.ChatGPT
-import com.helltar.aibot.commands.user.images.models.GPT4VisionData
+import com.helltar.aibot.commands.user.images.models.Dalle
+import com.helltar.aibot.commands.user.images.models.Vision
 import com.helltar.aibot.utils.NetworkUtils.httpPost
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.json.JSONException
-import org.json.JSONObject
+import kotlinx.serialization.encodeToString
 import org.slf4j.LoggerFactory
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import java.io.File
 import java.util.*
 
-class GPT4Vision(ctx: MessageContext) : ChatGPT(ctx) {
-
-    private companion object {
-        const val MAX_PHOTO_FILE_SIZE = 1024000
-    }
+class GPT4Vision(ctx: MessageContext) : DalleVariations(ctx) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -38,52 +28,29 @@ class GPT4Vision(ctx: MessageContext) : ChatGPT(ctx) {
             return
         }
 
-        val photo = replyMessage.photo.last()
+        val photo = downloadPhotoIfValid() ?: return
 
-        if (photo.fileSize > MAX_PHOTO_FILE_SIZE) {
-            replyToMessage(Strings.IMAGE_MUST_BE_LESS_THAN.format("${MAX_PHOTO_FILE_SIZE / 1000} kb."))
-            return
-        }
-
-        val photoFile = try {
-            ctx.sender.downloadFile(Methods.getFile(photo.fileId).call(ctx.sender))
-        } catch (e: TelegramApiException) {
-            log.error(e.message)
-            return
-        }
-
-        val response = sendPrompt(argsText, photoFile)
+        val response = sendPrompt(argumentsString, photo)
         val responseJson = response.data.decodeToString()
 
         if (response.isSuccessful) {
             val answer =
                 try {
-                    Gson().fromJson(responseJson, GPT4VisionData.ResponseData::class.java).choices.first().message.content
+                    json.decodeFromString<Vision.ResponseData>(responseJson).choices.first().message.content
                 } catch (e: Exception) {
+                    log.error("${e.message} $responseJson")
                     replyToMessage(Strings.CHAT_EXCEPTION)
-                    log.error(responseJson)
-                    log.error(e.message)
                     return
                 }
 
             try {
                 replyToMessage(answer, markdown = true)
-            } catch (e: Exception) { // todo: TelegramApiRequestException
-                replyToMessageWithDocument(
-                    withContext(Dispatchers.IO) { File.createTempFile("answer", ".txt") }.apply { writeText(answer) },
-                    Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE
-                )
-
+            } catch (e: Exception) {
+                errorReplyToMessageWithTextDocument(answer, Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE)
                 log.error(e.message)
             }
         } else {
-            try {
-                replyToMessage(JSONObject(responseJson).getJSONObject("error").getString("message")) // todo: errors model
-            } catch (e: JSONException) {
-                replyToMessage(Strings.CHAT_EXCEPTION)
-                log.error(e.message)
-            }
-
+            replyToMessage(Strings.CHAT_EXCEPTION)
             log.error(responseJson)
         }
     }
@@ -94,27 +61,12 @@ class GPT4Vision(ctx: MessageContext) : ChatGPT(ctx) {
     private suspend fun sendPrompt(text: String, image: File): Response {
         val url = "https://api.openai.com/v1/chat/completions"
 
-        val requestData =
-            GPT4VisionData.RequestData(
-                messages = listOf(
-                    GPT4VisionData.MessageData(
-                        content = listOf(
-                            GPT4VisionData.ContentData(
-                                GPT4VisionData.MESSAGE_CONTENT_TYPE_TEXT,
-                                text
-                            ),
-                            GPT4VisionData.ContentData(
-                                GPT4VisionData.MESSAGE_CONTENT_TYPE_IMAGE,
-                                image_url =
-                                GPT4VisionData.ImageData(
-                                    "data:image/jpeg;base64,${Base64.getEncoder().encodeToString(image.readBytes())}"
-                                )
-                            )
-                        )
-                    )
-                )
-            )
+        val imageBase64 = Base64.getEncoder().encodeToString(image.readBytes())
+        val imageData = Dalle.ImageData("data:image/jpeg;base64,$imageBase64")
+        val contentTextData = Vision.ContentData(Vision.MESSAGE_CONTENT_TYPE_TEXT, text)
+        val contentImageData = Vision.ContentData(Vision.MESSAGE_CONTENT_TYPE_IMAGE, image_url = imageData)
+        val requestData = Vision.RequestData(messages = listOf(Vision.MessageData(content = listOf(contentTextData, contentImageData))))
 
-        return httpPost(url, getOpenAIHeaders(), Gson().toJson(requestData))
+        return httpPost(url, getOpenAIHeaders(), json.encodeToString(requestData))
     }
 }

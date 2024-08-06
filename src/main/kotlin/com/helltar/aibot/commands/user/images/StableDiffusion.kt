@@ -6,11 +6,9 @@ import com.github.kittinunf.fuel.core.isSuccessful
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.dao.DatabaseFactory.PROVIDER_STABILITY_AI
 import com.helltar.aibot.utils.NetworkUtils.httpUpload
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.io.File
 
@@ -19,46 +17,42 @@ class StableDiffusion(ctx: MessageContext) : BotCommand(ctx) {
     private val log = LoggerFactory.getLogger(javaClass)
 
     override suspend fun run() {
-        if (args.isEmpty()) {
+        if (arguments.isEmpty()) {
             replyToMessage(Strings.STABLE_DIFFUSION_EMPTY_ARGS)
             return
         }
 
-        if (argsText.length > 2000) {
+        if (argumentsString.length > 2000) {
             replyToMessage(String.format(Strings.MANY_CHARACTERS, 2000))
             return
         }
 
-        val response = sendPrompt(argsText)
+        val response = sendPrompt(argumentsString)
         val responseData = response.data
 
         if (response.isSuccessful) {
             try {
-                var caption = argsText
+                var caption = argumentsString
 
-                if (caption.length > 512)
-                    caption = caption.substring(0, 512)
+                if (caption.length > 500)
+                    caption = "${caption.substring(0, 500)} ..."
 
-                withContext(Dispatchers.IO) {
-                    File.createTempFile("tmp", ".png") // todo: temp file
-                }.apply {
-                    writeBytes(responseData)
-                    replyToMessageWithPhoto(this, caption)
-                    delete()
-                }
+                val file = // todo: temp file
+                    withContext(Dispatchers.IO) {
+                        File.createTempFile("tmp", ".png")
+                    }.apply {
+                        writeBytes(responseData)
+                    }
+
+                replyToMessageWithPhoto(file, caption)
             } catch (e: Exception) {
                 log.error(e.message)
                 replyToMessage(Strings.BAD_REQUEST)
             }
-        } else
-            try {
-                val jsonObject = JSONObject(responseData.decodeToString())
-                val errors = jsonObject.getJSONArray("errors")
-                replyToMessage(errors.first().toString())
-            } catch (e: Exception) {
-                log.error(e.message)
-                replyToMessage(Strings.BAD_REQUEST)
-            }
+        } else {
+            log.error(responseData.decodeToString())
+            replyToMessage(Strings.BAD_REQUEST)
+        }
     }
 
     override fun getCommandName() =

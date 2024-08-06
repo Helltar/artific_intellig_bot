@@ -4,33 +4,25 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.dao.DatabaseFactory
+import com.helltar.aibot.db.dao.commandsDao
 
 class CommandsState(ctx: MessageContext, private val disable: Boolean = false) : BotCommand(ctx) {
 
+    private companion object {
+        const val ENABLED_SYMBOL = "\uD83D\uDFE2"
+        const val DISABLED_SYMBOL = "⚪\uFE0F"
+    }
+
     override suspend fun run() {
-        if (args.isEmpty()) {
-            val text =
-                buildString {
-                    Commands.disalableCommandsList.forEach { commandName ->
-                        append("<code>$commandName</code> ")
-
-                        if (DatabaseFactory.commandsDAO.isDisabled(commandName))
-                            append("➖")
-                        else
-                            append("➕")
-
-                        append("\n")
-                    }
-                }
-            replyToMessage(text)
+        if (arguments.isEmpty()) {
+            replyToMessage(getCommandsStatusText())
             return
         }
 
-        val commandName = args[0]
+        val commandName = arguments[0]
 
         if (!Commands.disalableCommandsList.contains(commandName)) {
-            replyToMessage(String.format(Strings.COMMAND_NOT_AVAILABLE, commandName, Commands.disalableCommandsList))
+            replyToMessage(Strings.COMMAND_NOT_AVAILABLE.format(commandName, Commands.disalableCommandsList.map { "<code>$it</code>" }))
             return
         }
 
@@ -43,21 +35,30 @@ class CommandsState(ctx: MessageContext, private val disable: Boolean = false) :
     override fun getCommandName() =
         if (disable) Commands.CMD_DISABLE else Commands.CMD_ENABLE
 
+    private suspend fun getCommandsStatusText() =
+        Commands.disalableCommandsList.map { commandName ->
+            val isDisabled = commandsDao.isDisabled(commandName)
+            val status = if (isDisabled) DISABLED_SYMBOL else ENABLED_SYMBOL
+            "$status <code>$commandName</code>"
+        }
+            .sortedDescending()
+            .joinToString("\n")
+
     private suspend fun enable(commandName: String) {
-        if (!DatabaseFactory.commandsDAO.isDisabled(commandName))
-            replyToMessage(String.format(Strings.COMMAND_ALREADY_ENABLED, commandName))
+        if (!commandsDao.isDisabled(commandName))
+            replyToMessage(Strings.COMMAND_ALREADY_ENABLED.format(commandName))
         else {
-            DatabaseFactory.commandsDAO.changeState(commandName, false)
-            replyToMessage(String.format(Strings.COMMAND_ENABLED, commandName))
+            commandsDao.changeState(commandName, false)
+            replyToMessage(Strings.COMMAND_ENABLED.format(commandName))
         }
     }
 
     private suspend fun disable(commandName: String) {
-        if (DatabaseFactory.commandsDAO.isDisabled(commandName))
-            replyToMessage(String.format(Strings.COMMAND_ALREADY_DISABLED, commandName))
+        if (commandsDao.isDisabled(commandName))
+            replyToMessage(Strings.COMMAND_ALREADY_DISABLED.format(commandName))
         else {
-            DatabaseFactory.commandsDAO.changeState(commandName, true)
-            replyToMessage(String.format(Strings.COMMAND_DISABLED, commandName))
+            commandsDao.changeState(commandName, true)
+            replyToMessage(Strings.COMMAND_DISABLED.format(commandName))
         }
     }
 }

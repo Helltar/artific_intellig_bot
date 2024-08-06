@@ -3,6 +3,7 @@ val postgresql_driver_version: String by project
 
 plugins {
     kotlin("jvm") version "2.0.0"
+    kotlin("plugin.serialization") version "2.0.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     application
 }
@@ -21,11 +22,11 @@ dependencies {
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2")
     implementation("com.github.kittinunf.fuel:fuel:2.3.1")
-    implementation("com.google.code.gson:gson:2.10.1")
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
     implementation("org.imgscalr:imgscalr-lib:4.2")
+
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.1")
-    implementation("org.json:json:20231013")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
 
     implementation("org.postgresql:postgresql:$postgresql_driver_version")
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")

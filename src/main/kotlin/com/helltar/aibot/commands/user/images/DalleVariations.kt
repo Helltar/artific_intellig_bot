@@ -4,28 +4,23 @@ import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.FileDataPart
 import com.helltar.aibot.Strings
+import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.commands.user.chat.ChatGPT
-import com.helltar.aibot.commands.user.images.models.DalleData.DALLE_REQUEST_IMAGE_SIZE
+import com.helltar.aibot.commands.user.images.models.Dalle
+import com.helltar.aibot.commands.user.images.models.Dalle.DALLE_IMAGE_SIZE
 import com.helltar.aibot.utils.NetworkUtils.httpUpload
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.json.JSONException
-import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import java.awt.Image
+import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.IOException
 import javax.imageio.ImageIO
 
-class DalleVariations(ctx: MessageContext) : ChatGPT(ctx) {
-
-    private companion object {
-        const val MAX_PHOTO_FILE_SIZE = 1024000
-    }
+open class DalleVariations(ctx: MessageContext) : BotCommand(ctx) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -40,72 +35,76 @@ class DalleVariations(ctx: MessageContext) : ChatGPT(ctx) {
             return
         }
 
-        val photos = replyMessage.photo
-        val photo = photos.last()
-
-        if (photo.fileSize > MAX_PHOTO_FILE_SIZE) {
-            replyToMessage(Strings.IMAGE_MUST_BE_LESS_THAN.format("1MB"))
-            return
-        }
-
-        val photoFile = try {
-            ctx.sender.downloadFile(Methods.getFile(photo.fileId).call(ctx.sender))
-        } catch (e: TelegramApiException) {
-            log.error(e.message)
-            return
-        }
-
+        val photo = downloadPhotoIfValid() ?: return
         val squarePngImage = ByteArrayOutputStream()
 
         try {
-            withContext(Dispatchers.IO) { ImageIO.write(resizeImage(ImageIO.read(photoFile)), "png", squarePngImage) }
-        } catch (e: IOException) {
-            log.error(e.message)
-            return
-        }
-
-        val responseJson = uploadImage(squarePngImage)
-
-        try {
-            replyToMessageWithPhoto(
-                JSONObject(responseJson)
-                    .getJSONArray("data")
-                    .getJSONObject(0)
-                    .getString("url"), messageId = replyMessage.messageId
-            )
-        } catch (e: JSONException) {
-            try {
-                replyToMessage(
-                    JSONObject(responseJson)
-                        .getJSONObject("error")
-                        .getString("message")
-                )
-            } catch (e: JSONException) {
-                log.error(e.message, e)
-                replyToMessage(Strings.BAD_REQUEST)
+            withContext(Dispatchers.IO) {
+                val originalImage = ImageIO.read(photo)
+                val resizedImage = resizeImage(originalImage)
+                ImageIO.write(resizedImage, "png", squarePngImage)
             }
+
+            val responseJson = uploadImage(squarePngImage)
+
+            log.debug(responseJson)
+
+            val url = json.decodeFromString<Dalle.ResponseData>(responseJson).data.first().url
+
+            replyToMessageWithPhoto(url, messageId = replyMessage.messageId)
+        } catch (e: Exception) {
+            log.error(e.message)
+            replyToMessage(Strings.BAD_REQUEST)
         }
     }
 
     override fun getCommandName() =
         Commands.CMD_DALLE_VARIATIONS
 
-    private fun resizeImage(image: BufferedImage): BufferedImage {
-        val resized = BufferedImage(512, 512, BufferedImage.TYPE_INT_ARGB)
+    protected fun downloadPhotoIfValid(): File? {
+        val photo = replyMessage!!.photo.last()
 
-        resized.createGraphics().apply {
-            drawImage(image.getScaledInstance(512, 512, Image.SCALE_FAST), 0, 0, null)
+        if (photo.fileSize > 1024 * 1024) {
+            replyToMessage(Strings.IMAGE_MUST_BE_LESS_THAN.format("1MB"))
+            return null
+        }
+
+        return try {
+            ctx.sender.downloadFile(Methods.getFile(photo.fileId).call(ctx.sender))
+        } catch (e: TelegramApiException) {
+            log.error(e.message)
+            null
+        }
+    }
+
+    private fun resizeImage(image: BufferedImage): BufferedImage {
+        val targetWidth = 512
+        val targetHeight = 512
+
+        val resizedImage = BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB)
+
+        resizedImage.createGraphics().apply {
+            setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
+            setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
+            setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+
+            drawImage(image.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH), 0, 0, targetWidth, targetHeight, null)
+
             dispose()
         }
 
-        return resized
+        return resizedImage
     }
 
     private suspend fun uploadImage(byteArrayStream: ByteArrayOutputStream): String {
         val url = "https://api.openai.com/v1/images/variations"
-        val parameters = listOf("n" to "1", "size" to DALLE_REQUEST_IMAGE_SIZE)
-        val file = withContext(Dispatchers.IO) { File.createTempFile("tmp", ".png") }.apply { writeBytes(byteArrayStream.toByteArray()) } // todo: tempFile
-        val dataPart = FileDataPart(file, "image")
-        return httpUpload(url, parameters, getOpenAIAuthorizationHeader(), dataPart).data.decodeToString()
+        val parameters = listOf("n" to "1", "size" to DALLE_IMAGE_SIZE)
+
+        val file = // todo: tempFile
+            withContext(Dispatchers.IO) { File.createTempFile("tmp", ".png") }.apply {
+                writeBytes(byteArrayStream.toByteArray())
+            }
+
+        return httpUpload(url, parameters, getOpenAIAuthHeader(), FileDataPart(file, "image")).data.decodeToString()
     }
 }

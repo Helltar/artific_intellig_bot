@@ -1,12 +1,11 @@
-package com.helltar.aibot.dao
+package com.helltar.aibot.db.dao
 
-import com.helltar.aibot.dao.DatabaseFactory.dbQuery
-import com.helltar.aibot.dao.tables.ConfigurationsTable
+import com.helltar.aibot.db.DatabaseFactory.dbQuery
+import com.helltar.aibot.db.tables.ConfigurationsTable
 import org.jetbrains.exposed.sql.insertIgnore
-import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 
-class ConfigurationsDAO {
+class ConfigurationsDao {
 
     suspend fun getGlobalSlowmodeMaxUsageCount() = dbQuery {
         getConfiguration("global_slowmode_max_usage_count")?.toIntOrNull() ?: 10
@@ -17,7 +16,10 @@ class ConfigurationsDAO {
     }
 
     private suspend fun getConfiguration(key: String) = dbQuery {
-        ConfigurationsTable.selectAll().where { ConfigurationsTable.key eq key }.singleOrNull()?.get(ConfigurationsTable.value)
+        ConfigurationsTable
+            .select(ConfigurationsTable.value)
+            .where { ConfigurationsTable.key eq key }
+            .singleOrNull()?.get(ConfigurationsTable.value)
     }
 
     private suspend fun setConfiguration(key: String, value: String) = dbQuery {
@@ -26,8 +28,8 @@ class ConfigurationsDAO {
             it[this.value] = value
         }
 
-        ConfigurationsTable.update({ ConfigurationsTable.key eq key }) {
-            it[this.value] = value
-        }
+        ConfigurationsTable.update({ ConfigurationsTable.key eq key }) { it[this.value] = value }
     }
 }
+
+val configurationsDao = ConfigurationsDao()

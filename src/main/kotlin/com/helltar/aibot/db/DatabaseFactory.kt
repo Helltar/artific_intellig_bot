@@ -1,4 +1,4 @@
-package com.helltar.aibot.dao
+package com.helltar.aibot.db
 
 import com.helltar.aibot.EnvConfig.creatorId
 import com.helltar.aibot.EnvConfig.databaseName
@@ -7,7 +7,7 @@ import com.helltar.aibot.EnvConfig.databaseUser
 import com.helltar.aibot.EnvConfig.postgresqlHost
 import com.helltar.aibot.EnvConfig.postgresqlPort
 import com.helltar.aibot.commands.Commands.disalableCommandsList
-import com.helltar.aibot.dao.tables.*
+import com.helltar.aibot.db.tables.*
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -19,20 +19,6 @@ import java.time.Clock
 import java.time.Instant
 
 object DatabaseFactory {
-
-    const val FILE_NAME_LOADING_GIF = "loading.gif"
-    const val PROVIDER_OPENAI_COM = "openai.com"
-    const val PROVIDER_STABILITY_AI = "stability.ai"
-
-    val apiKeysProviders = setOf(PROVIDER_OPENAI_COM, PROVIDER_STABILITY_AI)
-
-    val apiKeysDAO = ApiKeyDAO()
-    val banlistDAO = BanlistDAO()
-    val chatWhitelistDAO = ChatWhitelistDAO()
-    val commandsDAO = CommandsDAO()
-    val slowmodeDAO = SlowmodeDAO()
-    val sudoersDAO = SudoersDAO()
-    val configurationsDAO = ConfigurationsDAO()
 
     fun init() {
         val driverClassName = "org.postgresql.Driver"

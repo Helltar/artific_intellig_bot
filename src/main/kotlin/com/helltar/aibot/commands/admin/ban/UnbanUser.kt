@@ -4,18 +4,18 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.dao.DatabaseFactory
+import com.helltar.aibot.db.dao.banlistDao
 
 class UnbanUser(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
         val userId =
-            if (args.isNotEmpty())
-                args[0].toLongOrNull()
+            if (arguments.isNotEmpty())
+                arguments[0].toLongOrNull()
             else
                 ctx.message().replyToMessage?.from?.id
 
-        if (DatabaseFactory.banlistDAO.unbanUser(userId ?: return))
+        if (banlistDao.unbanUser(userId ?: return))
             replyToMessage(Strings.USER_UNBANNED)
         else
             replyToMessage(Strings.USER_NOT_BANNED)

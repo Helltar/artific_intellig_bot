@@ -2,16 +2,16 @@ package com.helltar.aibot.commands.user.chat
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
+import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
 
-class ChatCtxRemove(ctx: MessageContext) : ChatGPT(ctx) {
+class ChatCtxRemove(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
         var username = ""
 
         val userId =
-            if (!isReply)
-                this.userId
+            if (!isReply) this.userId
             else
                 if (isAdmin()) {
                     username = " (<b>${message.replyToMessage.from.firstName}</b>)"
@@ -27,7 +27,7 @@ class ChatCtxRemove(ctx: MessageContext) : ChatGPT(ctx) {
                 return
             }
 
-        userChatContextMap.remove(userId)
+        ChatHistoryManager(userId).clear()
 
         replyToMessage(Strings.CHAT_CONTEXT_REMOVED + username)
     }

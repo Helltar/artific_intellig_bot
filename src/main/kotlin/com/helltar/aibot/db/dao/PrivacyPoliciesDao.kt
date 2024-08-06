@@ -1,14 +1,14 @@
-package com.helltar.aibot.dao
+package com.helltar.aibot.db.dao
 
-import com.helltar.aibot.dao.DatabaseFactory.dbQuery
-import com.helltar.aibot.dao.tables.PrivacyPoliciesTable
+import com.helltar.aibot.db.DatabaseFactory.dbQuery
+import com.helltar.aibot.db.tables.PrivacyPoliciesTable
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import java.time.Clock
 import java.time.Instant
 
-class PrivacyPoliciesDAO {
+class PrivacyPoliciesDao {
 
     suspend fun update(text: String) = dbQuery {
         val existingPolicy = PrivacyPoliciesTable.selectAll().singleOrNull()
@@ -26,6 +26,10 @@ class PrivacyPoliciesDAO {
     }
 
     suspend fun getPolicyText() = dbQuery {
-        PrivacyPoliciesTable.selectAll().singleOrNull()?.get(PrivacyPoliciesTable.policyText) ?: "Privacy Policy"
+        PrivacyPoliciesTable
+            .select(PrivacyPoliciesTable.policyText)
+            .singleOrNull()?.get(PrivacyPoliciesTable.policyText) ?: "Privacy Policy"
     }
 }
+
+val privacyPoliciesDao = PrivacyPoliciesDao()

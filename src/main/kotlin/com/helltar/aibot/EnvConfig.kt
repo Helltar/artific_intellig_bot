@@ -4,7 +4,7 @@ import io.github.cdimascio.dotenv.dotenv
 
 object EnvConfig {
 
-    val creatorId = readEnv("CREATOR_ID").toLongOrNull() ?: throw RuntimeException("bad CREATOR_ID env.")
+    val creatorId = readEnv("CREATOR_ID").toLongOrNull() ?: throw IllegalArgumentException("bad CREATOR_ID env.")
 
     val telegramBotToken = readEnv("BOT_TOKEN")
     val telegramBotUsername = readEnv("BOT_USERNAME")
@@ -16,5 +16,6 @@ object EnvConfig {
     val databasePassword = readEnv("DATABASE_PASSWORD")
 
     private fun readEnv(env: String) =
-        dotenv { ignoreIfMissing = true }[env].ifBlank { throw RuntimeException("$env env. is blank") } ?: throw RuntimeException("error when read $env env.")
+        dotenv { ignoreIfMissing = true }[env].ifBlank { throw IllegalArgumentException("$env env. is blank") }
+            ?: throw IllegalArgumentException("error when read $env env.")
 }

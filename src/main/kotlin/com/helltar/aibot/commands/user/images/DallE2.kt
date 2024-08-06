@@ -1,40 +1,34 @@
 package com.helltar.aibot.commands.user.images
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.google.gson.Gson
 import com.helltar.aibot.Strings
+import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.commands.user.chat.ChatGPT
-import com.helltar.aibot.commands.user.images.models.DalleData
+import com.helltar.aibot.commands.user.images.models.Dalle
 import com.helltar.aibot.utils.NetworkUtils.httpPost
-import org.json.JSONException
-import org.json.JSONObject
+import kotlinx.serialization.encodeToString
 import org.slf4j.LoggerFactory
 
-class DallE2(ctx: MessageContext) : ChatGPT(ctx) {
+class DallE2(ctx: MessageContext) : BotCommand(ctx) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
     override suspend fun run() {
-        if (args.isEmpty()) {
+        if (arguments.isEmpty()) {
             replyToMessage(Strings.EMPTY_ARGS)
             return
         }
 
-        if (argsText.length > 1000) {
+        if (argumentsString.length > 1000) {
             replyToMessage(String.format(Strings.MANY_CHARACTERS, 1000))
             return
         }
 
         try {
-            replyToMessageWithPhoto(
-                JSONObject(sendPrompt(argsText))
-                    .getJSONArray("data")
-                    .getJSONObject(0)
-                    .getString("url"),
-                argsText
-            )
-        } catch (e: JSONException) {
+            val responseJson = sendPrompt(argumentsString)
+            val url = json.decodeFromString<Dalle.ResponseData>(responseJson).data.first().url
+            replyToMessageWithPhoto(url, argumentsString)
+        } catch (e: Exception) {
             replyToMessage(Strings.CHAT_EXCEPTION)
             log.error(e.message)
         }
@@ -45,7 +39,7 @@ class DallE2(ctx: MessageContext) : ChatGPT(ctx) {
 
     private suspend fun sendPrompt(prompt: String): String {
         val url = "https://api.openai.com/v1/images/generations"
-        val body = Gson().toJson(DalleData.RequestData(prompt, 1))
+        val body = json.encodeToString(Dalle.RequestData(prompt))
         return httpPost(url, getOpenAIHeaders(), body).data.decodeToString()
     }
 }

@@ -3,16 +3,23 @@ package com.helltar.aibot.commands
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.EnvConfig.creatorId
 import com.helltar.aibot.EnvConfig.telegramBotUsername
-import com.helltar.aibot.dao.DatabaseFactory
+import com.helltar.aibot.db.dao.*
+import kotlinx.serialization.json.Json
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.InputFile
 import org.telegram.telegrambots.meta.api.objects.message.Message
 import java.io.File
+import java.io.InputStream
 import java.util.concurrent.CompletableFuture
 
 abstract class BotCommand(val ctx: MessageContext) {
 
-    val args: Array<String> = ctx.arguments()
+    protected companion object {
+        const val PROVIDER_OPENAI_COM = "openai.com"
+        const val PROVIDER_STABILITY_AI = "stability.ai"
+    }
+
+    val arguments: Array<String> = ctx.arguments()
     val userLanguageCode = ctx.user().languageCode ?: "en"
 
     protected val userId = ctx.user().id
@@ -20,22 +27,24 @@ abstract class BotCommand(val ctx: MessageContext) {
     protected val replyMessage: Message? = message.replyToMessage
     protected val isReply = message.isReply && message.replyToMessage.messageId != message.replyToMessage.messageThreadId // todo: tmp. fix, check.
     protected val isNotReply = !isReply
-    protected val argsText: String = ctx.argumentsAsString()
+    protected val argumentsString: String = ctx.argumentsAsString()
+
+    protected val json = Json { ignoreUnknownKeys = true; encodeDefaults = true; explicitNulls = false }
 
     abstract suspend fun run()
     abstract fun getCommandName(): String
 
     suspend fun isCommandDisabled(command: String) =
-        DatabaseFactory.commandsDAO.isDisabled(command)
+        commandsDao.isDisabled(command)
 
     suspend fun isChatInWhiteList() =
-        DatabaseFactory.chatWhitelistDAO.isChatExists(ctx.chatId())
+        chatWhitelistDao.isChatExists(ctx.chatId())
 
     suspend fun isUserBanned(userId: Long) =
-        DatabaseFactory.banlistDAO.isUserBanned(userId)
+        banlistDao.isUserBanned(userId)
 
     suspend fun isAdmin() =
-        DatabaseFactory.sudoersDAO.isAdmin(userId)
+        sudoersDao.isAdmin(userId)
 
     fun isCreator(userId: Long = this.userId) =
         userId == creatorId
@@ -80,7 +89,7 @@ abstract class BotCommand(val ctx: MessageContext) {
     }
 
     protected suspend fun getApiKey(provider: String) =
-        DatabaseFactory.apiKeysDAO.getKey(provider)
+        apiKeysDao.getKey(provider)
 
     protected fun replyToMessageWithPhoto(file: File, caption: String = "", messageId: Int = message.messageId): Message =
         ctx.replyToMessageWithPhoto()
@@ -106,9 +115,23 @@ abstract class BotCommand(val ctx: MessageContext) {
             .call(ctx.sender)
             .messageId
 
-    protected fun sendVoice(file: File, messageId: Int): Message =
+    protected fun sendVoice(name: String, inputStream: InputStream, messageId: Int): Message =
         ctx.replyToMessageWithAudio()
-            .setFile(file)
+            .setFile(name, inputStream)
             .setReplyToMessageId(messageId)
             .call(ctx.sender)
+
+    protected fun errorReplyToMessageWithTextDocument(text: String, caption: String): Int =
+        ctx.replyWithDocument()
+            .setFile("$userId-${message.messageId}.txt", text.byteInputStream())
+            .setCaption(caption)
+            .setReplyToMessageId(message.messageId)
+            .call(ctx.sender)
+            .messageId
+
+    protected suspend fun getOpenAIAuthHeader() =
+        mapOf("Authorization" to "Bearer ${getApiKey(PROVIDER_OPENAI_COM)}")
+
+    protected suspend fun getOpenAIHeaders() =
+        mapOf("Content-Type" to "application/json") + getOpenAIAuthHeader()
 }

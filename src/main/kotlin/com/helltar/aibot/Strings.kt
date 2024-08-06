@@ -15,7 +15,7 @@ object Strings {
     const val API_KEY_FAIL_UPDATE = "⚠\uFE0F Error when update <b>%s</b> API Key" // ⚠️
     const val ASR_WHISPER_USE_AS_REPLY = "Use this command as a reply to an voice or video message \uD83D\uDE43" // 🙃
     const val AUDIO_MUST_BE_LESS_THAN = "Audio must be less than %s 😥" // 😥
-    const val BAD_REQUEST = "<code>Bad Request</code> \uD83D\uDE10" // 😐
+    const val BAD_REQUEST = "Bad Request \uD83D\uDE10" // 😐
     const val BAD_VIDEO_DURATION = "Bad video duration, must be less than <b>%d</b> seconds \uD83D\uDE13" // 😓
     const val BAD_VIDEO_NOTE_DURATION = "Bad video-note duration, must be less than <b>%d</b> seconds \uD83D\uDE13" // 😓
     const val BAN_AND_REASON = "❌ Ban, reason: <b>%s</b>"
@@ -27,7 +27,7 @@ object Strings {
     const val COMMAND_ALREADY_ENABLED = "✅ Command <b>%s</b> already enabled"
     const val COMMAND_DISABLED = "✅ Command <b>%s</b> disabled"
     const val COMMAND_ENABLED = "✅ Command <b>%s</b> enabled"
-    const val COMMAND_NOT_AVAILABLE = "Command <b>%s</b> not available: %s"
+    const val COMMAND_NOT_AVAILABLE = "Command <b>%s</b> is not available. Available: %s"
     const val COMMAND_NOT_SUPPORTED_IN_CHAT = "Command is not supported in this chat \uD83D\uDE48" // 🙈
     const val COMMAND_TEMPORARY_DISABLED = "Command temporary disabled \uD83D\uDC40" // 👀
     const val COULDNT_RECOGNIZE_VOICE = "Couldn't recognize the voice \uD83D\uDE49" // 🙉

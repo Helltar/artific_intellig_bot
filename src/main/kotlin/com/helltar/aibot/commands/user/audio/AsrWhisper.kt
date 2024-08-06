@@ -6,12 +6,10 @@ import com.github.kittinunf.fuel.core.FileDataPart
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.dao.DatabaseFactory.PROVIDER_OPENAI_COM
+import com.helltar.aibot.commands.user.audio.models.Whisper
 import com.helltar.aibot.utils.NetworkUtils.httpUpload
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.json.JSONException
-import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import org.telegram.telegrambots.meta.api.objects.Audio
 import org.telegram.telegrambots.meta.api.objects.Video
@@ -82,14 +80,13 @@ class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
 
         try {
             val text =
-                JSONObject(responseJson).getString("text").ifEmpty {
+                json.decodeFromString<Whisper.ResponseData>(responseJson).text.ifEmpty {
                     replyToMessage(Strings.COULDNT_RECOGNIZE_VOICE, messageId)
                     return
                 }
 
-            text.chunked(4096).forEach { replyToMessage(it, messageId) } // todo: 20 msg per min. (?)
-
-        } catch (e: JSONException) {
+            text.chunked(4096).forEach { replyToMessage(it, messageId) }
+        } catch (e: Exception) {
             log.error("${e.message}: $responseJson")
             replyToMessage(Strings.CHAT_EXCEPTION)
         }
@@ -162,9 +159,8 @@ class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
 
     private suspend fun uploadAudio(file: File): String {
         val url = "https://api.openai.com/v1/audio/transcriptions"
-        val headers = mapOf("Authorization" to "Bearer ${getApiKey(PROVIDER_OPENAI_COM)}")
         val parameters = listOf("model" to "whisper-1")
         val dataPart = FileDataPart(file, "file")
-        return httpUpload(url, parameters, headers, dataPart).data.decodeToString()
+        return httpUpload(url, parameters, getOpenAIAuthHeader(), dataPart).data.decodeToString()
     }
 }

@@ -2,26 +2,25 @@ package com.helltar.aibot.commands.user.chat
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
+import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.commands.user.chat.models.ChatGPTData.CHAT_ROLE_USER
+import com.helltar.aibot.commands.user.chat.models.Chat
 import org.slf4j.LoggerFactory
-import java.io.File
 
-class ChatCtx(ctx: MessageContext) : ChatGPT(ctx) {
+class ChatCtx(ctx: MessageContext) : BotCommand(ctx) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
     override suspend fun run() {
         val userId =
-            if (!isReply)
-                this.userId
-            else
-                if (isAdmin())
-                    message.replyToMessage.from.id
+            if (!isReply) this.userId
+            else {
+                if (isAdmin()) message.replyToMessage.from.id
                 else {
                     replyToMessage(Strings.ADMIN_ONLY_COMMAND)
                     return
                 }
+            }
 
         if (isCreator(userId))
             if (!isCreator()) {
@@ -29,25 +28,22 @@ class ChatCtx(ctx: MessageContext) : ChatGPT(ctx) {
                 return
             }
 
+        val userChatHistory = ChatHistoryManager(userId).userChatDialogHistory
+
         val text =
-            if (userChatContextMap.containsKey(userId))
-                userChatContextMap[userId]?.filter { it.role == CHAT_ROLE_USER }?.joinToString("\n") { "- ${it.content}" }
-            else
+            if (userChatHistory.isNotEmpty()) {
+                userChatHistory
+                    .filter { it.role == Chat.CHAT_ROLE_USER }
+                    .joinToString("\n") { "- ${it.content}" }
+            } else
                 Strings.CHAT_CONTEXT_EMPTY
 
         try {
-            replyToMessage("$text", markdown = true)
-        } catch (e: Exception) { // todo: TelegramApiRequestException
-            text?.let {
-                replyToMessageWithDocument(
-                    File.createTempFile("context", ".txt").apply { writeText(it) },
-                    Strings.TELEGRAM_API_EXCEPTION_CONTEXT_SAVED_TO_FILE
-                )
-            }
-
+            replyToMessage(text, markdown = true)
+        } catch (e: Exception) {
+            errorReplyToMessageWithTextDocument(text, Strings.TELEGRAM_API_EXCEPTION_CONTEXT_SAVED_TO_FILE)
             log.error(e.message)
         }
-
     }
 
     override fun getCommandName() =

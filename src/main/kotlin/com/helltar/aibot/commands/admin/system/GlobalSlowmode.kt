@@ -4,19 +4,19 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.dao.DatabaseFactory.configurationsDAO
+import com.helltar.aibot.db.dao.configurationsDao
 
 class GlobalSlowmode(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
-        if (args.isEmpty() || args[0].toIntOrNull() == null) {
-            replyToMessage(Strings.GLOBAL_SLOW_MODE_CURRENT_VALUE.format(configurationsDAO.getGlobalSlowmodeMaxUsageCount()))
+        if (arguments.isEmpty() || arguments[0].toIntOrNull() == null) {
+            replyToMessage(Strings.GLOBAL_SLOW_MODE_CURRENT_VALUE.format(configurationsDao.getGlobalSlowmodeMaxUsageCount()))
             return
         }
 
-        val newMax = args[0].toInt()
+        val newMax = arguments[0].toInt()
 
-        configurationsDAO.setGlobalSlowmodeMaxUsageCount(newMax)
+        configurationsDao.setGlobalSlowmodeMaxUsageCount(newMax)
 
         replyToMessage(Strings.GLOBAL_SLOW_MODE_SUCCESFULLY_CHANGED.format(newMax))
     }

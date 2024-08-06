@@ -2,14 +2,7 @@ package com.helltar.aibot.commands
 
 import com.helltar.aibot.EnvConfig
 import com.helltar.aibot.Strings
-import com.helltar.aibot.dao.DatabaseFactory
-import com.helltar.aibot.dao.DatabaseFactory.FILE_NAME_LOADING_GIF
-import com.helltar.aibot.dao.DatabaseFactory.configurationsDAO
-import com.helltar.aibot.dao.DatabaseFactory.slowmodeDAO
-import com.helltar.aibot.dao.FilesDAO
-import com.helltar.aibot.dao.GlobalSlowmodeDAO
-import com.helltar.aibot.dao.tables.GlobalSlowmodeTable
-import com.helltar.aibot.dao.tables.SlowmodeTable
+import com.helltar.aibot.db.dao.*
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import org.telegram.telegrambots.meta.api.objects.User
@@ -17,20 +10,21 @@ import java.io.File
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.hours
 
 class CommandExecutor {
 
-    private val scope = CoroutineScope(Dispatchers.IO)
-    private val requestsMap = hashMapOf<String, Job>()
-    private val log = LoggerFactory.getLogger(javaClass)
-
-    private val filesDAO = FilesDAO()
-    private val globalSlowmodeDAO = GlobalSlowmodeDAO()
-
     private companion object {
         const val SLOWMODE_BOUNDS_HOURS = 1
+        const val FILE_NAME_LOADING_GIF = "loading.gif"
+        val filesMap = mapOf(FILE_NAME_LOADING_GIF to "data/files/$FILE_NAME_LOADING_GIF")
     }
+
+    private val scope = CoroutineScope(Dispatchers.IO)
+    private val requestsMap = ConcurrentHashMap<String, Job>()
+
+    private val log = LoggerFactory.getLogger(javaClass)
 
     fun execute(
         botCommand: BotCommand,
@@ -82,7 +76,7 @@ class CommandExecutor {
             }
 
             if (botCommand.isUserBanned(userId)) {
-                val reason = DatabaseFactory.banlistDAO.getReason(userId) ?: "\uD83E\uDD37\u200D♂️" // 🤷‍♂️
+                val reason = banlistDao.getReason(userId) ?: "\uD83E\uDD37\u200D♂️" // 🤷‍♂️
                 botCommand.replyToMessage(Strings.BAN_AND_REASON.format(reason))
                 return@launch
             }
@@ -125,13 +119,13 @@ class CommandExecutor {
     }
 
     private suspend fun getSlowmodeRemainingSeconds(user: User): Long {
-        val resultRow =
-            slowmodeDAO.getSlowmodeState(user.id)
+        val slowmodeState =
+            slowmodeDao.getSlowmodeState(user.id)
                 ?: return getGlobalSlowmodeRemainingSeconds(user.id)
 
-        var requestsCount = resultRow[SlowmodeTable.requests]
-        val limit = resultRow[SlowmodeTable.limit]
-        val lastRequest = resultRow[SlowmodeTable.lastRequest]
+        val limit = slowmodeState.limit
+        val lastRequest = slowmodeState.lastRequest
+        var requestsCount = slowmodeState.requests
 
         lastRequest?.let {
             val timeElapsed = Duration.between(it, Instant.now(Clock.systemUTC()))
@@ -142,25 +136,25 @@ class CommandExecutor {
                 requestsCount = 0
         }
 
-        slowmodeDAO.update(user, limit, requestsCount + 1)
+        slowmodeDao.update(user, limit, requestsCount + 1)
 
         return 0
     }
 
     private suspend fun getGlobalSlowmodeRemainingSeconds(userId: Long): Long {
-        var resultRow = globalSlowmodeDAO.getUsageState(userId)
+        var slowmodeState = globalSlowmodeDao.getUsageState(userId)
 
-        if (resultRow == null) {
-            globalSlowmodeDAO.add(userId)
-            resultRow = globalSlowmodeDAO.getUsageState(userId) ?: return 0
+        if (slowmodeState == null) {
+            globalSlowmodeDao.add(userId)
+            slowmodeState = globalSlowmodeDao.getUsageState(userId) ?: return 0
         }
 
-        var usageCount = resultRow[GlobalSlowmodeTable.usageCount]
-        val lastUsage = resultRow[GlobalSlowmodeTable.lastUsage]
+        var usageCount = slowmodeState.usageCount
+        val lastUsage = slowmodeState.lastUsage
 
         lastUsage?.let {
             val timeElapsed = Duration.between(it, Instant.now(Clock.systemUTC()))
-            val globalSlowmodeMaxUsageCount = configurationsDAO.getGlobalSlowmodeMaxUsageCount()
+            val globalSlowmodeMaxUsageCount = configurationsDao.getGlobalSlowmodeMaxUsageCount()
 
             if (usageCount >= globalSlowmodeMaxUsageCount && timeElapsed.toHours() < SLOWMODE_BOUNDS_HOURS)
                 return SLOWMODE_BOUNDS_HOURS.hours.inWholeSeconds - timeElapsed.seconds
@@ -168,7 +162,7 @@ class CommandExecutor {
                 usageCount = 0
         }
 
-        globalSlowmodeDAO.update(userId, usageCount + 1)
+        globalSlowmodeDao.update(userId, usageCount + 1)
 
         return 0
     }
@@ -176,17 +170,17 @@ class CommandExecutor {
     private suspend fun sendWaitingGif(botCommand: BotCommand, gifCaption: String): Int {
 
         suspend fun sendGifAndSaveFileId(): Int {
-            val message = botCommand.sendDocument(File("data/files/$FILE_NAME_LOADING_GIF"))
-            message.document.fileId?.let { filesDAO.add(FILE_NAME_LOADING_GIF, it) }
+            val message = botCommand.sendDocument(File(filesMap.getValue(FILE_NAME_LOADING_GIF)))
+            message.document.fileId?.let { filesDao.add(FILE_NAME_LOADING_GIF, it) }
             return message.messageId
         }
 
-        return filesDAO.getFileId(FILE_NAME_LOADING_GIF)?.let { fileId ->
+        return filesDao.getFileId(FILE_NAME_LOADING_GIF)?.let { fileId ->
             try {
                 botCommand.replyToMessageWithDocument(fileId, gifCaption)
             } catch (e: Exception) {
                 log.error(e.message)
-                filesDAO.delete(FILE_NAME_LOADING_GIF)
+                filesDao.delete(FILE_NAME_LOADING_GIF)
                 sendGifAndSaveFileId()
             }
         } ?: sendGifAndSaveFileId()
