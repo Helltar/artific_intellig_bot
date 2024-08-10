@@ -19,7 +19,7 @@ NOTE: to get your Telegram ID, you can use [@artific_intellig_bot](https://t.me/
 ### Docker
 
 ```bash
-docker run --rm -d --name aibot --env-file .env ghcr.io/helltar/aibot:0.9.12
+docker run --rm -d --name aibot --env-file .env ghcr.io/helltar/aibot:latest
 ```
 
 ### Or run without Docker
