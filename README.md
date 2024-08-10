@@ -1,5 +1,5 @@
-AIBot for Telegram
---------------------
+AI bot for Telegram (focused on use in group chats)
+---------------------------------------------------
 
 Demo: https://t.me/+siikRmY3uyE5YTBi
 
