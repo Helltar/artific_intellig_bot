@@ -40,7 +40,7 @@ object Commands {
     const val CMD_UPDATE_API_KEY = "updatekey"
     const val CMD_UPDATE_PRIVACY_POLICY = "updateprivacy"
 
-    val disalableCommandsList =
+    val disableableCommands =
         setOf(
             CMD_CHAT,
             CMD_GPT_VISION,
