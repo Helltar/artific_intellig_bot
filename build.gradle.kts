@@ -26,7 +26,9 @@ object Versions {
 }
 
 dependencies {
-    implementation("com.annimon:tgbots-module:${Versions.tgbotsModule}") { exclude("org.telegram", "telegrambots-webhook") }
+    implementation("com.annimon:tgbots-module:${Versions.tgbotsModule}") {
+        exclude("org.telegram", "telegrambots-webhook")
+    }
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.jacksonModuleKotlin}")
     implementation("com.github.kittinunf.fuel:fuel:${Versions.fuel}")
