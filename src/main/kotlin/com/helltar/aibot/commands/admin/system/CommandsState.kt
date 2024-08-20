@@ -21,8 +21,8 @@ class CommandsState(ctx: MessageContext, private val disable: Boolean = false) :
 
         val commandName = arguments[0]
 
-        if (!Commands.disalableCommandsList.contains(commandName)) {
-            replyToMessage(Strings.COMMAND_NOT_AVAILABLE.format(commandName, Commands.disalableCommandsList.map { "<code>$it</code>" }))
+        if (!Commands.disableableCommands.contains(commandName)) {
+            replyToMessage(Strings.COMMAND_NOT_AVAILABLE.format(commandName, Commands.disableableCommands.map { "<code>$it</code>" }))
             return
         }
 
@@ -36,7 +36,7 @@ class CommandsState(ctx: MessageContext, private val disable: Boolean = false) :
         if (disable) Commands.CMD_DISABLE else Commands.CMD_ENABLE
 
     private suspend fun getCommandsStatusText() =
-        Commands.disalableCommandsList.map { commandName ->
+        Commands.disableableCommands.map { commandName ->
             val isDisabled = commandsDao.isDisabled(commandName)
             val status = if (isDisabled) DISABLED_SYMBOL else ENABLED_SYMBOL
             "$status <code>$commandName</code>"

@@ -6,7 +6,7 @@ import com.helltar.aibot.EnvConfig.databasePassword
 import com.helltar.aibot.EnvConfig.databaseUser
 import com.helltar.aibot.EnvConfig.postgresqlHost
 import com.helltar.aibot.EnvConfig.postgresqlPort
-import com.helltar.aibot.commands.Commands.disalableCommandsList
+import com.helltar.aibot.commands.Commands.disableableCommands
 import com.helltar.aibot.db.tables.*
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
@@ -42,7 +42,7 @@ object DatabaseFactory {
             }
 
             if (CommandsStateTable.selectAll().count() == 0L) {
-                disalableCommandsList.forEach { command ->
+                disableableCommands.forEach { command ->
                     CommandsStateTable.insert {
                         it[name] = command
                         it[isDisabled] = false
