@@ -8,6 +8,7 @@ import com.annimon.tgbotsmodule.commands.authority.SimpleAuthority
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.EnvConfig.creatorId
 import com.helltar.aibot.EnvConfig.telegramBotUsername
+import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.CommandExecutor
 import com.helltar.aibot.commands.Commands.CMD_ABOUT
 import com.helltar.aibot.commands.Commands.CMD_ADD_ADMIN
@@ -71,7 +72,6 @@ import org.telegram.telegrambots.meta.api.objects.EntityType
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.message.Message
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
-import java.util.function.Consumer
 
 class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler(botModuleOptions) {
 
@@ -81,69 +81,62 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
     private val commandExecutor = CommandExecutor()
 
     init {
-        registry.run {
-            register(simpleCommand(CMD_START) { commandExecutor.execute(Start(it), checkRights = false) })
-            register(simpleCommand(CMD_MYID) { commandExecutor.execute(MyId(it), checkRights = false) })
-            register(simpleCommand(CMD_ABOUT) { commandExecutor.execute(About(it), checkRights = false) })
-            register(simpleCommand(CMD_PRIVACY) { commandExecutor.execute(Privacy(it), checkRights = false) })
+        registerSimpleCommand(CMD_START, ::Start)
+        registerSimpleCommand(CMD_MYID, ::MyId)
+        registerSimpleCommand(CMD_ABOUT, ::About)
+        registerSimpleCommand(CMD_PRIVACY, ::Privacy)
+        registerSimpleCommand(CMD_CHATCTX, ::ChatCtx, true)
+        registerSimpleCommand(CMD_CHAT_CTX_REMOVE, ::ChatCtxRemove, true)
 
-            register(simpleCommand(CMD_CHAT) { commandExecutor.execute(ChatGPT(it), isLongtimeCommand = true) })
-            register(simpleCommand(CMD_GPT_VISION) { commandExecutor.execute(GPT4Vision(it), isLongtimeCommand = true) })
-            register(simpleCommand(CMD_CHATCTX) { commandExecutor.execute(ChatCtx(it)) })
-            register(simpleCommand(CMD_CHAT_CTX_REMOVE) { commandExecutor.execute(ChatCtxRemove(it)) })
+        registerLongRunningCommand(CMD_CHAT, ::ChatGPT)
+        registerLongRunningCommand(CMD_GPT_VISION, ::GPT4Vision)
+        registerLongRunningCommand(CMD_DALLE, ::DallE2)
+        registerLongRunningCommand(CMD_DALLE_VARIATIONS, ::DalleVariations)
+        registerLongRunningCommand(CMD_SDIFF, ::StableDiffusion)
+        registerLongRunningCommand(CMD_ASR, ::AsrWhisper)
 
-            register(simpleCommand(CMD_DALLE) { commandExecutor.execute(DallE2(it), isLongtimeCommand = true) })
-            register(simpleCommand(CMD_DALLE_VARIATIONS) { commandExecutor.execute(DalleVariations(it), isLongtimeCommand = true) })
-            register(simpleCommand(CMD_SDIFF) { commandExecutor.execute(StableDiffusion(it), isLongtimeCommand = true) })
-            register(simpleCommand(CMD_ASR) { commandExecutor.execute(AsrWhisper(it), isLongtimeCommand = true) })
+        registerAdminCommand(CMD_ENABLE, { CommandsState(it) })
+        registerAdminCommand(CMD_DISABLE, { CommandsState(it, true) })
+        registerAdminCommand(CMD_BAN_LIST, ::Banlist)
+        registerAdminCommand(CMD_BAN_USER, ::BanUser)
+        registerAdminCommand(CMD_UNBAN_USER, ::UnbanUser)
+        registerAdminCommand(CMD_SLOW_MODE, ::Slowmode)
+        registerAdminCommand(CMD_SLOW_MODE_OFF, ::SlowmodeOff)
+        registerAdminCommand(CMD_SLOW_MODE_LIST, ::SlowmodeList)
+        registerAdminCommand(CMD_RM_ADMIN, ::RemoveAdmin)
+        registerAdminCommand(CMD_ADMIN_LIST, ::AdminList, true)
+        registerAdminCommand(CMD_CHATS_WHITE_LIST, ::ChatsWhitelist, true)
+        registerAdminCommand(CMD_RM_CHAT, ::RemoveChat)
 
-            register(simpleCommand(CMD_ENABLE) { commandExecutor.execute(CommandsState(it), true) })
-            register(simpleCommand(CMD_DISABLE) { commandExecutor.execute(CommandsState(it, true), true) })
-
-            register(simpleCommand(CMD_BAN_LIST) { commandExecutor.execute(Banlist(it), true) })
-            register(simpleCommand(CMD_BAN_USER) { commandExecutor.execute(BanUser(it), true) })
-            register(simpleCommand(CMD_UNBAN_USER) { commandExecutor.execute(UnbanUser(it), true) })
-
-            register(simpleCommand(CMD_SLOW_MODE) { commandExecutor.execute(Slowmode(it), true) })
-            register(simpleCommand(CMD_SLOW_MODE_OFF) { commandExecutor.execute(SlowmodeOff(it), true) })
-            register(simpleCommand(CMD_SLOW_MODE_LIST) { commandExecutor.execute(SlowmodeList(it), true) })
-
-            register(simpleCommand(CMD_RM_ADMIN) { commandExecutor.execute(RemoveAdmin(it), true) })
-            register(simpleCommand(CMD_ADMIN_LIST) { commandExecutor.execute(AdminList(it), true, userChatOnly = true) })
-
-            register(simpleCommand(CMD_CHATS_WHITE_LIST) { commandExecutor.execute(ChatsWhitelist(it), true, userChatOnly = true) })
-            register(simpleCommand(CMD_RM_CHAT) { commandExecutor.execute(RemoveChat(it), true) })
-
-            register(simpleCommand(CMD_GLOBAL_SLOW_MODE) { commandExecutor.execute(GlobalSlowmode(it), isCreatorCommand = true) })
-            register(simpleCommand(CMD_ADD_ADMIN) { commandExecutor.execute(AddAdmin(it), isCreatorCommand = true) })
-            register(simpleCommand(CMD_ADD_CHAT) { commandExecutor.execute(AddChat(it), isCreatorCommand = true) })
-            register(simpleCommand(CMD_UPDATE_API_KEY) { commandExecutor.execute(UpdateApiKey(it), userChatOnly = true, isCreatorCommand = true) })
-            register(simpleCommand(CMD_UPDATE_PRIVACY_POLICY) { commandExecutor.execute(UpdatePrivacyPolicy(it), userChatOnly = true, isCreatorCommand = true) })
-        }
+        registerCreatorCommand(CMD_ADD_ADMIN, ::AddAdmin)
+        registerCreatorCommand(CMD_ADD_CHAT, ::AddChat)
+        registerCreatorCommand(CMD_GLOBAL_SLOW_MODE, ::GlobalSlowmode)
+        registerCreatorCommand(CMD_UPDATE_API_KEY, ::UpdateApiKey, true)
+        registerCreatorCommand(CMD_UPDATE_PRIVACY_POLICY, ::UpdatePrivacyPolicy, true)
     }
 
     override fun onUpdate(update: Update): BotApiMethod<*>? {
-        fun Message.hasMentions() =
-            this.entities.any { it.type == EntityType.MENTION || it.type == EntityType.TEXTMENTION }
 
-        fun chatGPT(ctx: MessageContext) =
-            commandExecutor.execute(ChatGPT(ctx), isLongtimeCommand = true)
+        fun executeChatGPT(ctx: MessageContext) =
+            commandExecutor.execute(ChatGPT(ctx), createCommandOptions(isLongRunningCommand = true))
+
+        fun shouldProcessMessage(replyToMessage: Message, text: String): Boolean {
+            val isMe = replyToMessage.from.userName == telegramBotUsername
+            return isMe && !replyToMessage.hasPhoto() && !text.startsWith("/")
+        }
+
+        fun processMessage(message: Message) {
+            val ctx = MessageContext(this, update, "")
+
+            if (!message.hasEntities() || !message.entities.any { it.type == EntityType.MENTION || it.type == EntityType.TEXTMENTION })
+                executeChatGPT(ctx)
+        }
 
         if (update.hasMessage() && update.message.isReply && update.message.hasText()) {
             val message = update.message
-            val replyToMessage = message.replyToMessage
-            val text = message.text
-            val isMe = replyToMessage.from.userName == telegramBotUsername
 
-            if (isMe && !replyToMessage.hasPhoto() && !text.startsWith("/")) {
-                val ctx = MessageContext(this, update, "")
-
-                if (!message.hasEntities()) // if it doesn't have text formatting, @username, etc...
-                    chatGPT(ctx)
-                else
-                    if (!message.hasMentions()) // if it has text formatting, etc..., but doesn't have @username
-                        chatGPT(ctx)
-            }
+            if (shouldProcessMessage(message.replyToMessage, message.text))
+                processMessage(message)
         }
 
         registry.handleUpdate(this, update)
@@ -155,6 +148,32 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
         throw tae ?: TelegramApiException("TelegramApiException") // todo: TelegramApiException
     }
 
-    private fun simpleCommand(command: String, consumer: Consumer<MessageContext>) =
-        SimpleCommand("/$command", consumer)
+    private fun createCommandOptions(
+        checkRights: Boolean = true,
+        isAdminCommand: Boolean = false,
+        isCreatorCommand: Boolean = false,
+        isLongRunningCommand: Boolean = false,
+        privateChatOnly: Boolean = false
+    ) =
+        CommandExecutor.CommandOptions(checkRights, isAdminCommand, isCreatorCommand, isLongRunningCommand, privateChatOnly)
+
+    private fun registerCommand(command: String, botCommand: (MessageContext) -> BotCommand, options: CommandExecutor.CommandOptions) {
+        registry.register(SimpleCommand("/$command") { commandExecutor.execute(botCommand(it), options) })
+    }
+
+    private fun registerSimpleCommand(command: String, botCommand: (MessageContext) -> BotCommand, checkRights: Boolean = false) {
+        registerCommand(command, botCommand, createCommandOptions(checkRights = checkRights))
+    }
+
+    private fun registerLongRunningCommand(command: String, botCommand: (MessageContext) -> BotCommand) {
+        registerCommand(command, botCommand, createCommandOptions(isLongRunningCommand = true))
+    }
+
+    private fun registerAdminCommand(command: String, botCommand: (MessageContext) -> BotCommand, privateChatOnly: Boolean = false) {
+        registerCommand(command, botCommand, createCommandOptions(isAdminCommand = true, privateChatOnly = privateChatOnly))
+    }
+
+    private fun registerCreatorCommand(command: String, botCommand: (MessageContext) -> BotCommand, privateChatOnly: Boolean = false) {
+        registerCommand(command, botCommand, createCommandOptions(isCreatorCommand = true, privateChatOnly = privateChatOnly))
+    }
 }
