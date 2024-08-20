@@ -20,39 +20,50 @@ import java.time.Instant
 
 object DatabaseFactory {
 
+    private const val DRIVER_CLASS_NAME = "org.postgresql.Driver"
+    private const val JDBC_URL_FORMAT = "jdbc:postgresql://%s:%s/%s"
+
     fun init() {
-        val driverClassName = "org.postgresql.Driver"
-        val jdbcURL = "jdbc:postgresql://$postgresqlHost:$postgresqlPort/$databaseName"
-        val database = Database.connect(jdbcURL, driverClassName, databaseUser, databasePassword)
+        val jdbcUrl = JDBC_URL_FORMAT.format(postgresqlHost, postgresqlPort, databaseName)
+        val database = Database.connect(jdbcUrl, DRIVER_CLASS_NAME, databaseUser, databasePassword)
 
-        transaction(database) {
-            SchemaUtils.create(
-                ApiKeysTable, BannedUsersTable, ChatWhitelistTable,
-                CommandsStateTable, FilesTable, GlobalSlowmodeTable,
-                SlowmodeTable, SudoersTable, PrivacyPoliciesTable,
-                ConfigurationsTable
-            )
-
-            if (SudoersTable.selectAll().count() == 0L) {
-                SudoersTable.insert {
-                    it[this.userId] = creatorId
-                    it[this.username] = "Owner"
-                    it[datetime] = Instant.now(Clock.systemUTC())
-                }
-            }
-
-            if (CommandsStateTable.selectAll().count() == 0L) {
-                disableableCommands.forEach { command ->
-                    CommandsStateTable.insert {
-                        it[name] = command
-                        it[isDisabled] = false
-                        it[datetime] = Instant.now(Clock.systemUTC())
-                    }
-                }
-            }
-        }
+        initializeSchema(database)
+        initializeSudoersTable(database)
+        initializeCommandsStateTable(database)
     }
 
     suspend fun <T> dbQuery(block: suspend () -> T): T =
         newSuspendedTransaction(Dispatchers.IO) { block() }
+
+    private fun initializeSchema(database: Database) = transaction(database) {
+        SchemaUtils.create(
+            ApiKeysTable, BannedUsersTable, ChatWhitelistTable,
+            CommandsStateTable, FilesTable, GlobalSlowmodeTable,
+            SlowmodeTable, SudoersTable, PrivacyPoliciesTable,
+            ConfigurationsTable
+        )
+    }
+
+    private fun initializeSudoersTable(database: Database) = transaction(database) {
+        if (SudoersTable.selectAll().count() == 0L) {
+            SudoersTable.insert {
+                it[userId] = creatorId
+                it[username] = "Owner"
+                it[datetime] = Instant.now(Clock.systemUTC())
+            }
+        }
+    }
+
+
+    private fun initializeCommandsStateTable(database: Database) = transaction(database) {
+        if (CommandsStateTable.selectAll().count() == 0L) {
+            disableableCommands.forEach { command ->
+                CommandsStateTable.insert {
+                    it[name] = command
+                    it[isDisabled] = false
+                    it[datetime] = Instant.now(Clock.systemUTC())
+                }
+            }
+        }
+    }
 }
