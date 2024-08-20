@@ -1,20 +1,21 @@
-AI bot for Telegram (focused on use in group chats)
----------------------------------------------------
+# AI Bot for Telegram
 
-Demo: https://t.me/+siikRmY3uyE5YTBi
+- This bot is focused on Group Chats.
+- [Demo](https://t.me/+siikRmY3uyE5YTBi)
 
-Installation
-------------
+## Installation
 
-Edit the **.env** file where:
+### Environment Variables
 
-- CREATOR_ID: your Telegram user-ID
-- BOT_TOKEN: [BotFather](https://t.me/BotFather)
-- BOT_USERNAME: [BotFather](https://t.me/BotFather) (example: artific_intellig_bot)
+Edit the **.env** file with the following:
 
-and also include the data for connecting to **PostgreSQL**.
+- `CREATOR_ID`: Your Telegram user-ID
+- `BOT_TOKEN`: Obtain from [BotFather](https://t.me/BotFather)
+- `BOT_USERNAME`: Obtain from [BotFather](https://t.me/BotFather) (Example: artific_intellig_bot)
 
-NOTE: to get your Telegram ID, you can use [@artific_intellig_bot](https://t.me/artific_intellig_bot) by entering the command /**myid**
+Also include PostgreSQL connection data.
+
+> **NOTE:** To get your Telegram ID, you can use [@artific_intellig_bot](https://t.me/artific_intellig_bot) by entering the command `/myid`
 
 ### Docker
 
@@ -22,97 +23,93 @@ NOTE: to get your Telegram ID, you can use [@artific_intellig_bot](https://t.me/
 docker run --rm -d --name aibot --env-file .env ghcr.io/helltar/aibot:latest
 ```
 
-### Or run without Docker
+### Run Without Docker
 
-NOTE: you need to install https://ffmpeg.org on your system (for **/asr** command)
-
-Build & Run:
+> **NOTE:** You need to install [FFmpeg](https://ffmpeg.org) on your system (for the `/asr` command)
 
 ```bash
 ./gradlew shadowJar
 java -jar build/libs/artific_intellig_bot-version.jar
 ```
 
-Usage
------
+## Usage
 
-First obtain API keys:
+### Obtain API Keys
+
+First, obtain the following API keys:
 
 - [OpenAI API Key](https://platform.openai.com/api-keys)
 - [Stable Diffusion API Key](https://platform.stability.ai/account/keys)
 
-and add them using the command in the bot:
+Add them using the command in the bot:
 
-- /**_updatekey_** _openai.com sk-qwerty_
-- /**_updatekey_** _stability.ai sk-qwerty_
+- `/updatekey openai.com sk-qwerty`
+- `/updatekey stability.ai sk-qwerty`
 
 ### Commands
 
-- /**chat** - ChatGPT
-- /**vision** - GPT-4 Vision
-- /**dalle** - DALL·E 2
-- /**sdif** - Stable Diffusion
-- /**dallevar** - DALL·E 2 Variations
-- /**asr** - Automatic Speech Recognition (openai-Whisper)
-- /**privacy**
-- /**about**
+- `/chat` - ChatGPT
+- `/vision` - GPT-4 Vision
+- `/dalle` - DALL·E 2
+- `/sdif` - Stable Diffusion
+- `/dallevar` - DALL·E 2 Variations
+- `/asr` - Automatic Speech Recognition (openai-Whisper)
+- `/privacy`
+- `/about`
 
-Additional chat commands:
+### Additional Chat Commands
 
-- /**chatctx** - view dialogue history
-- /**chatrm** - clear history
+- `/chatctx` - View dialogue history
+- `/chatrm` - Clear history
 
 For audio responses (TTS), add the **#voice** tag to your message, for example:
 
-`Hello, how are you? #voice`
+```text
+Hello, how are you? #voice
+```
 
-### Admin commands
+### Admin Commands
 
-Change command state:
+#### Change Command State
 
-- /**enable** _commandName_ (example: _/enable chat_)
-- /**disable** _commandName_ (example: _/disable dalle_)
+- `/enable commandName` (Example: `/enable chat`)
+- `/disable commandName` (Example: `/disable dalle`)
 
-NOTE: run _/enable_ or _/disable_ with no arguments for view supported commands
-<br>
-<br>
+> **NOTE:** Run `/enable` or `/disable` with no arguments to view supported commands.
 
-Ban user:
+#### Ban User
 
-- /**ban** (use as reply to user message, example: _/ban reason_)
-- /**unban** (use as reply to user message or by user ID)
-- /**banlist**
-<br>
+- `/ban` (Use as reply to user message, Example: `/ban reason`)
+- `/unban` (Use as reply to user message or by user ID)
+- `/banlist`
 
-Slowmode for user:
+#### Slowmode for User
 
-- /**slowmode** (use as reply to user message, example: _/slowmode 5_) (requests per hour)
-- /**slowmodeoff** (use as reply to user message or by user ID)
-- /**slowmodelist**
-<br>
+- `/slowmode` (Use as reply to user message, Example: `/slowmode 5`) (Requests per hour)
+- `/slowmodeoff` (Use as reply to user message or by user ID)
+- `/slowmodelist`
 
-Global slowmode (default 10 requests per hour per user)
+#### Global Slowmode
 
-- /**globalslowmode**
-<br>
+(Default: 10 requests per hour per user)
 
-Manage admins:
+- `/globalslowmode`
 
-- /**addadmin** (add admin by ID, example: _/addadmin 123456789 username_)
-- /**rmadmin** (remove admin by ID)
-- /**sudoers** (view admin list)
-<br>
+#### Manage Admins
 
-Manage chats:
+- `/addadmin` (Add admin by ID, Example: `/addadmin 123456789 username`)
+- `/rmadmin` (Remove admin by ID)
+- `/sudoers` (View admin list)
 
-- /**addchat** (add chat to white list, use in chat or by ID)
-- /**rmchat** (remove chat from white list, use in chat or by ID)
-- /**chats** (view chats list)
-<br>
+#### Manage Chats
 
-Other:
+- `/addchat` (Add chat to whitelist, Use in chat or by ID)
+- `/rmchat` (Remove chat from whitelist, Use in chat or by ID)
+- `/chats` (View chats list)
 
-- /**updateprivacy** (update bot privacy policy **/privacy**)
+#### Other
+
+- `/updateprivacy` (Update bot privacy policy `/privacy`)
 
 <br>
 <a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA.png" alt="IntelliJ IDEA logo." width="32%"></a>
