@@ -7,7 +7,7 @@ import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.user.audio.models.Whisper
-import com.helltar.aibot.utils.NetworkUtils.httpUpload
+import com.helltar.aibot.utils.NetworkUtils.uploadWithFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.slf4j.LoggerFactory
@@ -161,6 +161,6 @@ class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
         val url = "https://api.openai.com/v1/audio/transcriptions"
         val parameters = listOf("model" to "whisper-1")
         val dataPart = FileDataPart(file, "file")
-        return httpUpload(url, parameters, getOpenAIAuthHeader(), dataPart).data.decodeToString()
+        return uploadWithFile(url, getOpenAIAuthHeader(), parameters, dataPart).data.decodeToString()
     }
 }

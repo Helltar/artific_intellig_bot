@@ -8,7 +8,7 @@ import com.helltar.aibot.Strings.localizedString
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.user.chat.models.Chat
-import com.helltar.aibot.utils.NetworkUtils.httpPost
+import com.helltar.aibot.utils.NetworkUtils.postJson
 import kotlinx.serialization.encodeToString
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
@@ -132,12 +132,12 @@ class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
     private suspend fun sendPrompt(messages: List<Chat.MessageData>, gptModel: String): Response {
         val url = "https://api.openai.com/v1/chat/completions"
         val body = json.encodeToString(Chat.RequestData(gptModel, messages))
-        return httpPost(url, getOpenAIHeaders(), body)
+        return postJson(url, getOpenAIHeaders(), body)
     }
 
     private suspend fun textToSpeech(input: String): ByteArray {
         val url = "https://api.openai.com/v1/audio/speech"
         val body = json.encodeToString(Chat.SpeechRequestData(input = input))
-        return httpPost(url, getOpenAIHeaders(), body).data
+        return postJson(url, getOpenAIHeaders(), body).data
     }
 }

@@ -8,7 +8,7 @@ import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.user.images.models.Dalle
 import com.helltar.aibot.commands.user.images.models.Dalle.DALLE_IMAGE_SIZE
-import com.helltar.aibot.utils.NetworkUtils.httpUpload
+import com.helltar.aibot.utils.NetworkUtils.uploadWithFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.slf4j.LoggerFactory
@@ -105,6 +105,6 @@ open class DalleVariations(ctx: MessageContext) : BotCommand(ctx) {
                 writeBytes(byteArrayStream.toByteArray())
             }
 
-        return httpUpload(url, parameters, getOpenAIAuthHeader(), FileDataPart(file, "image")).data.decodeToString()
+        return uploadWithFile(url, getOpenAIAuthHeader(), parameters, FileDataPart(file, "image")).data.decodeToString()
     }
 }

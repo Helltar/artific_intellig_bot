@@ -5,7 +5,7 @@ import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.user.images.models.Dalle
-import com.helltar.aibot.utils.NetworkUtils.httpPost
+import com.helltar.aibot.utils.NetworkUtils.postJson
 import kotlinx.serialization.encodeToString
 import org.slf4j.LoggerFactory
 
@@ -40,6 +40,6 @@ class DallE2(ctx: MessageContext) : BotCommand(ctx) {
     private suspend fun sendPrompt(prompt: String): String {
         val url = "https://api.openai.com/v1/images/generations"
         val body = json.encodeToString(Dalle.RequestData(prompt))
-        return httpPost(url, getOpenAIHeaders(), body).data.decodeToString()
+        return postJson(url, getOpenAIHeaders(), body).data.decodeToString()
     }
 }

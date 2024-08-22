@@ -6,7 +6,7 @@ import com.github.kittinunf.fuel.core.isSuccessful
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.utils.NetworkUtils.httpUpload
+import com.helltar.aibot.utils.NetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.slf4j.LoggerFactory
@@ -62,6 +62,6 @@ class StableDiffusion(ctx: MessageContext) : BotCommand(ctx) {
         val url = "https://api.stability.ai/v2beta/stable-image/generate/sd3"
         val headers = mapOf("Accept" to "image/*", "Authorization" to "Bearer ${getApiKey(PROVIDER_STABILITY_AI)}")
         val params = listOf("prompt" to prompt, "model" to "sd3-turbo", "aspect_ratio" to "1:1", "output_format" to "jpeg")
-        return httpUpload(url, headers, params)
+        return NetworkUtils.upload(url, headers, params)
     }
 }

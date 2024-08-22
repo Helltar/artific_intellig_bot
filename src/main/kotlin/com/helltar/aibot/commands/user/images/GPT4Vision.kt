@@ -7,7 +7,7 @@ import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.user.images.models.Dalle
 import com.helltar.aibot.commands.user.images.models.Vision
-import com.helltar.aibot.utils.NetworkUtils.httpPost
+import com.helltar.aibot.utils.NetworkUtils.postJson
 import kotlinx.serialization.encodeToString
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -67,6 +67,6 @@ class GPT4Vision(ctx: MessageContext) : DalleVariations(ctx) {
         val contentImageData = Vision.ContentData(Vision.MESSAGE_CONTENT_TYPE_IMAGE, image_url = imageData)
         val requestData = Vision.RequestData(messages = listOf(Vision.MessageData(content = listOf(contentTextData, contentImageData))))
 
-        return httpPost(url, getOpenAIHeaders(), json.encodeToString(requestData))
+        return postJson(url, getOpenAIHeaders(), json.encodeToString(requestData))
     }
 }
