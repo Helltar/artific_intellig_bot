@@ -54,7 +54,6 @@ object DatabaseFactory {
         }
     }
 
-
     private fun initializeCommandsStateTable(database: Database) = transaction(database) {
         if (CommandsStateTable.selectAll().count() == 0L) {
             disableableCommands.forEach { command ->
