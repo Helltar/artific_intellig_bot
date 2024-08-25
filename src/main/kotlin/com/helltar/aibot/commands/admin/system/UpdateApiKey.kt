@@ -8,7 +8,7 @@ import com.helltar.aibot.db.dao.apiKeysDao
 
 class UpdateApiKey(ctx: MessageContext) : BotCommand(ctx) {
 
-    private val apiKeysProviders = setOf(PROVIDER_OPENAI_COM, PROVIDER_STABILITY_AI)
+    private val apiKeysProviders = setOf(PROVIDER_OPENAI_COM, PROVIDER_STABILITY_AI, PROVIDER_MICROSOFT)
     private val providersHtmlList = apiKeysProviders.joinToString("\n") { "<code>$it</code>" }
 
     override suspend fun run() {

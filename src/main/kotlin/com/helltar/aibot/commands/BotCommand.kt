@@ -17,6 +17,7 @@ abstract class BotCommand(val ctx: MessageContext) {
     protected companion object {
         const val PROVIDER_OPENAI_COM = "openai.com"
         const val PROVIDER_STABILITY_AI = "stability.ai"
+        const val PROVIDER_MICROSOFT = "microsoft.com"
     }
 
     val arguments: Array<String> = ctx.arguments()
