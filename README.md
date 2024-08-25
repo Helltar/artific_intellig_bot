@@ -17,6 +17,15 @@ Also include PostgreSQL connection data.
 
 > **NOTE:** To get your Telegram ID, you can use [@artific_intellig_bot](https://t.me/artific_intellig_bot) by entering the command `/myid`
 
+### Docker Compose
+
+```bash
+git clone https://github.com/Helltar/artific_intellig_bot --depth 1
+cd artific_intellig_bot
+# edit .env file, add telegram bot credentials
+docker-compose up --build -d
+```
+
 ### Docker
 
 ```bash
