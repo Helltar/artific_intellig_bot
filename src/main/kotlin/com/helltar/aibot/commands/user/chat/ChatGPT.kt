@@ -85,14 +85,7 @@ class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
         }
 
         chatHistoryManager.addMessage(Chat.MessageData(Chat.CHAT_ROLE_USER, text))
-
-        var dialogLength = chatHistoryManager.getMessagesLengthSum()
-
-        if (dialogLength > MAX_USER_DIALOG_HISTORY_LENGH)
-            while (dialogLength > MAX_USER_DIALOG_HISTORY_LENGH) {
-                chatHistoryManager.removeSecondMessage()
-                dialogLength = chatHistoryManager.getMessagesLengthSum()
-            }
+        ensureDialogLengthWithinLimit()
 
         getBotReply()?.let { answer ->
             chatHistoryManager.addMessage(Chat.MessageData(Chat.CHAT_ROLE_ASSISTANT, answer))
@@ -108,6 +101,11 @@ class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
                 sendVoice("voice-$messageId", ByteArrayInputStream(textToSpeech(answer)), messageId)
         }
             ?: replyToMessage(Strings.CHAT_EXCEPTION)
+    }
+
+    private fun ensureDialogLengthWithinLimit() {
+        while (chatHistoryManager.getMessagesLengthSum() > MAX_USER_DIALOG_HISTORY_LENGH)
+            chatHistoryManager.removeSecondMessage()
     }
 
     private suspend fun getBotReply(): String? {
