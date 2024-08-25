@@ -12,6 +12,7 @@ object Commands {
     const val CMD_SDIFF = "sdif"
     const val CMD_ASR = "asr"
     const val CMD_DALLE_VARIATIONS = "dallevar"
+    const val CMD_TTS = "tts"
 
     const val CMD_ABOUT = "about"
     const val CMD_MYID = "myid"

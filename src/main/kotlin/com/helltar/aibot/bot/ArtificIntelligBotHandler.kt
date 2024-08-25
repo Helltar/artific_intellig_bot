@@ -36,6 +36,7 @@ import com.helltar.aibot.commands.Commands.CMD_SLOW_MODE
 import com.helltar.aibot.commands.Commands.CMD_SLOW_MODE_LIST
 import com.helltar.aibot.commands.Commands.CMD_SLOW_MODE_OFF
 import com.helltar.aibot.commands.Commands.CMD_START
+import com.helltar.aibot.commands.Commands.CMD_TTS
 import com.helltar.aibot.commands.Commands.CMD_UNBAN_USER
 import com.helltar.aibot.commands.Commands.CMD_UPDATE_API_KEY
 import com.helltar.aibot.commands.Commands.CMD_UPDATE_PRIVACY_POLICY
@@ -60,6 +61,7 @@ import com.helltar.aibot.commands.user.MyId
 import com.helltar.aibot.commands.user.Privacy
 import com.helltar.aibot.commands.user.Start
 import com.helltar.aibot.commands.user.audio.AsrWhisper
+import com.helltar.aibot.commands.user.audio.TTS
 import com.helltar.aibot.commands.user.chat.ChatCtx
 import com.helltar.aibot.commands.user.chat.ChatCtxRemove
 import com.helltar.aibot.commands.user.chat.ChatGPT
@@ -94,6 +96,7 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
         registerLongRunningCommand(CMD_DALLE_VARIATIONS, ::DalleVariations)
         registerLongRunningCommand(CMD_SDIFF, ::StableDiffusion)
         registerLongRunningCommand(CMD_ASR, ::AsrWhisper)
+        registerLongRunningCommand(CMD_TTS, ::TTS)
 
         registerAdminCommand(CMD_ENABLE, { CommandsState(it) })
         registerAdminCommand(CMD_DISABLE, { CommandsState(it, true) })
