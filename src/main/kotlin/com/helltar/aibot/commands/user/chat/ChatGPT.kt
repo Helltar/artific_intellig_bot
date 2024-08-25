@@ -18,7 +18,7 @@ class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
     private companion object {
         const val MAX_USER_MESSAGE_TEXT_LENGTH = 2048
         const val MAX_ADMIN_MESSAGE_TEXT_LENGTH = 4096
-        const val MAX_USER_DIALOG_HISTORY_LENGH = 10000
+        const val MAX_USER_DIALOG_HISTORY_LENGTH = 10000
         const val VOICE_OUT_TEXT_TAG = "#voice"
     }
 
@@ -104,7 +104,7 @@ class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
     }
 
     private fun ensureDialogLengthWithinLimit() {
-        while (chatHistoryManager.getMessagesLengthSum() > MAX_USER_DIALOG_HISTORY_LENGH)
+        while (chatHistoryManager.getMessagesLengthSum() > MAX_USER_DIALOG_HISTORY_LENGTH)
             chatHistoryManager.removeSecondMessage()
     }
 
