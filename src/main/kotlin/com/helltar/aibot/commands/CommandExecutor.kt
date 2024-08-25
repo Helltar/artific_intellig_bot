@@ -56,7 +56,7 @@ class CommandExecutor {
     }
 
     private fun logCommandExecution(botCommand: BotCommand, user: User, chat: Chat, commandName: String) {
-        val logMessage = "$commandName: ${chat.id} ${user.id} ${user.userName} ${user.firstName} ${chat.title}: ${botCommand.ctx.message().text}"
+        val logMessage = "$commandName: ${chat.id} ${chat.title} ${user.id} ${user.userName} ${user.firstName}: ${botCommand.ctx.message().text}"
         log.info(logMessage)
     }
 
