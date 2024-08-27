@@ -1,8 +1,8 @@
 package com.helltar.aibot.commands
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.EnvConfig.creatorId
-import com.helltar.aibot.EnvConfig.telegramBotUsername
+import com.helltar.aibot.Config.creatorId
+import com.helltar.aibot.Config.telegramBotUsername
 import com.helltar.aibot.db.dao.*
 import kotlinx.serialization.json.Json
 import org.telegram.telegrambots.meta.api.methods.ParseMode
@@ -12,15 +12,14 @@ import java.io.File
 import java.io.InputStream
 import java.util.concurrent.CompletableFuture
 
-abstract class BotCommand(val ctx: MessageContext) {
+interface Command {
 
-    protected companion object {
-        const val PROVIDER_OPENAI_COM = "openai.com"
-        const val PROVIDER_STABILITY_AI = "stability.ai"
-        const val PROVIDER_MICROSOFT = "microsoft.com"
-    }
+    suspend fun run()
+    fun getCommandName(): String
+}
 
-    val arguments: Array<String> = ctx.arguments()
+abstract class BotCommand(val ctx: MessageContext) : Command {
+
     val userLanguageCode = ctx.user().languageCode ?: "en"
 
     protected val userId = ctx.user().id
@@ -28,12 +27,11 @@ abstract class BotCommand(val ctx: MessageContext) {
     protected val replyMessage: Message? = message.replyToMessage
     protected val isReply = message.isReply && message.replyToMessage.messageId != message.replyToMessage.messageThreadId // todo: tmp. fix, check.
     protected val isNotReply = !isReply
+
+    protected val arguments: Array<String> = ctx.arguments()
     protected val argumentsString: String = ctx.argumentsAsString()
 
     protected val json = Json { ignoreUnknownKeys = true; encodeDefaults = true; explicitNulls = false }
-
-    abstract suspend fun run()
-    abstract fun getCommandName(): String
 
     suspend fun isCommandDisabled(command: String) =
         commandsDao.isDisabled(command)
@@ -122,17 +120,11 @@ abstract class BotCommand(val ctx: MessageContext) {
             .setReplyToMessageId(messageId)
             .call(ctx.sender)
 
-    protected fun errorReplyToMessageWithTextDocument(text: String, caption: String): Int =
+    protected fun errorReplyWithTextDocument(text: String, caption: String): Int =
         ctx.replyWithDocument()
             .setFile("$userId-${message.messageId}.txt", text.byteInputStream())
             .setCaption(caption)
             .setReplyToMessageId(message.messageId)
             .call(ctx.sender)
             .messageId
-
-    protected suspend fun getOpenAIAuthHeader() =
-        mapOf("Authorization" to "Bearer ${getApiKey(PROVIDER_OPENAI_COM)}")
-
-    protected suspend fun getOpenAIHeaders() =
-        mapOf("Content-Type" to "application/json") + getOpenAIAuthHeader()
 }

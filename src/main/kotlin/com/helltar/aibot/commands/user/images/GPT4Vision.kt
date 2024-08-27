@@ -46,7 +46,7 @@ class GPT4Vision(ctx: MessageContext) : DalleVariations(ctx) {
             try {
                 replyToMessage(answer, markdown = true)
             } catch (e: Exception) {
-                errorReplyToMessageWithTextDocument(answer, Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE)
+                errorReplyWithTextDocument(answer, Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE)
                 log.error(e.message)
             }
         } else {
@@ -67,6 +67,6 @@ class GPT4Vision(ctx: MessageContext) : DalleVariations(ctx) {
         val contentImageData = Vision.ContentData(Vision.MESSAGE_CONTENT_TYPE_IMAGE, image_url = imageData)
         val requestData = Vision.RequestData(messages = listOf(Vision.MessageData(content = listOf(contentTextData, contentImageData))))
 
-        return postJson(url, getOpenAIHeaders(), json.encodeToString(requestData))
+        return postJson(url, createOpenAIHeaders(), json.encodeToString(requestData))
     }
 }

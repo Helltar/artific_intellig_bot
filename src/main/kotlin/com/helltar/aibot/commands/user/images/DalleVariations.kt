@@ -4,8 +4,8 @@ import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.FileDataPart
 import com.helltar.aibot.Strings
-import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
+import com.helltar.aibot.commands.OpenAICommand
 import com.helltar.aibot.commands.user.images.models.Dalle
 import com.helltar.aibot.commands.user.images.models.Dalle.DALLE_IMAGE_SIZE
 import com.helltar.aibot.utils.NetworkUtils.uploadWithFile
@@ -20,7 +20,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.imageio.ImageIO
 
-open class DalleVariations(ctx: MessageContext) : BotCommand(ctx) {
+open class DalleVariations(ctx: MessageContext) : OpenAICommand(ctx) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -105,6 +105,6 @@ open class DalleVariations(ctx: MessageContext) : BotCommand(ctx) {
                 writeBytes(byteArrayStream.toByteArray())
             }
 
-        return uploadWithFile(url, getOpenAIAuthHeader(), parameters, FileDataPart(file, "image")).data.decodeToString()
+        return uploadWithFile(url, createAuthHeader(), parameters, FileDataPart(file, "image")).data.decodeToString()
     }
 }

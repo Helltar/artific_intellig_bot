@@ -5,21 +5,21 @@ import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.core.isSuccessful
 import com.helltar.aibot.Strings
 import com.helltar.aibot.Strings.localizedString
-import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
+import com.helltar.aibot.commands.OpenAICommand
 import com.helltar.aibot.commands.user.chat.models.Chat
 import com.helltar.aibot.utils.NetworkUtils.postJson
 import kotlinx.serialization.encodeToString
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
 
-class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
+class ChatGPT(ctx: MessageContext) : OpenAICommand(ctx) {
 
     private companion object {
         const val MAX_USER_MESSAGE_TEXT_LENGTH = 2048
         const val MAX_ADMIN_MESSAGE_TEXT_LENGTH = 4096
-        const val MAX_USER_DIALOG_HISTORY_LENGTH = 10000
-        const val VOICE_OUT_TEXT_TAG = "#voice"
+        const val MAX_DIALOG_HISTORY_LENGTH = 10000
+        const val VOICE_OUT_TAG = "#voice"
     }
 
     private val chatHistoryManager = ChatHistoryManager(userId)
@@ -46,7 +46,7 @@ class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
                         return
                     }
 
-                isVoiceOut = argumentsString == VOICE_OUT_TEXT_TAG
+                isVoiceOut = argumentsString == VOICE_OUT_TAG
                 messageId = replyMessage.messageId
             } else
                 text = message.text
@@ -72,10 +72,10 @@ class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
 
         // todo: isVoiceOut
         if (!isVoiceOut) {
-            isVoiceOut = text.contains(VOICE_OUT_TEXT_TAG)
+            isVoiceOut = text.contains(VOICE_OUT_TAG)
 
             if (isVoiceOut)
-                text = text.replace(VOICE_OUT_TEXT_TAG, "").trim()
+                text = text.replace(VOICE_OUT_TAG, "").trim()
         }
 
         if (chatHistoryManager.userChatDialogHistory.isEmpty()) {
@@ -85,6 +85,7 @@ class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
         }
 
         chatHistoryManager.addMessage(Chat.MessageData(Chat.CHAT_ROLE_USER, text))
+
         ensureDialogLengthWithinLimit()
 
         getBotReply()?.let { answer ->
@@ -94,7 +95,7 @@ class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
                 try {
                     replyToMessage(answer, messageId, markdown = true)
                 } catch (e: Exception) {
-                    errorReplyToMessageWithTextDocument(answer, Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE)
+                    errorReplyWithTextDocument(answer, Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE)
                     log.error(e.message)
                 }
             } else
@@ -104,7 +105,7 @@ class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
     }
 
     private fun ensureDialogLengthWithinLimit() {
-        while (chatHistoryManager.getMessagesLengthSum() > MAX_USER_DIALOG_HISTORY_LENGTH)
+        while (chatHistoryManager.getMessagesLengthSum() > MAX_DIALOG_HISTORY_LENGTH)
             chatHistoryManager.removeSecondMessage()
     }
 
@@ -130,12 +131,12 @@ class ChatGPT(ctx: MessageContext) : BotCommand(ctx) {
     private suspend fun sendPrompt(messages: List<Chat.MessageData>, gptModel: String): Response {
         val url = "https://api.openai.com/v1/chat/completions"
         val body = json.encodeToString(Chat.RequestData(gptModel, messages))
-        return postJson(url, getOpenAIHeaders(), body)
+        return postJson(url, createOpenAIHeaders(), body)
     }
 
     private suspend fun textToSpeech(input: String): ByteArray {
         val url = "https://api.openai.com/v1/audio/speech"
         val body = json.encodeToString(Chat.SpeechRequestData(input = input))
-        return postJson(url, getOpenAIHeaders(), body).data
+        return postJson(url, createOpenAIHeaders(), body).data
     }
 }
