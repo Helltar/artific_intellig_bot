@@ -2,21 +2,20 @@ package com.helltar.aibot.commands
 
 object Commands {
 
-    const val CMD_CHAT = "chat"
-    const val CMD_CHATCTX = "chatctx" // dialog context
-    const val CMD_CHAT_CTX_REMOVE = "chatrm" // remove context
-    const val CMD_GPT_VISION = "vision"
-
     const val CMD_START = "start"
+    const val CMD_ABOUT = "about"
+    const val CMD_MYID = "myid"
+    const val CMD_PRIVACY = "privacy"
+
+    const val CMD_CHAT = "chat"
+    const val CMD_GPT_VISION = "vision"
     const val CMD_DALLE = "dalle"
     const val CMD_SDIFF = "sdif"
     const val CMD_ASR = "asr"
     const val CMD_DALLE_VARIATIONS = "dallevar"
-    const val CMD_TTS = "tts"
 
-    const val CMD_ABOUT = "about"
-    const val CMD_MYID = "myid"
-    const val CMD_PRIVACY = "privacy"
+    const val CMD_CHATCTX = "chatctx" // dialog context
+    const val CMD_CHAT_CTX_REMOVE = "chatrm" // remove context
 
     const val CMD_ADD_ADMIN = "addadmin"
     const val CMD_RM_ADMIN = "rmadmin"
