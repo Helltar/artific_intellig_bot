@@ -1,18 +1,17 @@
 package com.helltar.aibot.db
 
-import com.helltar.aibot.EnvConfig.creatorId
-import com.helltar.aibot.EnvConfig.databaseName
-import com.helltar.aibot.EnvConfig.databasePassword
-import com.helltar.aibot.EnvConfig.databaseUser
-import com.helltar.aibot.EnvConfig.postgresqlHost
-import com.helltar.aibot.EnvConfig.postgresqlPort
+import com.helltar.aibot.Config.creatorId
+import com.helltar.aibot.Config.databaseName
+import com.helltar.aibot.Config.databasePassword
+import com.helltar.aibot.Config.databaseUser
+import com.helltar.aibot.Config.postgresqlHost
+import com.helltar.aibot.Config.postgresqlPort
 import com.helltar.aibot.commands.Commands.disableableCommands
 import com.helltar.aibot.db.tables.*
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Clock
@@ -45,23 +44,19 @@ object DatabaseFactory {
     }
 
     private fun initializeSudoersTable(database: Database) = transaction(database) {
-        if (SudoersTable.selectAll().count() == 0L) {
-            SudoersTable.insert {
-                it[userId] = creatorId
-                it[username] = "Owner"
-                it[datetime] = Instant.now(Clock.systemUTC())
-            }
+        SudoersTable.insertIgnore {
+            it[userId] = creatorId
+            it[username] = "Owner"
+            it[datetime] = Instant.now(Clock.systemUTC())
         }
     }
 
     private fun initializeCommandsStateTable(database: Database) = transaction(database) {
-        if (CommandsStateTable.selectAll().count() == 0L) {
-            disableableCommands.forEach { command ->
-                CommandsStateTable.insert {
-                    it[name] = command
-                    it[isDisabled] = false
-                    it[datetime] = Instant.now(Clock.systemUTC())
-                }
+        disableableCommands.forEach { command ->
+            CommandsStateTable.insertIgnore {
+                it[name] = command
+                it[isDisabled] = false
+                it[datetime] = Instant.now(Clock.systemUTC())
             }
         }
     }
