@@ -5,40 +5,23 @@
 
 ## Installation
 
-### Environment Variables
+### Docker Compose
+
+```bash
+mkdir aibot && cd aibot
+wget https://raw.githubusercontent.com/Helltar/artific_intellig_bot/master/{.env,compose.yaml}
+```
 
 Edit the **.env** file with the following:
 
-- `CREATOR_ID`: Your Telegram user-ID
+- `CREATOR_ID`: Your Telegram user-ID (You can use [@artific_intellig_bot](https://t.me/artific_intellig_bot) by entering the command `/myid`)
 - `BOT_TOKEN`: Obtain from [BotFather](https://t.me/BotFather)
 - `BOT_USERNAME`: Obtain from [BotFather](https://t.me/BotFather) (Example: artific_intellig_bot)
 
 Also include PostgreSQL connection data.
 
-> **NOTE:** To get your Telegram ID, you can use [@artific_intellig_bot](https://t.me/artific_intellig_bot) by entering the command `/myid`
-
-### Docker Compose
-
 ```bash
-git clone https://github.com/Helltar/artific_intellig_bot --depth 1
-cd artific_intellig_bot
-# edit .env file, add telegram bot credentials
-docker-compose up --build -d
-```
-
-### Docker
-
-```bash
-docker run --rm -d --name aibot --env-file .env ghcr.io/helltar/aibot:latest
-```
-
-### Run Without Docker
-
-> **NOTE:** You need to install [FFmpeg](https://ffmpeg.org) on your system (for the `/asr` command)
-
-```bash
-./gradlew shadowJar
-java -jar build/libs/artific_intellig_bot-version.jar
+docker compose up -d
 ```
 
 ## Usage
