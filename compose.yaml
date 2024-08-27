@@ -1,0 +1,24 @@
+services:
+
+  aibot:
+    container_name: aibot_container
+    image: ghcr.io/helltar/aibot:latest
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: postgres_container
+    image: postgres:alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      PGPORT: ${POSTGRESQL_PORT}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
