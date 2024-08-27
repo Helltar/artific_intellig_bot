@@ -4,8 +4,8 @@ import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.FileDataPart
 import com.helltar.aibot.Strings
-import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
+import com.helltar.aibot.commands.OpenAICommand
 import com.helltar.aibot.commands.user.audio.models.Whisper
 import com.helltar.aibot.utils.NetworkUtils.uploadWithFile
 import kotlinx.coroutines.Dispatchers
@@ -21,15 +21,14 @@ import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
+class AsrWhisper(ctx: MessageContext) : OpenAICommand(ctx) {
 
     private companion object {
-        const val WHISPER_MAX_AUDIO_FILE_SIZE = 25600000
+        const val MAX_AUDIO_FILE_SIZE = 25600000
     }
 
     private val isCreator = isCreator()
-
-    private val maxAudioSize = if (!isCreator) 1024000 else WHISPER_MAX_AUDIO_FILE_SIZE
+    private val maxAudioSize = if (!isCreator) 1024000 else MAX_AUDIO_FILE_SIZE
     private val maxVoiceSize = maxAudioSize
     private val maxVideoDuration = if (!isCreator) 60 else 600
     private val maxVideoNoteDuration = if (!isCreator) 90 else 900
@@ -43,7 +42,7 @@ class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
         }
 
         val fileData =
-            checkMediaTypeAndGetFileData(replyMessage!!)
+            getFileDataBasedOnMediaType(replyMessage!!)
                 ?: run {
                     replyToMessage(Strings.VIDEO_OR_AUDIO_NOT_FOUND)
                     return
@@ -70,8 +69,8 @@ class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
                         return
                     }
 
-        if (outFile.length() > WHISPER_MAX_AUDIO_FILE_SIZE) {
-            replyToMessage(Strings.VOICE_MUST_BE_LESS_THAN.format("${WHISPER_MAX_AUDIO_FILE_SIZE / 1024000} mb."))
+        if (outFile.length() > MAX_AUDIO_FILE_SIZE) {
+            replyToMessage(Strings.VOICE_MUST_BE_LESS_THAN.format("${MAX_AUDIO_FILE_SIZE / 1024000} mb."))
             return
         }
 
@@ -85,7 +84,9 @@ class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
                     return
                 }
 
-            text.chunked(4096).forEach { replyToMessage(it, messageId) }
+            text.chunked(4000).forEach {
+                replyToMessage(it, messageId)
+            }
         } catch (e: Exception) {
             log.error("${e.message}: $responseJson")
             replyToMessage(Strings.CHAT_EXCEPTION)
@@ -95,21 +96,14 @@ class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
     override fun getCommandName() =
         Commands.CMD_ASR
 
-    private fun checkMediaTypeAndGetFileData(message: Message): Pair<Pair<String, String>?, Boolean>? { // fileId, fileName, isVideo
-        if (message.hasVoice())
-            return Pair(checkVoiceAndGetFileData(message.voice), false)
-
-        if (message.hasAudio())
-            return Pair(checkAudioAndGetFileData(message.audio), false)
-
-        if (message.hasVideo())
-            return Pair(checkVideoAndGetFileData(message.video), true)
-
-        if (message.hasVideoNote())
-            return Pair(checkVideoNoteAndGetFileData(message.videoNote), true)
-
-        return null
-    }
+    private fun getFileDataBasedOnMediaType(message: Message): Pair<Pair<String, String>?, Boolean>? = // fileId, fileName, isVideo
+        when {
+            message.hasVoice() -> Pair(checkVoiceAndGetFileData(message.voice), false)
+            message.hasAudio() -> Pair(checkAudioAndGetFileData(message.audio), false)
+            message.hasVideo() -> Pair(checkVideoAndGetFileData(message.video), true)
+            message.hasVideoNote() -> Pair(checkVideoNoteAndGetFileData(message.videoNote), true)
+            else -> null
+        }
 
     private fun checkAudioAndGetFileData(audio: Audio) =
         if (audio.fileSize <= maxAudioSize)
@@ -146,11 +140,17 @@ class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
     private fun extractAudioFromVideo(file: File): File? {
         val tempDir = System.getProperty("java.io.tmpdir")
         val outputFilename = "$tempDir/audio_${UUID.randomUUID()}.wav"
-        val ffmpegCommands = arrayOf("ffmpeg", "-i", file.absolutePath, "-acodec", "pcm_s16le", "-ac", "1", "-ar", "16000", outputFilename)
+
+        val cmdarray =
+            arrayOf(
+                "ffmpeg", "-i", file.absolutePath,
+                "-acodec", "pcm_s16le", "-ac", "1", "-ar", "16000",
+                outputFilename
+            )
 
         return try {
-            Runtime.getRuntime().exec(ffmpegCommands).waitFor(2, TimeUnit.MINUTES)
-            File(outputFilename).run { if (exists()) this else null }
+            Runtime.getRuntime().exec(cmdarray).waitFor(2, TimeUnit.MINUTES)
+            File(outputFilename).takeIf { it.exists() }
         } catch (e: Exception) {
             log.error(e.message)
             null
@@ -161,6 +161,6 @@ class AsrWhisper(ctx: MessageContext) : BotCommand(ctx) {
         val url = "https://api.openai.com/v1/audio/transcriptions"
         val parameters = listOf("model" to "whisper-1")
         val dataPart = FileDataPart(file, "file")
-        return uploadWithFile(url, getOpenAIAuthHeader(), parameters, dataPart).data.decodeToString()
+        return uploadWithFile(url, createAuthHeader(), parameters, dataPart).data.decodeToString()
     }
 }
