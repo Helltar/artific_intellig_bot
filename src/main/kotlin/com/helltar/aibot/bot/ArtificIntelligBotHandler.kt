@@ -6,10 +6,9 @@ import com.annimon.tgbotsmodule.commands.CommandRegistry
 import com.annimon.tgbotsmodule.commands.SimpleCommand
 import com.annimon.tgbotsmodule.commands.authority.SimpleAuthority
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.EnvConfig.creatorId
-import com.helltar.aibot.EnvConfig.telegramBotUsername
+import com.helltar.aibot.Config.creatorId
+import com.helltar.aibot.Config.telegramBotUsername
 import com.helltar.aibot.commands.BotCommand
-import com.helltar.aibot.commands.CommandExecutor
 import com.helltar.aibot.commands.Commands.CMD_ABOUT
 import com.helltar.aibot.commands.Commands.CMD_ADD_ADMIN
 import com.helltar.aibot.commands.Commands.CMD_ADD_CHAT
@@ -36,18 +35,17 @@ import com.helltar.aibot.commands.Commands.CMD_SLOW_MODE
 import com.helltar.aibot.commands.Commands.CMD_SLOW_MODE_LIST
 import com.helltar.aibot.commands.Commands.CMD_SLOW_MODE_OFF
 import com.helltar.aibot.commands.Commands.CMD_START
-import com.helltar.aibot.commands.Commands.CMD_TTS
 import com.helltar.aibot.commands.Commands.CMD_UNBAN_USER
 import com.helltar.aibot.commands.Commands.CMD_UPDATE_API_KEY
 import com.helltar.aibot.commands.Commands.CMD_UPDATE_PRIVACY_POLICY
 import com.helltar.aibot.commands.admin.ban.BanUser
+import com.helltar.aibot.commands.admin.ban.Banlist
 import com.helltar.aibot.commands.admin.ban.UnbanUser
 import com.helltar.aibot.commands.admin.chat.AddChat
 import com.helltar.aibot.commands.admin.chat.ChatsWhitelist
 import com.helltar.aibot.commands.admin.chat.RemoveChat
-import com.helltar.aibot.commands.admin.lists.Banlist
-import com.helltar.aibot.commands.admin.lists.SlowmodeList
 import com.helltar.aibot.commands.admin.slowmode.Slowmode
+import com.helltar.aibot.commands.admin.slowmode.SlowmodeList
 import com.helltar.aibot.commands.admin.slowmode.SlowmodeOff
 import com.helltar.aibot.commands.admin.sudoers.AddAdmin
 import com.helltar.aibot.commands.admin.sudoers.AdminList
@@ -61,7 +59,6 @@ import com.helltar.aibot.commands.user.MyId
 import com.helltar.aibot.commands.user.Privacy
 import com.helltar.aibot.commands.user.Start
 import com.helltar.aibot.commands.user.audio.AsrWhisper
-import com.helltar.aibot.commands.user.audio.TTS
 import com.helltar.aibot.commands.user.chat.ChatCtx
 import com.helltar.aibot.commands.user.chat.ChatCtxRemove
 import com.helltar.aibot.commands.user.chat.ChatGPT
@@ -96,7 +93,6 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
         registerLongRunningCommand(CMD_DALLE_VARIATIONS, ::DalleVariations)
         registerLongRunningCommand(CMD_SDIFF, ::StableDiffusion)
         registerLongRunningCommand(CMD_ASR, ::AsrWhisper)
-        registerLongRunningCommand(CMD_TTS, ::TTS)
 
         registerAdminCommand(CMD_ENABLE, { CommandsState(it) })
         registerAdminCommand(CMD_DISABLE, { CommandsState(it, true) })
