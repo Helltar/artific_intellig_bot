@@ -7,7 +7,16 @@ import com.helltar.aibot.commands.Commands
 class Start(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
-        replyToMessage("https://t.me/+siikRmY3uyE5YTBi", enableWebPagePreview = true)
+        replyToMessage(
+            """
+            Welcome to the AI Bot! 🤖✨
+ 
+            To start a conversation, please reply to this message.
+        
+            How can I assist you today?
+            """
+                .trimIndent()
+        )
     }
 
     override fun getCommandName() =
