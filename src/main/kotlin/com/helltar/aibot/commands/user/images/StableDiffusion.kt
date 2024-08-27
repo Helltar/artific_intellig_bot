@@ -3,6 +3,7 @@ package com.helltar.aibot.commands.user.images
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.core.isSuccessful
+import com.helltar.aibot.Config
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
@@ -60,7 +61,7 @@ class StableDiffusion(ctx: MessageContext) : BotCommand(ctx) {
 
     private suspend fun sendPrompt(prompt: String): Response {
         val url = "https://api.stability.ai/v2beta/stable-image/generate/sd3"
-        val headers = mapOf("Accept" to "image/*", "Authorization" to "Bearer ${getApiKey(PROVIDER_STABILITY_AI)}")
+        val headers = mapOf("Accept" to "image/*", "Authorization" to "Bearer ${getApiKey(Config.PROVIDER_STABILITY_AI)}")
         val params = listOf("prompt" to prompt, "model" to "sd3-turbo", "aspect_ratio" to "1:1", "output_format" to "jpeg")
         return NetworkUtils.upload(url, headers, params)
     }

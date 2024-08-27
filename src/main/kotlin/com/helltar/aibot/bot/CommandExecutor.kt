@@ -1,7 +1,11 @@
-package com.helltar.aibot.commands
+package com.helltar.aibot.bot
 
-import com.helltar.aibot.EnvConfig
+import com.helltar.aibot.Config
+import com.helltar.aibot.Config.DIR_FILES
+import com.helltar.aibot.Config.LOADING_GIF_FILE_NAME
 import com.helltar.aibot.Strings
+import com.helltar.aibot.commands.BotCommand
+import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.db.dao.*
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
@@ -26,8 +30,6 @@ class CommandExecutor {
 
     private companion object {
         const val SLOW_MODE_DURATION_HOURS = 1
-        const val LOADING_GIF_FILE_NAME = "loading.gif"
-        val filesMap = mapOf(LOADING_GIF_FILE_NAME to File("data/files/$LOADING_GIF_FILE_NAME"))
     }
 
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -68,7 +70,7 @@ class CommandExecutor {
             false
 
     private suspend fun checkPermissions(botCommand: BotCommand, options: CommandOptions): Boolean {
-        val isCreator = botCommand.ctx.user().id == EnvConfig.creatorId
+        val isCreator = botCommand.ctx.user().id == Config.creatorId
         val isAdmin = botCommand.isAdmin()
 
         return when {
@@ -183,7 +185,7 @@ class CommandExecutor {
         val fileName = LOADING_GIF_FILE_NAME
 
         suspend fun sendGifAndReturnMessageId(): Int {
-            val message = botCommand.sendDocument(filesMap.getValue(fileName))
+            val message = botCommand.sendDocument(File("$DIR_FILES/$LOADING_GIF_FILE_NAME"))
             message.document.fileId?.let { filesDao.add(fileName, it) }
             return message.messageId
         }
