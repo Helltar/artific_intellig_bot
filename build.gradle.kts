@@ -6,14 +6,14 @@ plugins {
 }
 
 group = "com.helltar"
-version = "0.9.20"
+version = "0.9.21"
 
 repositories {
     mavenCentral()
 }
 
 object Versions {
-    const val tgbotsModule = "7.9.0"
+    const val tgbotsModule = "7.10.0"
     const val jacksonModuleKotlin = "2.14.2"
     const val fuel = "2.3.1"
     const val dotenvKotlin = "6.4.1"
