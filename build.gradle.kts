@@ -13,38 +13,38 @@ repositories {
 }
 
 object Versions {
-    const val tgbotsModule = "7.10.0"
-    const val jacksonModuleKotlin = "2.14.2"
-    const val fuel = "2.3.1"
-    const val dotenvKotlin = "6.4.1"
-    const val imgscalrLib = "4.2"
-    const val exposedVersion = "0.52.0"
-    const val postgresql = "42.6.0"
-    const val coroutinesCoreJvm = "1.8.1"
-    const val kotlinxSerializationJson = "1.7.1"
-    const val logbackClassic = "1.5.6"
+    const val TGBOTS_MODULE = "7.10.0"
+    const val JACKSON_MODULE_KOTLIN = "2.14.2"
+    const val FUEL = "2.3.1"
+    const val DOTENV_KOTLIN = "6.4.1"
+    const val IMGSCALR_LIB = "4.2"
+    const val EXPOSED = "0.52.0"
+    const val POSTGRESQL = "42.6.0"
+    const val COROUTINES_CORE_JVM = "1.8.1"
+    const val KOTLINX_SERIALIZATION_JSON = "1.7.1"
+    const val LOGBACK_CLASSIC = "1.5.6"
 }
 
 dependencies {
-    implementation("com.annimon:tgbots-module:${Versions.tgbotsModule}") {
+    implementation("com.annimon:tgbots-module:${Versions.TGBOTS_MODULE}") {
         exclude("org.telegram", "telegrambots-webhook")
     }
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.jacksonModuleKotlin}")
-    implementation("com.github.kittinunf.fuel:fuel:${Versions.fuel}")
-    implementation("io.github.cdimascio:dotenv-kotlin:${Versions.dotenvKotlin}")
-    implementation("org.imgscalr:imgscalr-lib:${Versions.imgscalrLib}")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.JACKSON_MODULE_KOTLIN}")
+    implementation("com.github.kittinunf.fuel:fuel:${Versions.FUEL}")
+    implementation("io.github.cdimascio:dotenv-kotlin:${Versions.DOTENV_KOTLIN}")
+    implementation("org.imgscalr:imgscalr-lib:${Versions.IMGSCALR_LIB}")
 
-    implementation("org.jetbrains.exposed:exposed-core:${Versions.exposedVersion}")
-    implementation("org.jetbrains.exposed:exposed-dao:${Versions.exposedVersion}")
-    implementation("org.jetbrains.exposed:exposed-java-time:${Versions.exposedVersion}")
-    implementation("org.jetbrains.exposed:exposed-jdbc:${Versions.exposedVersion}")
-    implementation("org.postgresql:postgresql:${Versions.postgresql}")
+    implementation("org.jetbrains.exposed:exposed-core:${Versions.EXPOSED}")
+    implementation("org.jetbrains.exposed:exposed-dao:${Versions.EXPOSED}")
+    implementation("org.jetbrains.exposed:exposed-java-time:${Versions.EXPOSED}")
+    implementation("org.jetbrains.exposed:exposed-jdbc:${Versions.EXPOSED}")
+    implementation("org.postgresql:postgresql:${Versions.POSTGRESQL}")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:${Versions.coroutinesCoreJvm}")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinxSerializationJson}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:${Versions.COROUTINES_CORE_JVM}")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION_JSON}")
 
-    implementation("ch.qos.logback:logback-classic:${Versions.logbackClassic}")
+    implementation("ch.qos.logback:logback-classic:${Versions.LOGBACK_CLASSIC}")
 }
 
 application {
