@@ -1,7 +1,6 @@
 # AI Bot for Telegram
 
-- This bot is focused on Group Chats.
-- [Demo](https://t.me/+siikRmY3uyE5YTBi)
+This bot is focused on Group Chats.
 
 ## Installation
 
