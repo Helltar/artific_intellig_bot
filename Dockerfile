@@ -4,11 +4,11 @@ WORKDIR /app
 
 COPY build.gradle.kts gradle.properties settings.gradle.kts ./
 RUN gradle shadowJar -x test --no-daemon
-
 COPY src ./src
 RUN gradle shadowJar --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine
+
 RUN apk add --no-cache ffmpeg
 WORKDIR /app
 
