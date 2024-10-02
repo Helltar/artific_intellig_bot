@@ -1,7 +1,7 @@
 package com.helltar.aibot.commands.user.images.models
 
 import com.helltar.aibot.commands.user.chat.models.Chat
-import com.helltar.aibot.commands.user.chat.models.Chat.CHAT_GPT_MODEL_4_MINI
+import com.helltar.aibot.commands.user.chat.models.Chat.CHAT_GPT_MODEL
 import com.helltar.aibot.commands.user.chat.models.Chat.CHAT_ROLE_USER
 import kotlinx.serialization.Serializable
 
@@ -12,9 +12,8 @@ object Vision {
 
     @Serializable
     data class RequestData(
-        val model: String = CHAT_GPT_MODEL_4_MINI,
-        val messages: List<MessageData>,
-        val max_tokens: Int = 600
+        val model: String = CHAT_GPT_MODEL,
+        val messages: List<MessageData>
     )
 
     @Serializable
