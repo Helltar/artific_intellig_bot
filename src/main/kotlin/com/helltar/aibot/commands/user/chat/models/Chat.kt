@@ -4,8 +4,7 @@ import kotlinx.serialization.Serializable
 
 object Chat {
 
-    const val CHAT_GPT_MODEL_4 = "gpt-4o"
-    const val CHAT_GPT_MODEL_4_MINI = "gpt-4o-mini"
+    const val CHAT_GPT_MODEL = "gpt-4o"
 
     const val CHAT_ROLE_USER = "user"
     const val CHAT_ROLE_ASSISTANT = "assistant"
@@ -13,7 +12,7 @@ object Chat {
 
     @Serializable
     data class RequestData(
-        val model: String,
+        val model: String = CHAT_GPT_MODEL,
         val messages: List<MessageData>
     )
 

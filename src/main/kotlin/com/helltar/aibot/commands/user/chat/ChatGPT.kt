@@ -16,9 +16,8 @@ import java.io.ByteArrayInputStream
 class ChatGPT(ctx: MessageContext) : OpenAICommand(ctx) {
 
     private companion object {
-        const val MAX_USER_MESSAGE_TEXT_LENGTH = 2048
-        const val MAX_ADMIN_MESSAGE_TEXT_LENGTH = 4096
-        const val MAX_DIALOG_HISTORY_LENGTH = 10000
+        const val MAX_USER_MESSAGE_TEXT_LENGTH = 4000
+        const val MAX_DIALOG_HISTORY_LENGTH = MAX_USER_MESSAGE_TEXT_LENGTH * 3
         const val VOICE_OUT_TAG = "#voice"
     }
 
@@ -56,14 +55,8 @@ class ChatGPT(ctx: MessageContext) : OpenAICommand(ctx) {
                 return
             }
 
-        val textLength =
-            if (!isAdmin())
-                MAX_USER_MESSAGE_TEXT_LENGTH
-            else
-                MAX_ADMIN_MESSAGE_TEXT_LENGTH
-
-        if (text.length > textLength) {
-            replyToMessage(String.format(Strings.MANY_CHARACTERS, textLength))
+        if (text.length > MAX_USER_MESSAGE_TEXT_LENGTH) {
+            replyToMessage(String.format(Strings.MANY_CHARACTERS, MAX_USER_MESSAGE_TEXT_LENGTH))
             return
         }
 
@@ -110,9 +103,7 @@ class ChatGPT(ctx: MessageContext) : OpenAICommand(ctx) {
     }
 
     private suspend fun getBotReply(): String? {
-        val gptModel = if (!isAdmin()) Chat.CHAT_GPT_MODEL_4_MINI else Chat.CHAT_GPT_MODEL_4
-
-        val response = sendPrompt(chatHistoryManager.userChatDialogHistory, gptModel)
+        val response = sendPrompt(chatHistoryManager.userChatDialogHistory)
         val responseJson = response.data.decodeToString()
 
         return if (response.isSuccessful) {
@@ -128,9 +119,9 @@ class ChatGPT(ctx: MessageContext) : OpenAICommand(ctx) {
         }
     }
 
-    private suspend fun sendPrompt(messages: List<Chat.MessageData>, gptModel: String): Response {
+    private suspend fun sendPrompt(messages: List<Chat.MessageData>): Response {
         val url = "https://api.openai.com/v1/chat/completions"
-        val body = json.encodeToString(Chat.RequestData(gptModel, messages))
+        val body = json.encodeToString(Chat.RequestData(messages = messages))
         return postJson(url, createOpenAIHeaders(), body)
     }
 
