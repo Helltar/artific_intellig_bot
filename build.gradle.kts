@@ -1,19 +1,19 @@
 plugins {
-    kotlin("jvm") version "2.0.20"
-    kotlin("plugin.serialization") version "2.0.20"
+    kotlin("jvm") version "2.1.0"
+    kotlin("plugin.serialization") version "2.1.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     application
 }
 
 group = "com.helltar"
-version = "0.9.25"
+version = "0.9.26"
 
 repositories {
     mavenCentral()
 }
 
 object Versions {
-    const val TGBOTS_MODULE = "7.10.0"
+    const val TGBOTS_MODULE = "8.0.0"
     const val JACKSON_MODULE_KOTLIN = "2.14.2"
     const val FUEL = "2.3.1"
     const val DOTENV_KOTLIN = "6.4.1"
