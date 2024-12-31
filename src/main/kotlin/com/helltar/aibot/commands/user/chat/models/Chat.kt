@@ -8,7 +8,7 @@ object Chat {
 
     const val CHAT_ROLE_USER = "user"
     const val CHAT_ROLE_ASSISTANT = "assistant"
-    const val CHAT_ROLE_SYSTEM = "system"
+    const val CHAT_ROLE_DEVELOPER = "developer"
 
     @Serializable
     data class RequestData(

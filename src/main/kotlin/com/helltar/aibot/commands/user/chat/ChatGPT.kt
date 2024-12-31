@@ -73,7 +73,7 @@ class ChatGPT(ctx: MessageContext) : OpenAICommand(ctx) {
 
         if (chatHistoryManager.userChatDialogHistory.isEmpty()) {
             val systemPromt = localizedString(Strings.CHAT_GPT_SYSTEM_MESSAGE, userLanguageCode)
-            val systemPromtData = Chat.MessageData(Chat.CHAT_ROLE_SYSTEM, systemPromt.format(chatTitle, username, userId))
+            val systemPromtData = Chat.MessageData(Chat.CHAT_ROLE_DEVELOPER, systemPromt.format(chatTitle, username, userId))
             chatHistoryManager.addMessage(systemPromtData)
         }
 
