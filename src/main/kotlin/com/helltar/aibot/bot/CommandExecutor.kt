@@ -12,9 +12,7 @@ import org.slf4j.LoggerFactory
 import org.telegram.telegrambots.meta.api.objects.User
 import org.telegram.telegrambots.meta.api.objects.chat.Chat
 import java.io.File
-import java.time.Clock
-import java.time.Duration
-import java.time.Instant
+import java.time.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.hours
 
@@ -125,6 +123,8 @@ class CommandExecutor {
 
             try {
                 botCommand.run()
+            } catch (e: Exception) {
+                log.error(e.message, e)
             } finally {
                 botCommand.deleteMessage(messageId)
             }
