@@ -9,7 +9,7 @@ import com.helltar.aibot.utils.NetworkUtils.postJson
 import kotlinx.serialization.encodeToString
 import org.slf4j.LoggerFactory
 
-class DallE2(ctx: MessageContext) : OpenAICommand(ctx) {
+class DallEGenerations(ctx: MessageContext) : OpenAICommand(ctx) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 

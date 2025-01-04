@@ -20,7 +20,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.imageio.ImageIO
 
-open class DalleVariations(ctx: MessageContext) : OpenAICommand(ctx) {
+open class DallEVariations(ctx: MessageContext) : OpenAICommand(ctx) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 

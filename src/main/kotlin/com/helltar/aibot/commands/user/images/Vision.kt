@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.*
 
-class GPT4Vision(ctx: MessageContext) : DalleVariations(ctx) {
+class Vision(ctx: MessageContext) : DallEVariations(ctx) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 

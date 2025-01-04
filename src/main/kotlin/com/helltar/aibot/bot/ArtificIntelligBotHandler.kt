@@ -68,9 +68,9 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
         registerSimpleCommand(CMD_CHAT_CTX_REMOVE, ::ChatCtxRemove, true)
 
         registerLongRunningCommand(CMD_CHAT, ::ChatGPT)
-        registerLongRunningCommand(CMD_GPT_VISION, ::GPT4Vision)
-        registerLongRunningCommand(CMD_DALLE, ::DallE2)
-        registerLongRunningCommand(CMD_DALLE_VARIATIONS, ::DalleVariations)
+        registerLongRunningCommand(CMD_GPT_VISION, ::Vision)
+        registerLongRunningCommand(CMD_DALLE, ::DallEGenerations)
+        registerLongRunningCommand(CMD_DALLE_VARIATIONS, ::DallEVariations)
         registerLongRunningCommand(CMD_ASR, ::AsrWhisper)
 
         registerAdminCommand(CMD_ENABLE, { CommandsState(it) })
