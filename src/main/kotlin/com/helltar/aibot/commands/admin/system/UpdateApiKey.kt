@@ -1,7 +1,7 @@
 package com.helltar.aibot.commands.admin.system
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.Config.apiKeyProviders
+import com.helltar.aibot.Config.PROVIDER_OPENAI_COM
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
@@ -10,22 +10,13 @@ import com.helltar.aibot.db.dao.apiKeysDao
 class UpdateApiKey(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
-        val providersHtmlList = apiKeyProviders.joinToString("\n") { "<code>$it</code>" }
-
-        if (arguments.size < 2) {
-            replyToMessage(Strings.UPDATE_API_KEYS_COMMAND_EXAMPLE.format(apiKeyProviders.first()))
-            reply(providersHtmlList)
+        if (arguments.isEmpty()) {
+            replyToMessage(Strings.UPDATE_API_KEYS_COMMAND_EXAMPLE)
             return
         }
 
-        val provider = arguments[0]
-
-        if (provider !in apiKeyProviders) {
-            reply(providersHtmlList)
-            return
-        }
-
-        val apiKey = arguments[1]
+        val provider = PROVIDER_OPENAI_COM
+        val apiKey = argumentsString
 
         if (apiKeysDao.getKey(provider) != null) {
             if (apiKeysDao.update(provider, apiKey)) {

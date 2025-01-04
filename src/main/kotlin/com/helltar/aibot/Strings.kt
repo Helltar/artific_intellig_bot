@@ -44,7 +44,7 @@ object Strings {
     const val PROVIDER_API_KEY_SUCCESS_UPDATE = "✅ API Key for <b>%s</b> succesfully updated"
     const val TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE = "TelegramApiException, response saved to file \uD83D\uDE48" // 🙈
     const val TELEGRAM_API_EXCEPTION_CONTEXT_SAVED_TO_FILE = "TelegramApiException, context saved to file. Use /$CMD_CHAT_CTX_REMOVE for fix ☺\uFE0F" // ☺️
-    const val UPDATE_API_KEYS_COMMAND_EXAMPLE = "ℹ\uFE0F Example: <code>/$CMD_UPDATE_API_KEY %s sk-qwertyuiop...</code>" // ℹ️
+    const val UPDATE_API_KEYS_COMMAND_EXAMPLE = "ℹ\uFE0F Example: <code>/$CMD_UPDATE_API_KEY</code> sk-key_here" // ℹ️
     const val VIDEO_OR_AUDIO_NOT_FOUND = "Message does not contain audio or video \uD83E\uDD14" // 🤔
     const val VOICE_MUST_BE_LESS_THAN = "Voice must be less than %s 😥" // 😥
     const val MESSAGE_TEXT_NOT_FOUND = "The message does not contain text \uD83E\uDD14" // 🤔

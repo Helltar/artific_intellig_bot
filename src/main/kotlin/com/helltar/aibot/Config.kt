@@ -8,9 +8,9 @@ object Config {
     const val DIR_FILES = "data/files"
 
     const val PROVIDER_OPENAI_COM = "openai.com"
-    const val PROVIDER_STABILITY_AI = "stability.ai"
 
-    val apiKeyProviders = setOf(PROVIDER_OPENAI_COM, PROVIDER_STABILITY_AI)
+    @Suppress("unused")
+    val apiKeyProviders = setOf(PROVIDER_OPENAI_COM)
 
     private const val CREATOR_ID_KEY = "CREATOR_ID"
     private const val BOT_TOKEN_KEY = "BOT_TOKEN"
