@@ -39,7 +39,7 @@ class DallEGenerations(ctx: MessageContext) : OpenAICommand(ctx) {
 
     private suspend fun sendPrompt(prompt: String): String {
         val url = "https://api.openai.com/v1/images/generations"
-        val body = json.encodeToString(Dalle.RequestData(prompt))
+        val body = json.encodeToString(Dalle.RequestData(prompt = prompt))
         return postJson(url, createOpenAIHeaders(), body).data.decodeToString()
     }
 }
