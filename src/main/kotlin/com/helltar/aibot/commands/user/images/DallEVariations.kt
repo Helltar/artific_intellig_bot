@@ -7,7 +7,7 @@ import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.OpenAICommand
 import com.helltar.aibot.commands.user.images.models.Dalle
-import com.helltar.aibot.commands.user.images.models.Dalle.DALLE_IMAGE_SIZE
+import com.helltar.aibot.commands.user.images.models.Dalle.DALLE_VARIATIONS_IMAGE_SIZE
 import com.helltar.aibot.utils.NetworkUtils.uploadWithFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -100,7 +100,7 @@ open class DallEVariations(ctx: MessageContext) : OpenAICommand(ctx) {
 
     private suspend fun uploadImage(byteArrayStream: ByteArrayOutputStream): String {
         val url = "https://api.openai.com/v1/images/variations"
-        val parameters = listOf("n" to "1", "size" to DALLE_IMAGE_SIZE)
+        val parameters = listOf("n" to "1", "size" to DALLE_VARIATIONS_IMAGE_SIZE)
 
         val file = // todo: tempFile
             withContext(Dispatchers.IO) { File.createTempFile("tmp", ".png") }.apply {
