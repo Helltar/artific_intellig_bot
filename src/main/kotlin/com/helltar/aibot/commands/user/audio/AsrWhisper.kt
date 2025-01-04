@@ -11,10 +11,7 @@ import com.helltar.aibot.utils.NetworkUtils.uploadWithFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.slf4j.LoggerFactory
-import org.telegram.telegrambots.meta.api.objects.Audio
-import org.telegram.telegrambots.meta.api.objects.Video
-import org.telegram.telegrambots.meta.api.objects.VideoNote
-import org.telegram.telegrambots.meta.api.objects.Voice
+import org.telegram.telegrambots.meta.api.objects.*
 import org.telegram.telegrambots.meta.api.objects.message.Message
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import java.io.File
@@ -156,6 +153,8 @@ class AsrWhisper(ctx: MessageContext) : OpenAICommand(ctx) {
             null
         }
     }
+
+    /* https://platform.openai.com/docs/api-reference/audio/createTranscription */
 
     private suspend fun uploadAudio(file: File): String {
         val url = "https://api.openai.com/v1/audio/transcriptions"

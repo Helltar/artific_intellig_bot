@@ -4,6 +4,8 @@ import kotlinx.serialization.Serializable
 
 object Chat {
 
+    /* https://platform.openai.com/docs/api-reference/chat/create */
+
     const val CHAT_GPT_MODEL = "gpt-4o"
 
     const val CHAT_ROLE_USER = "user"
@@ -42,6 +44,8 @@ object Chat {
         val completion_tokens: Int,
         val total_tokens: Int
     )
+
+    /* https://platform.openai.com/docs/api-reference/audio/createSpeech */
 
     @Serializable
     data class SpeechRequestData(

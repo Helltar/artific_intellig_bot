@@ -7,6 +7,8 @@ import kotlinx.serialization.Serializable
 
 object Vision {
 
+    /* https://platform.openai.com/docs/guides/vision */
+
     const val MESSAGE_CONTENT_TYPE_TEXT = "text"
     const val MESSAGE_CONTENT_TYPE_IMAGE = "image_url"
 

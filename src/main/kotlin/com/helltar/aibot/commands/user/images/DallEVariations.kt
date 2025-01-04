@@ -96,6 +96,8 @@ open class DallEVariations(ctx: MessageContext) : OpenAICommand(ctx) {
         return resizedImage
     }
 
+    /*  https://platform.openai.com/docs/api-reference/images/createVariation */
+
     private suspend fun uploadImage(byteArrayStream: ByteArrayOutputStream): String {
         val url = "https://api.openai.com/v1/images/variations"
         val parameters = listOf("n" to "1", "size" to DALLE_IMAGE_SIZE)
