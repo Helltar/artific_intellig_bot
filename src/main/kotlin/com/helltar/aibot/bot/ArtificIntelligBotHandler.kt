@@ -43,7 +43,7 @@ import com.helltar.aibot.commands.admin.slowmode.*
 import com.helltar.aibot.commands.admin.sudoers.*
 import com.helltar.aibot.commands.admin.system.*
 import com.helltar.aibot.commands.user.*
-import com.helltar.aibot.commands.user.audio.AsrWhisper
+import com.helltar.aibot.commands.user.audio.Transcriptions
 import com.helltar.aibot.commands.user.chat.*
 import com.helltar.aibot.commands.user.images.*
 import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod
@@ -67,11 +67,11 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
         registerSimpleCommand(CMD_CHATCTX, ::ChatCtx, true)
         registerSimpleCommand(CMD_CHAT_CTX_REMOVE, ::ChatCtxRemove, true)
 
-        registerLongRunningCommand(CMD_CHAT, ::ChatGPT)
+        registerLongRunningCommand(CMD_CHAT, ::Chat)
         registerLongRunningCommand(CMD_GPT_VISION, ::Vision)
         registerLongRunningCommand(CMD_DALLE, ::DallEGenerations)
         registerLongRunningCommand(CMD_DALLE_VARIATIONS, ::DallEVariations)
-        registerLongRunningCommand(CMD_ASR, ::AsrWhisper)
+        registerLongRunningCommand(CMD_ASR, ::Transcriptions)
 
         registerAdminCommand(CMD_ENABLE, { CommandsState(it) })
         registerAdminCommand(CMD_DISABLE, { CommandsState(it, true) })
@@ -96,7 +96,7 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
     override fun onUpdate(update: Update): BotApiMethod<*>? {
 
         fun executeChatGPT(ctx: MessageContext) =
-            commandExecutor.execute(ChatGPT(ctx), createCommandOptions(isLongRunningCommand = true))
+            commandExecutor.execute(Chat(ctx), createCommandOptions(isLongRunningCommand = true))
 
         fun shouldProcessMessage(replyToMessage: Message, text: String): Boolean {
             val isMe = replyToMessage.from.userName == telegramBotUsername

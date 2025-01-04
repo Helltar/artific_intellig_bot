@@ -13,7 +13,7 @@ import kotlinx.serialization.encodeToString
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
 
-class ChatGPT(ctx: MessageContext) : OpenAICommand(ctx) {
+class Chat(ctx: MessageContext) : OpenAICommand(ctx) {
 
     private companion object {
         const val MAX_USER_MESSAGE_TEXT_LENGTH = 4000

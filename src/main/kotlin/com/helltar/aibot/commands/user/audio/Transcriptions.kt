@@ -6,10 +6,10 @@ import com.github.kittinunf.fuel.core.FileDataPart
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.OpenAICommand
-import com.helltar.aibot.commands.user.audio.models.Whisper
 import com.helltar.aibot.utils.NetworkUtils.uploadWithFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
 import org.slf4j.LoggerFactory
 import org.telegram.telegrambots.meta.api.objects.*
 import org.telegram.telegrambots.meta.api.objects.message.Message
@@ -18,7 +18,10 @@ import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class AsrWhisper(ctx: MessageContext) : OpenAICommand(ctx) {
+class Transcriptions(ctx: MessageContext) : OpenAICommand(ctx) {
+
+    @Serializable
+    data class ResponseData(val text: String)
 
     private companion object {
         const val MAX_AUDIO_FILE_SIZE = 25600000
@@ -76,7 +79,7 @@ class AsrWhisper(ctx: MessageContext) : OpenAICommand(ctx) {
 
         try {
             val text =
-                json.decodeFromString<Whisper.ResponseData>(responseJson).text.ifEmpty {
+                json.decodeFromString<ResponseData>(responseJson).text.ifEmpty {
                     replyToMessage(Strings.COULDNT_RECOGNIZE_VOICE, messageId)
                     return
                 }
