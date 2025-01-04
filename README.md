@@ -26,24 +26,21 @@ docker compose up -d
 
 ### Obtain API Keys
 
-First, obtain the following API keys:
+First, get the following API key:
 
 - [OpenAI API Key](https://platform.openai.com/api-keys)
-- [Stable Diffusion API Key](https://platform.stability.ai/account/keys)
 
-Add them using the command in the bot:
+Add it using the command in the bot:
 
-- `/updatekey openai.com sk-qwerty`
-- `/updatekey stability.ai sk-qwerty`
+- `/updatekey sk-qwerty...`
 
 ### Commands
 
-- `/chat` - ChatGPT
-- `/vision` - GPT-4 Vision
-- `/dalle` - DALL·E 2
-- `/sdif` - Stable Diffusion
-- `/dallevar` - DALL·E 2 Variations
-- `/asr` - Automatic Speech Recognition (openai-Whisper)
+- `/chat` - ChatGPT (gpt-4o)
+- `/vision` - Describes images with GPT-4 Vision (gpt-4o)
+- `/dalle` - Creates an image given a prompt (dall-e-3)
+- `/dallevar` - Creates a variation of a given image (dall-e-2)
+- `/asr` - Transcribes audio (whisper-1)
 - `/privacy`
 - `/about`
 
