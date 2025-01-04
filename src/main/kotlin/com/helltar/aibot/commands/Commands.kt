@@ -10,7 +10,6 @@ object Commands {
     const val CMD_CHAT = "chat"
     const val CMD_GPT_VISION = "vision"
     const val CMD_DALLE = "dalle"
-    const val CMD_SDIFF = "sdif"
     const val CMD_ASR = "asr"
     const val CMD_DALLE_VARIATIONS = "dallevar"
 
@@ -45,7 +44,6 @@ object Commands {
             CMD_CHAT,
             CMD_GPT_VISION,
             CMD_DALLE,
-            CMD_SDIFF,
             CMD_ASR,
             CMD_DALLE_VARIATIONS
         )

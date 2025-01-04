@@ -4,7 +4,6 @@ import com.annimon.tgbotsmodule.services.ResourceBundleLocalizationService
 import com.helltar.aibot.commands.Commands.CMD_CHAT_CTX_REMOVE
 import com.helltar.aibot.commands.Commands.CMD_GLOBAL_SLOW_MODE
 import com.helltar.aibot.commands.Commands.CMD_PRIVACY
-import com.helltar.aibot.commands.Commands.CMD_SDIFF
 import com.helltar.aibot.commands.Commands.CMD_SLOW_MODE
 import com.helltar.aibot.commands.Commands.CMD_UPDATE_API_KEY
 import com.helltar.aibot.commands.Commands.CMD_UPDATE_PRIVACY_POLICY
@@ -43,7 +42,6 @@ object Strings {
     const val NO_PHOTO_IN_MESSAGE = "No photo in message \uD83E\uDD14" // 🤔
     const val PROVIDER_API_KEY_SUCCESS_ADD = "✅ API Key for <b>%s</b> succesfully added"
     const val PROVIDER_API_KEY_SUCCESS_UPDATE = "✅ API Key for <b>%s</b> succesfully updated"
-    const val STABLE_DIFFUSION_EMPTY_ARGS = "Please write a description of what you want to receive:\n\n<code>/$CMD_SDIFF photo realistic portrait of young woman</code>"
     const val TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE = "TelegramApiException, response saved to file \uD83D\uDE48" // 🙈
     const val TELEGRAM_API_EXCEPTION_CONTEXT_SAVED_TO_FILE = "TelegramApiException, context saved to file. Use /$CMD_CHAT_CTX_REMOVE for fix ☺\uFE0F" // ☺️
     const val UPDATE_API_KEYS_COMMAND_EXAMPLE = "ℹ\uFE0F Example: <code>/$CMD_UPDATE_API_KEY %s sk-qwertyuiop...</code>" // ℹ️
