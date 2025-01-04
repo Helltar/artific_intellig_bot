@@ -10,7 +10,7 @@ class About(ctx: MessageContext) : BotCommand(ctx) {
         replyToMessage(
             """
             <a href="https://github.com/Helltar/artific_intellig_bot">AᎥ</a>
-            Contact: @Helltar https://helltar.com
+            Contact: https://helltar.com
             Source Code:
             """
                 .trimIndent(), enableWebPagePreview = true
