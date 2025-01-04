@@ -26,6 +26,7 @@ class DallEGenerations(ctx: MessageContext) : OpenAICommand(ctx) {
 
         try {
             val responseJson = sendPrompt(argumentsString)
+            log.debug(responseJson)
             val url = json.decodeFromString<Dalle.ResponseData>(responseJson).data.first().url
             replyToMessageWithPhoto(url, argumentsString)
         } catch (e: Exception) {
