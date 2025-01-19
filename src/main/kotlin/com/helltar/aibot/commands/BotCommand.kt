@@ -80,23 +80,8 @@ abstract class BotCommand(val ctx: MessageContext) : Command {
             .setFile(file)
             .call(ctx.sender)
 
-    protected fun reply(text: String) {
-        ctx.reply()
-            .setText(text)
-            .setParseMode(ParseMode.HTML)
-            .call(ctx.sender)
-    }
-
     protected suspend fun getApiKey(provider: String) =
         apiKeysDao.getKey(provider)
-
-    protected fun replyToMessageWithPhoto(file: File, caption: String = "", messageId: Int = message.messageId): Message =
-        ctx.replyToMessageWithPhoto()
-            .setFile(file)
-            .setCaption(caption)
-            .setReplyToMessageId(messageId)
-            .setParseMode(ParseMode.HTML)
-            .call(ctx.sender)
 
     protected fun replyToMessageWithPhoto(url: String, caption: String = "", messageId: Int = message.messageId): Message =
         ctx.replyToMessageWithPhoto()
@@ -105,14 +90,6 @@ abstract class BotCommand(val ctx: MessageContext) : Command {
             .setReplyToMessageId(messageId)
             .setParseMode(ParseMode.HTML)
             .call(ctx.sender)
-
-    protected fun replyToMessageWithDocument(file: File, caption: String): Int =
-        ctx.replyWithDocument()
-            .setFile(file)
-            .setCaption(caption)
-            .setReplyToMessageId(message.messageId)
-            .call(ctx.sender)
-            .messageId
 
     protected fun sendVoice(name: String, inputStream: InputStream, messageId: Int): Message =
         ctx.replyToMessageWithAudio()
