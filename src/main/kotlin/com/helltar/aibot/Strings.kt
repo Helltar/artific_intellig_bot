@@ -43,7 +43,7 @@ object Strings {
     const val PROVIDER_API_KEY_SUCCESS_ADD = "✅ API Key for <b>%s</b> succesfully added"
     const val PROVIDER_API_KEY_SUCCESS_UPDATE = "✅ API Key for <b>%s</b> succesfully updated"
     const val TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE = "TelegramApiException, response saved to file \uD83D\uDE48" // 🙈
-    const val TELEGRAM_API_EXCEPTION_CONTEXT_SAVED_TO_FILE = "TelegramApiException, context saved to file. Use /$CMD_CHAT_CTX_REMOVE for fix ☺\uFE0F" // ☺️
+    const val TELEGRAM_API_EXCEPTION_CONTEXT_SAVED_TO_FILE = "An error occurred (TelegramApiException). The context has been saved to a file. You can try fixing it using the /$CMD_CHAT_CTX_REMOVE command ☺\uFE0F"
     const val UPDATE_API_KEYS_COMMAND_EXAMPLE = "ℹ\uFE0F Example: <code>/$CMD_UPDATE_API_KEY</code> sk-key_here" // ℹ️
     const val VIDEO_OR_AUDIO_NOT_FOUND = "Message does not contain audio or video \uD83E\uDD14" // 🤔
     const val VOICE_MUST_BE_LESS_THAN = "Voice must be less than %s 😥" // 😥
@@ -76,10 +76,12 @@ object Strings {
     const val SLOW_MODE_ON_UPDATE = "\uD83D\uDD04 Slow mode already on, update, <b>%d</b> requests per hour" // 🔄
     const val SLOW_MODE_OFF = "✅ Slow mode off"
     const val SLOW_MODE_OFF_NOT_ENABLED = "ℹ\uFE0F Slow mode not enabled for this user" // ℹ️
-    const val SLOW_MODE_BAD_ARG = "\uD83E\uDD2D Bad args., example: <code>/$CMD_SLOW_MODE 123456789 2</code> (userid, limit), or if this is a reply: <code>/$CMD_SLOW_MODE 2</code>" // 🤭
+    const val SLOW_MODE_BAD_ARG =
+        "\uD83E\uDD2D Bad args., example: <code>/$CMD_SLOW_MODE 123456789 2</code> (userid, limit), or if this is a reply: <code>/$CMD_SLOW_MODE 2</code>" // 🤭
     const val SLOW_MODE_USER_NOT_FOUND = "\uD83E\uDD37\u200D♂\uFE0F User with this ID is not in the database"
 
-    const val GLOBAL_SLOW_MODE_CURRENT_VALUE = "ℹ\uFE0F The current value is <b>%d</b> requests per hour per user.\n\nTo change it, use the command <code>/$CMD_GLOBAL_SLOW_MODE 15</code>"
+    const val GLOBAL_SLOW_MODE_CURRENT_VALUE =
+        "ℹ\uFE0F The current value is <b>%d</b> requests per hour per user.\n\nTo change it, use the command <code>/$CMD_GLOBAL_SLOW_MODE 15</code>"
     const val GLOBAL_SLOW_MODE_SUCCESFULLY_CHANGED = "✅ The value for global-slowmode has been successfully changed to <b>%d</b> requests per hour per user."
 
     const val UPDATE_PRIVACY_POLICY_EXAMPLE = "<code>/$CMD_UPDATE_PRIVACY_POLICY</code> text"

@@ -25,7 +25,9 @@ class ChatCtx(ctx: MessageContext) : BotCommand(ctx) {
         try {
             replyToMessage(text, markdown = true)
         } catch (e: Exception) {
-            errorReplyWithTextDocument(text, Strings.TELEGRAM_API_EXCEPTION_CONTEXT_SAVED_TO_FILE)
+            if (userChatHistory.isNotEmpty())
+                errorReplyWithTextDocument(text, Strings.TELEGRAM_API_EXCEPTION_CONTEXT_SAVED_TO_FILE)
+
             log.error(e.message)
         }
     }
