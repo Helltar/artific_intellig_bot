@@ -7,10 +7,17 @@ services:
     env_file: .env
     depends_on:
       - postgres
+    volumes:
+      - aibot_data:/app/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
 
   postgres:
     container_name: postgres_container
-    image: postgres:alpine
+    image: postgres:17.2-alpine
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DATABASE_NAME}
@@ -22,3 +29,4 @@ services:
 
 volumes:
   postgres_data:
+  aibot_data:
