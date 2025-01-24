@@ -12,12 +12,6 @@ import java.io.File
 import java.io.InputStream
 import java.util.concurrent.CompletableFuture
 
-interface Command {
-
-    suspend fun run()
-    fun getCommandName(): String
-}
-
 abstract class BotCommand(val ctx: MessageContext) : Command {
 
     val userLanguageCode = ctx.user().languageCode ?: "en"
