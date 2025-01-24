@@ -8,9 +8,9 @@ import com.helltar.aibot.Strings.localizedString
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.OpenAICommand
 import com.helltar.aibot.commands.user.chat.models.Chat
-import com.helltar.aibot.utils.NetworkUtils.postJson
+import com.helltar.aibot.utils.Network.postJson
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.encodeToString
-import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
 
 class Chat(ctx: MessageContext) : OpenAICommand(ctx) {
@@ -19,11 +19,10 @@ class Chat(ctx: MessageContext) : OpenAICommand(ctx) {
         const val MAX_USER_MESSAGE_TEXT_LENGTH = 4000
         const val MAX_DIALOG_HISTORY_LENGTH = MAX_USER_MESSAGE_TEXT_LENGTH * 3
         const val VOICE_OUT_TAG = "#voice"
+        val log = KotlinLogging.logger {}
     }
 
     private val chatHistoryManager = ChatHistoryManager(userId)
-
-    private val log = LoggerFactory.getLogger(javaClass)
 
     override suspend fun run() {
         processUserMessage()
@@ -89,7 +88,7 @@ class Chat(ctx: MessageContext) : OpenAICommand(ctx) {
                     replyToMessage(answer, messageId, markdown = true)
                 } catch (e: Exception) {
                     errorReplyWithTextDocument(answer, Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE)
-                    log.error(e.message)
+                    log.error { e.message }
                 }
             } else
                 sendVoice("voice-$messageId", ByteArrayInputStream(textToSpeech(answer)), messageId)
@@ -110,11 +109,11 @@ class Chat(ctx: MessageContext) : OpenAICommand(ctx) {
             try {
                 json.decodeFromString<Chat.ResponseData>(responseJson).choices.first().message.content
             } catch (e: Exception) {
-                log.error(e.message)
+                log.error { e.message }
                 null
             }
         } else {
-            log.error("$response")
+            log.error { "$response" }
             null
         }
     }

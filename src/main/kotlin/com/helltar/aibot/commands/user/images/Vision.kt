@@ -7,15 +7,15 @@ import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.user.images.models.Dalle
 import com.helltar.aibot.commands.user.images.models.Vision
-import com.helltar.aibot.utils.NetworkUtils.postJson
+import com.helltar.aibot.utils.Network.postJson
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.encodeToString
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.*
 
-class Vision(ctx: MessageContext) : DallEVariations(ctx) {
+private val log = KotlinLogging.logger {}
 
-    private val log = LoggerFactory.getLogger(javaClass)
+class Vision(ctx: MessageContext) : DallEVariations(ctx) {
 
     override suspend fun run() {
         if (isNotReply) {
@@ -38,7 +38,7 @@ class Vision(ctx: MessageContext) : DallEVariations(ctx) {
                 try {
                     json.decodeFromString<Vision.ResponseData>(responseJson).choices.first().message.content
                 } catch (e: Exception) {
-                    log.error("${e.message} $responseJson")
+                    log.error { "${e.message} $responseJson" }
                     replyToMessage(Strings.CHAT_EXCEPTION)
                     return
                 }
@@ -47,11 +47,11 @@ class Vision(ctx: MessageContext) : DallEVariations(ctx) {
                 replyToMessage(answer, markdown = true)
             } catch (e: Exception) {
                 errorReplyWithTextDocument(answer, Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE)
-                log.error(e.message)
+                log.error { e.message }
             }
         } else {
             replyToMessage(Strings.CHAT_EXCEPTION)
-            log.error(responseJson)
+            log.error { responseJson }
         }
     }
 

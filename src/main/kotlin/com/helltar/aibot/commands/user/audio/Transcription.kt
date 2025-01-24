@@ -6,11 +6,11 @@ import com.github.kittinunf.fuel.core.FileDataPart
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.OpenAICommand
-import com.helltar.aibot.utils.NetworkUtils.uploadWithFile
+import com.helltar.aibot.utils.Network.uploadWithFile
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
-import org.slf4j.LoggerFactory
 import org.telegram.telegrambots.meta.api.objects.*
 import org.telegram.telegrambots.meta.api.objects.message.Message
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
@@ -18,13 +18,14 @@ import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class Transcriptions(ctx: MessageContext) : OpenAICommand(ctx) {
+class Transcription(ctx: MessageContext) : OpenAICommand(ctx) {
 
     @Serializable
     data class ResponseData(val text: String)
 
     private companion object {
         const val MAX_AUDIO_FILE_SIZE = 25600000
+        val log = KotlinLogging.logger {}
     }
 
     private val isCreator = isCreator()
@@ -32,8 +33,6 @@ class Transcriptions(ctx: MessageContext) : OpenAICommand(ctx) {
     private val maxVoiceSize = maxAudioSize
     private val maxVideoDuration = if (!isCreator) 60 else 600
     private val maxVideoNoteDuration = if (!isCreator) 90 else 900
-
-    private val log = LoggerFactory.getLogger(javaClass)
 
     override suspend fun run() {
         if (isNotReply) {
@@ -55,7 +54,7 @@ class Transcriptions(ctx: MessageContext) : OpenAICommand(ctx) {
         try {
             ctx.sender.downloadFile(Methods.getFile(fileId).call(ctx.sender)).renameTo(outFile)
         } catch (e: TelegramApiException) {
-            log.error(e.message)
+            log.error { e.message }
             return
         }
 
@@ -88,7 +87,7 @@ class Transcriptions(ctx: MessageContext) : OpenAICommand(ctx) {
                 replyToMessage(it, messageId)
             }
         } catch (e: Exception) {
-            log.error("${e.message}: $responseJson")
+            log.error { "${e.message}: $responseJson" }
             replyToMessage(Strings.CHAT_EXCEPTION)
         }
     }
@@ -152,7 +151,7 @@ class Transcriptions(ctx: MessageContext) : OpenAICommand(ctx) {
             Runtime.getRuntime().exec(cmdarray).waitFor(2, TimeUnit.MINUTES)
             File(outputFilename).takeIf { it.exists() }
         } catch (e: Exception) {
-            log.error(e.message)
+            log.error { e.message }
             null
         }
     }

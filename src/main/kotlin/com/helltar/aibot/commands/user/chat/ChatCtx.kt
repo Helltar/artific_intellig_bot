@@ -5,11 +5,11 @@ import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.user.chat.models.Chat
-import org.slf4j.LoggerFactory
+import io.github.oshai.kotlinlogging.KotlinLogging
+
+private val log = KotlinLogging.logger {}
 
 class ChatCtx(ctx: MessageContext) : BotCommand(ctx) {
-
-    private val log = LoggerFactory.getLogger(javaClass)
 
     override suspend fun run() {
         val userId = getUserId() ?: return
@@ -28,7 +28,7 @@ class ChatCtx(ctx: MessageContext) : BotCommand(ctx) {
             if (userChatHistory.isNotEmpty())
                 errorReplyWithTextDocument(text, Strings.TELEGRAM_API_EXCEPTION_CONTEXT_SAVED_TO_FILE)
 
-            log.error(e.message)
+            log.error { e.message }
         }
     }
 

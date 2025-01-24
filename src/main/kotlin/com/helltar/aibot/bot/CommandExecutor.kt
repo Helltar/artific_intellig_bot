@@ -7,8 +7,8 @@ import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.db.dao.*
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
-import org.slf4j.LoggerFactory
 import org.telegram.telegrambots.meta.api.objects.User
 import org.telegram.telegrambots.meta.api.objects.chat.Chat
 import java.io.File
@@ -28,12 +28,11 @@ class CommandExecutor {
 
     private companion object {
         const val SLOW_MODE_DURATION_HOURS = 1
+        val log = KotlinLogging.logger {}
     }
 
     private val scope = CoroutineScope(Dispatchers.IO)
     private val requestsMap = ConcurrentHashMap<String, Job>()
-
-    private val log = LoggerFactory.getLogger(javaClass)
 
     fun execute(botCommand: BotCommand, options: CommandOptions) {
         val user = botCommand.ctx.user()
@@ -57,7 +56,7 @@ class CommandExecutor {
 
     private fun logCommandExecution(botCommand: BotCommand, user: User, chat: Chat, commandName: String) {
         val logMessage = "$commandName: ${chat.id} ${chat.title} ${user.id} ${user.userName} ${user.firstName}: ${botCommand.ctx.message().text}"
-        log.info(logMessage)
+        log.info { logMessage }
     }
 
     private fun isRequestInProgress(requestKey: String, botCommand: BotCommand) =
@@ -124,7 +123,7 @@ class CommandExecutor {
             try {
                 botCommand.run()
             } catch (e: Exception) {
-                log.error(e.message, e)
+                log.error { e.message }
             } finally {
                 botCommand.deleteMessage(messageId)
             }
@@ -194,7 +193,7 @@ class CommandExecutor {
             try {
                 botCommand.replyToMessageWithDocument(fileId, caption)
             } catch (e: Exception) {
-                log.error(e.message)
+                log.error { e.message }
                 filesDao.delete(fileName)
                 sendGifAndReturnMessageId()
             }

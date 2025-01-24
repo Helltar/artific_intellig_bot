@@ -8,10 +8,10 @@ import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.OpenAICommand
 import com.helltar.aibot.commands.user.images.models.Dalle
 import com.helltar.aibot.commands.user.images.models.Dalle.DALLE_VARIATIONS_IMAGE_SIZE
-import com.helltar.aibot.utils.NetworkUtils.uploadWithFile
+import com.helltar.aibot.utils.Network.uploadWithFile
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.slf4j.LoggerFactory
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import java.awt.Image
 import java.awt.RenderingHints
@@ -20,9 +20,9 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.imageio.ImageIO
 
-open class DallEVariations(ctx: MessageContext) : OpenAICommand(ctx) {
+private val log = KotlinLogging.logger {}
 
-    private val log = LoggerFactory.getLogger(javaClass)
+open class DallEVariations(ctx: MessageContext) : OpenAICommand(ctx) {
 
     override suspend fun run() {
         if (isNotReply) {
@@ -47,13 +47,13 @@ open class DallEVariations(ctx: MessageContext) : OpenAICommand(ctx) {
 
             val responseJson = uploadImage(squarePngImage)
 
-            log.debug(responseJson)
+            log.debug { responseJson }
 
             val url = json.decodeFromString<Dalle.ResponseData>(responseJson).data.first().url
 
             replyToMessageWithPhoto(url, messageId = replyMessage.messageId)
         } catch (e: Exception) {
-            log.error(e.message)
+            log.error { e.message }
             replyToMessage(Strings.BAD_REQUEST)
         }
     }
@@ -72,7 +72,7 @@ open class DallEVariations(ctx: MessageContext) : OpenAICommand(ctx) {
         return try {
             ctx.sender.downloadFile(Methods.getFile(photo.fileId).call(ctx.sender))
         } catch (e: TelegramApiException) {
-            log.error(e.message)
+            log.error { e.message }
             null
         }
     }
