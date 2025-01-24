@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.helltar"
-version = "0.9.50"
+version = "0.9.60"
 
 repositories {
     mavenCentral()
@@ -22,7 +22,8 @@ object Versions {
     const val POSTGRESQL = "42.7.3"
     const val COROUTINES_CORE_JVM = "1.8.1"
     const val KOTLINX_SERIALIZATION_JSON = "1.7.1"
-    const val LOGBACK_CLASSIC = "1.5.6"
+    const val LOGBACK_CLASSIC = "1.5.16"
+    const val KOTLIN_LOGGING = "7.0.3"
 }
 
 dependencies {
@@ -44,6 +45,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:${Versions.COROUTINES_CORE_JVM}")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION_JSON}")
 
+    implementation("io.github.oshai:kotlin-logging-jvm:${Versions.KOTLIN_LOGGING}")
     implementation("ch.qos.logback:logback-classic:${Versions.LOGBACK_CLASSIC}")
 }
 
