@@ -3,7 +3,7 @@
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <charset>UTF-8</charset>
-            <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) %gray(%logger{36}) %cyan([%thread]) %magenta(%M)-%gray([%line]) --> %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) %green(%logger{36}) %cyan([%thread]) %magenta(%M)-%green([%line]) --> %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -12,7 +12,7 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>data/logs/%d{YYYY.MM.dd}/log_%d{YYYY.MM.dd}.%i.log</fileNamePattern>
-            <maxFileSize>25MB</maxFileSize>
+            <maxFileSize>50MB</maxFileSize>
             <maxHistory>60</maxHistory>
             <totalSizeCap>5GB</totalSizeCap>
         </rollingPolicy>
