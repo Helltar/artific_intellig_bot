@@ -1,14 +1,11 @@
 package com.helltar.aibot.utils
 
 import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.core.FileDataPart
-import com.github.kittinunf.fuel.core.Method
-import com.github.kittinunf.fuel.core.Parameters
-import com.github.kittinunf.fuel.core.Request
+import com.github.kittinunf.fuel.core.*
 import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.httpPost
 
-object NetworkUtils {
+object Network {
 
     private const val TIMEOUT = 180000
 
@@ -16,17 +13,6 @@ object NetworkUtils {
         url.httpPost()
             .applyCommonSettings(headers)
             .jsonBody(jsonBody)
-            .response().second
-
-    fun post(url: String, headers: Map<String, String>, body: String) =
-        url.httpPost()
-            .applyCommonSettings(headers)
-            .body(body)
-            .response().second
-
-    fun upload(url: String, headers: Map<String, String>, parameters: Parameters) =
-        Fuel.upload(url, Method.POST, parameters)
-            .applyCommonSettings(headers)
             .response().second
 
     fun uploadWithFile(url: String, headers: Map<String, String>, parameters: Parameters, dataPart: FileDataPart) =
