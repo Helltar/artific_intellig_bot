@@ -42,8 +42,8 @@ import com.helltar.aibot.commands.admin.chat.*
 import com.helltar.aibot.commands.admin.slowmode.*
 import com.helltar.aibot.commands.admin.sudoers.*
 import com.helltar.aibot.commands.admin.system.*
-import com.helltar.aibot.commands.user.*
-import com.helltar.aibot.commands.user.audio.Transcriptions
+import com.helltar.aibot.commands.simple.*
+import com.helltar.aibot.commands.user.audio.Transcription
 import com.helltar.aibot.commands.user.chat.*
 import com.helltar.aibot.commands.user.images.*
 import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod
@@ -71,7 +71,7 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
         registerLongRunningCommand(CMD_GPT_VISION, ::Vision)
         registerLongRunningCommand(CMD_DALLE, ::DallEGenerations)
         registerLongRunningCommand(CMD_DALLE_VARIATIONS, ::DallEVariations)
-        registerLongRunningCommand(CMD_ASR, ::Transcriptions)
+        registerLongRunningCommand(CMD_ASR, ::Transcription)
 
         registerAdminCommand(CMD_ENABLE, { CommandsState(it) })
         registerAdminCommand(CMD_DISABLE, { CommandsState(it, true) })
