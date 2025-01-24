@@ -76,12 +76,10 @@ object Strings {
     const val SLOW_MODE_ON_UPDATE = "\uD83D\uDD04 Slow mode already on, update, <b>%d</b> requests per hour" // 🔄
     const val SLOW_MODE_OFF = "✅ Slow mode off"
     const val SLOW_MODE_OFF_NOT_ENABLED = "ℹ\uFE0F Slow mode not enabled for this user" // ℹ️
-    const val SLOW_MODE_BAD_ARG =
-        "\uD83E\uDD2D Bad args., example: <code>/$CMD_SLOW_MODE 123456789 2</code> (userid, limit), or if this is a reply: <code>/$CMD_SLOW_MODE 2</code>" // 🤭
+    const val SLOW_MODE_BAD_ARG = "\uD83E\uDD2D Bad args., example: <code>/$CMD_SLOW_MODE 123456789 2</code> (userid, limit), or if this is a reply: <code>/$CMD_SLOW_MODE 2</code>" // 🤭
     const val SLOW_MODE_USER_NOT_FOUND = "\uD83E\uDD37\u200D♂\uFE0F User with this ID is not in the database"
 
-    const val GLOBAL_SLOW_MODE_CURRENT_VALUE =
-        "ℹ\uFE0F The current value is <b>%d</b> requests per hour per user.\n\nTo change it, use the command <code>/$CMD_GLOBAL_SLOW_MODE 15</code>"
+    const val GLOBAL_SLOW_MODE_CURRENT_VALUE = "ℹ\uFE0F The current value is <b>%d</b> requests per hour per user.\n\nTo change it, use the command <code>/$CMD_GLOBAL_SLOW_MODE 15</code>"
     const val GLOBAL_SLOW_MODE_SUCCESFULLY_CHANGED = "✅ The value for global-slowmode has been successfully changed to <b>%d</b> requests per hour per user."
 
     const val UPDATE_PRIVACY_POLICY_EXAMPLE = "<code>/$CMD_UPDATE_PRIVACY_POLICY</code> text"
