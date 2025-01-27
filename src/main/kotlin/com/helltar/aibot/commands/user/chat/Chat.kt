@@ -83,6 +83,8 @@ class Chat(ctx: MessageContext) : OpenAICommand(ctx) {
         getBotReply()?.let { answer ->
             chatHistoryManager.addMessage(Chat.MessageData(Chat.CHAT_ROLE_ASSISTANT, answer))
 
+            log.debug { "answer: $answer" }
+
             if (!isVoiceOut) {
                 try {
                     replyToMessage(answer, messageId, markdown = true)
@@ -101,22 +103,21 @@ class Chat(ctx: MessageContext) : OpenAICommand(ctx) {
             chatHistoryManager.removeSecondMessage()
     }
 
-    private suspend fun getBotReply(): String? {
-        val response = sendPrompt(chatHistoryManager.userChatDialogHistory)
-        val responseJson = response.data.decodeToString()
+    private suspend fun getBotReply() =
+        try {
+            val response = sendPrompt(chatHistoryManager.userChatDialogHistory)
+            val responseJson = response.data.decodeToString()
 
-        return if (response.isSuccessful) {
-            try {
+            if (response.isSuccessful)
                 json.decodeFromString<Chat.ResponseData>(responseJson).choices.first().message.content
-            } catch (e: Exception) {
-                log.error { e.message }
+            else {
+                log.error { "$response" }
                 null
             }
-        } else {
-            log.error { "$response" }
+        } catch (e: Exception) {
+            log.error { e.message }
             null
         }
-    }
 
     private suspend fun sendPrompt(messages: List<Chat.MessageData>): Response {
         val url = "https://api.openai.com/v1/chat/completions"
