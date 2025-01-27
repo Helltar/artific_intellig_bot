@@ -7,3 +7,4 @@ deploy/
 test/
 
 data/logs
+data/*.txt
