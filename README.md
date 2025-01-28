@@ -35,9 +35,13 @@ Add it using the command in the bot:
 
 - `/updatekey sk-qwerty...`
 
+If you want to use DeepSeek for `/chat`, also add the key ([DeepSeek API Key](https://platform.deepseek.com/api_keys)) with the command:
+
+- `/updatekey deepseek.com sk-qwerty...`
+
 ### Commands
 
-- `/chat` - ChatGPT (gpt-4o)
+- `/chat` - ChatGPT (gpt-4o, deepseek-chat)
 - `/vision` - Describes images with GPT-4 Vision (gpt-4o)
 - `/dalle` - Creates an image given a prompt (dall-e-3)
 - `/dallevar` - Creates a variation of a given image (dall-e-2)
@@ -57,6 +61,15 @@ Hello, how are you? #voice
 ```
 
 ### Admin Commands
+
+#### DeepSeek
+
+- `/deepseekon`
+- `/deepseekoff`
+
+For example, if you enable it with the command `/deepseekon`, DeepSeek (deepseek-chat) will be used for **text** requests in the `/chat` command.
+When you turn it off with `/deepseekoff`, OpenAI (gpt-4o) will be used.
+By default, gpt-4o is used.
 
 #### Change Command State
 
