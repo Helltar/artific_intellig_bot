@@ -1,7 +1,8 @@
 package com.helltar.aibot.commands.admin.system
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.Config.PROVIDER_OPENAI_COM
+import com.helltar.aibot.Config.PROVIDER_DEEPSEEK
+import com.helltar.aibot.Config.PROVIDER_OPENAI
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
@@ -15,8 +16,24 @@ class UpdateApiKey(ctx: MessageContext) : BotCommand(ctx) {
             return
         }
 
-        val provider = PROVIDER_OPENAI_COM
-        val apiKey = argumentsString
+        var provider = PROVIDER_OPENAI
+        var apiKey = argumentsString
+
+        if (arguments.size > 1) {
+            provider =
+                arguments.first().takeIf { it == PROVIDER_DEEPSEEK }
+                    ?: run {
+                        replyToMessage(Strings.UPDATE_API_KEYS_COMMAND_EXAMPLE)
+                        return
+                    }
+
+            apiKey = arguments[1]
+        }
+
+        if (apiKey.trim().length < 16) {
+            replyToMessage(Strings.BAD_API_KEY_LENGTH)
+            return
+        }
 
         if (apiKeysDao.getKey(provider) != null) {
             if (apiKeysDao.update(provider, apiKey)) {

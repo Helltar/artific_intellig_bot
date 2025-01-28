@@ -7,10 +7,11 @@ object Config {
     const val LOADING_GIF_FILE_NAME = "loading.gif"
     const val DIR_FILES = "data/files"
 
-    const val PROVIDER_OPENAI_COM = "openai.com"
+    const val PROVIDER_OPENAI = "openai.com"
+    const val PROVIDER_DEEPSEEK = "deepseek.com"
 
     @Suppress("unused")
-    val apiKeyProviders = setOf(PROVIDER_OPENAI_COM)
+    val apiKeyProviders = setOf(PROVIDER_OPENAI, PROVIDER_DEEPSEEK)
 
     private const val CREATOR_ID_KEY = "CREATOR_ID"
     private const val BOT_TOKEN_KEY = "BOT_TOKEN"

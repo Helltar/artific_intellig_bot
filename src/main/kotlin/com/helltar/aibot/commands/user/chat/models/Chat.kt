@@ -4,13 +4,17 @@ import kotlinx.serialization.Serializable
 
 object Chat {
 
-    /* https://platform.openai.com/docs/api-reference/chat/create */
+    /*
+      https://platform.openai.com/docs/api-reference/chat/create
+      https://api-docs.deepseek.com/api/create-chat-completion
+    */
 
     const val CHAT_GPT_MODEL = "gpt-4o"
+    const val DEEPSEEK_MODEL = "deepseek-chat"
 
     const val CHAT_ROLE_USER = "user"
     const val CHAT_ROLE_ASSISTANT = "assistant"
-    const val CHAT_ROLE_DEVELOPER = "developer"
+    const val CHAT_ROLE_DEVELOPER = "system" // developer
 
     @Serializable
     data class RequestData(

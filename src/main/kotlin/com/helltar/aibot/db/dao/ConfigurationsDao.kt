@@ -15,6 +15,14 @@ class ConfigurationsDao {
         setConfiguration("global_slowmode_max_usage_count", newMax.toString())
     }
 
+    suspend fun isDeepSeekEnabled() = dbQuery {
+        getConfiguration("deepseek_enabled")?.toBoolean() == true
+    }
+
+    suspend fun setDeepSeekState(enable: Boolean) = dbQuery {
+        setConfiguration("deepseek_enabled", enable.toString())
+    }
+
     private suspend fun getConfiguration(key: String) = dbQuery {
         ConfigurationsTable
             .select(ConfigurationsTable.value)
@@ -22,13 +30,14 @@ class ConfigurationsDao {
             .singleOrNull()?.get(ConfigurationsTable.value)
     }
 
-    private suspend fun setConfiguration(key: String, value: String) = dbQuery {
+    private suspend fun setConfiguration(key: String, value: String) = dbQuery { // todo: insert update
         ConfigurationsTable.insertIgnore {
             it[this.key] = key
             it[this.value] = value
         }
 
-        ConfigurationsTable.update({ ConfigurationsTable.key eq key }) { it[this.value] = value }
+        ConfigurationsTable
+            .update({ ConfigurationsTable.key eq key }) { it[this.value] = value }
     }
 }
 

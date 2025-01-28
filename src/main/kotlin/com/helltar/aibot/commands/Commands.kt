@@ -35,6 +35,8 @@ object Commands {
     const val CMD_SLOW_MODE_OFF = "slowmodeoff"
     const val CMD_SLOW_MODE_LIST = "slowmodelist"
     const val CMD_GLOBAL_SLOW_MODE = "globalslowmode"
+    const val CMD_DEEP_SEEK_ON = "deepseekon"
+    const val CMD_DEEP_SEEK_OFF = "deepseekoff"
 
     const val CMD_UPDATE_API_KEY = "updatekey"
     const val CMD_UPDATE_PRIVACY_POLICY = "updateprivacy"

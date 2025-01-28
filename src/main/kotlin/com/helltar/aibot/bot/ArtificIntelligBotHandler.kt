@@ -22,6 +22,8 @@ import com.helltar.aibot.commands.Commands.CMD_CHATS_WHITE_LIST
 import com.helltar.aibot.commands.Commands.CMD_CHAT_CTX_REMOVE
 import com.helltar.aibot.commands.Commands.CMD_DALLE
 import com.helltar.aibot.commands.Commands.CMD_DALLE_VARIATIONS
+import com.helltar.aibot.commands.Commands.CMD_DEEP_SEEK_OFF
+import com.helltar.aibot.commands.Commands.CMD_DEEP_SEEK_ON
 import com.helltar.aibot.commands.Commands.CMD_DISABLE
 import com.helltar.aibot.commands.Commands.CMD_ENABLE
 import com.helltar.aibot.commands.Commands.CMD_GLOBAL_SLOW_MODE
@@ -37,15 +39,30 @@ import com.helltar.aibot.commands.Commands.CMD_START
 import com.helltar.aibot.commands.Commands.CMD_UNBAN_USER
 import com.helltar.aibot.commands.Commands.CMD_UPDATE_API_KEY
 import com.helltar.aibot.commands.Commands.CMD_UPDATE_PRIVACY_POLICY
-import com.helltar.aibot.commands.admin.ban.*
-import com.helltar.aibot.commands.admin.chat.*
-import com.helltar.aibot.commands.admin.slowmode.*
-import com.helltar.aibot.commands.admin.sudoers.*
+import com.helltar.aibot.commands.admin.ban.BanUser
+import com.helltar.aibot.commands.admin.ban.Banlist
+import com.helltar.aibot.commands.admin.ban.UnbanUser
+import com.helltar.aibot.commands.admin.chat.AddChat
+import com.helltar.aibot.commands.admin.chat.ChatsWhitelist
+import com.helltar.aibot.commands.admin.chat.RemoveChat
+import com.helltar.aibot.commands.admin.slowmode.Slowmode
+import com.helltar.aibot.commands.admin.slowmode.SlowmodeList
+import com.helltar.aibot.commands.admin.slowmode.SlowmodeOff
+import com.helltar.aibot.commands.admin.sudoers.AddAdmin
+import com.helltar.aibot.commands.admin.sudoers.AdminList
+import com.helltar.aibot.commands.admin.sudoers.RemoveAdmin
 import com.helltar.aibot.commands.admin.system.*
-import com.helltar.aibot.commands.simple.*
+import com.helltar.aibot.commands.simple.About
+import com.helltar.aibot.commands.simple.MyId
+import com.helltar.aibot.commands.simple.Privacy
+import com.helltar.aibot.commands.simple.Start
 import com.helltar.aibot.commands.user.audio.Transcription
-import com.helltar.aibot.commands.user.chat.*
-import com.helltar.aibot.commands.user.images.*
+import com.helltar.aibot.commands.user.chat.Chat
+import com.helltar.aibot.commands.user.chat.ChatCtx
+import com.helltar.aibot.commands.user.chat.ChatCtxRemove
+import com.helltar.aibot.commands.user.images.DallEGenerations
+import com.helltar.aibot.commands.user.images.DallEVariations
+import com.helltar.aibot.commands.user.images.Vision
 import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.EntityType
 import org.telegram.telegrambots.meta.api.objects.Update
@@ -64,8 +81,8 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
         registerSimpleCommand(CMD_MYID, ::MyId)
         registerSimpleCommand(CMD_ABOUT, ::About)
         registerSimpleCommand(CMD_PRIVACY, ::Privacy)
-        registerSimpleCommand(CMD_CHATCTX, ::ChatCtx, true)
-        registerSimpleCommand(CMD_CHAT_CTX_REMOVE, ::ChatCtxRemove, true)
+        registerSimpleCommand(CMD_CHATCTX, ::ChatCtx, checkRights = true)
+        registerSimpleCommand(CMD_CHAT_CTX_REMOVE, ::ChatCtxRemove, checkRights = true)
 
         registerLongRunningCommand(CMD_CHAT, ::Chat)
         registerLongRunningCommand(CMD_GPT_VISION, ::Vision)
@@ -73,8 +90,8 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
         registerLongRunningCommand(CMD_DALLE_VARIATIONS, ::DallEVariations)
         registerLongRunningCommand(CMD_ASR, ::Transcription)
 
-        registerAdminCommand(CMD_ENABLE, { CommandsState(it) })
-        registerAdminCommand(CMD_DISABLE, { CommandsState(it, true) })
+        registerAdminCommand(CMD_ENABLE, ::CommandState)
+        registerAdminCommand(CMD_DISABLE, { CommandState(it, true) })
         registerAdminCommand(CMD_BAN_LIST, ::Banlist)
         registerAdminCommand(CMD_BAN_USER, ::BanUser)
         registerAdminCommand(CMD_UNBAN_USER, ::UnbanUser)
@@ -82,15 +99,17 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
         registerAdminCommand(CMD_SLOW_MODE_OFF, ::SlowmodeOff)
         registerAdminCommand(CMD_SLOW_MODE_LIST, ::SlowmodeList)
         registerAdminCommand(CMD_RM_ADMIN, ::RemoveAdmin)
-        registerAdminCommand(CMD_ADMIN_LIST, ::AdminList, true)
-        registerAdminCommand(CMD_CHATS_WHITE_LIST, ::ChatsWhitelist, true)
         registerAdminCommand(CMD_RM_CHAT, ::RemoveChat)
+        registerAdminCommand(CMD_ADMIN_LIST, ::AdminList, privateChatOnly = true)
+        registerAdminCommand(CMD_CHATS_WHITE_LIST, ::ChatsWhitelist, privateChatOnly = true)
 
         registerCreatorCommand(CMD_ADD_ADMIN, ::AddAdmin)
         registerCreatorCommand(CMD_ADD_CHAT, ::AddChat)
         registerCreatorCommand(CMD_GLOBAL_SLOW_MODE, ::GlobalSlowmode)
-        registerCreatorCommand(CMD_UPDATE_API_KEY, ::UpdateApiKey, true)
-        registerCreatorCommand(CMD_UPDATE_PRIVACY_POLICY, ::UpdatePrivacyPolicy, true)
+        registerCreatorCommand(CMD_UPDATE_API_KEY, ::UpdateApiKey, privateChatOnly = true)
+        registerCreatorCommand(CMD_DEEP_SEEK_ON, { DeepSeekState(it, true) }, privateChatOnly = true)
+        registerCreatorCommand(CMD_DEEP_SEEK_OFF, ::DeepSeekState, privateChatOnly = true)
+        registerCreatorCommand(CMD_UPDATE_PRIVACY_POLICY, ::UpdatePrivacyPolicy, privateChatOnly = true)
     }
 
     override fun onUpdate(update: Update): BotApiMethod<*>? {
