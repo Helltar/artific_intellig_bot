@@ -6,7 +6,7 @@ import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.db.dao.commandsDao
 
-class CommandsState(ctx: MessageContext, private val disable: Boolean = false) : BotCommand(ctx) {
+class CommandState(ctx: MessageContext, private val disable: Boolean = false) : BotCommand(ctx) {
 
     private companion object {
         const val ENABLED_SYMBOL = "\uD83D\uDFE2"
