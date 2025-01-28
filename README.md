@@ -35,7 +35,7 @@ Add it using the command in the bot:
 
 - `/updatekey sk-qwerty...`
 
-If you want to use DeepSeek for `/chat`, also add the key ([DeepSeek API Key](https://platform.deepseek.com/api_keys)) with the command:
+If you want to use **DeepSeek** for `/chat`, also add the key [DeepSeek API Key](https://platform.deepseek.com/api_keys) with the command:
 
 - `/updatekey deepseek.com sk-qwerty...`
 
@@ -64,12 +64,10 @@ Hello, how are you? #voice
 
 #### DeepSeek
 
-- `/deepseekon`
-- `/deepseekoff`
+- `/deepseekon` (DeepSeek **deepseek-chat** will be used for **text** requests in the `/chat` command)
+- `/deepseekoff` (OpenAI **gpt-4o** will be used)
 
-For example, if you enable it with the command `/deepseekon`, DeepSeek (deepseek-chat) will be used for **text** requests in the `/chat` command.
-When you turn it off with `/deepseekoff`, OpenAI (gpt-4o) will be used.
-By default, gpt-4o is used.
+By default, **gpt-4o** is used.
 
 #### Change Command State
 
