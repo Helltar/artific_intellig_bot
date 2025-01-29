@@ -8,11 +8,11 @@ import com.helltar.aibot.Strings.localizedString
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.OpenAICommand
 import com.helltar.aibot.commands.user.chat.models.Chat
-import com.helltar.aibot.commands.user.chat.models.Chat.CHAT_GPT_MODEL
-import com.helltar.aibot.commands.user.chat.models.Chat.DEEPSEEK_CHAT_API_URL
+import com.helltar.aibot.commands.user.chat.models.Chat.CHAT_API_URL
+import com.helltar.aibot.commands.user.chat.models.Chat.DEEPSEEK_API_URL
 import com.helltar.aibot.commands.user.chat.models.Chat.DEEPSEEK_MODEL
-import com.helltar.aibot.commands.user.chat.models.Chat.OPENAI_CHAT_API_URL
-import com.helltar.aibot.commands.user.chat.models.Chat.OPENAI_TTS_API_URL
+import com.helltar.aibot.commands.user.chat.models.Chat.GPT_MODEL
+import com.helltar.aibot.commands.user.chat.models.Chat.TTS_API_URL
 import com.helltar.aibot.db.dao.configurationsDao
 import com.helltar.aibot.utils.Network.postAsByteArray
 import com.helltar.aibot.utils.Network.postAsString
@@ -80,11 +80,11 @@ class Chat(ctx: MessageContext) : OpenAICommand(ctx) {
         if (chatHistoryManager.userChatDialogHistory.isEmpty()) {
             val systemPromt = localizedString(Strings.CHAT_GPT_SYSTEM_MESSAGE, userLanguageCode)
             val systemPromtContent = systemPromt.format(chatTitle, username, userId)
-            val systemPromtData = Chat.MessageData(Chat.CHAT_ROLE_DEVELOPER, systemPromtContent)
+            val systemPromtData = Chat.MessageData(Chat.ROLE_DEVELOPER, systemPromtContent)
             chatHistoryManager.addMessage(systemPromtData)
         }
 
-        chatHistoryManager.addMessage(Chat.MessageData(Chat.CHAT_ROLE_USER, text))
+        chatHistoryManager.addMessage(Chat.MessageData(Chat.ROLE_USER, text))
 
         ensureDialogLengthWithinLimit()
 
@@ -96,7 +96,7 @@ class Chat(ctx: MessageContext) : OpenAICommand(ctx) {
             return
         }
 
-        chatHistoryManager.addMessage(Chat.MessageData(Chat.CHAT_ROLE_ASSISTANT, answer))
+        chatHistoryManager.addMessage(Chat.MessageData(Chat.ROLE_ASSISTANT, answer))
 
         log.debug { "answer: $answer" }
 
@@ -133,9 +133,9 @@ class Chat(ctx: MessageContext) : OpenAICommand(ctx) {
 
     private suspend fun sendPrompt(messages: List<Chat.MessageData>): String {
         val (url, model, provider) = if (!configurationsDao.isDeepSeekEnabled())
-            Triple(OPENAI_CHAT_API_URL, CHAT_GPT_MODEL, PROVIDER_OPENAI)
+            Triple(CHAT_API_URL, GPT_MODEL, PROVIDER_OPENAI)
         else
-            Triple(DEEPSEEK_CHAT_API_URL, DEEPSEEK_MODEL, PROVIDER_DEEPSEEK)
+            Triple(DEEPSEEK_API_URL, DEEPSEEK_MODEL, PROVIDER_DEEPSEEK)
 
         log.debug { "$url $messages" }
 
@@ -145,6 +145,6 @@ class Chat(ctx: MessageContext) : OpenAICommand(ctx) {
 
     private suspend fun textToSpeech(input: String): ByteArray {
         val body = json.encodeToString(Chat.SpeechRequestData(input = input))
-        return postAsByteArray(OPENAI_TTS_API_URL, createOpenAIHeaders(), body)
+        return postAsByteArray(TTS_API_URL, createOpenAIHeaders(), body)
     }
 }

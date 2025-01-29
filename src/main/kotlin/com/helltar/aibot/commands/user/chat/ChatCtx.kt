@@ -50,7 +50,7 @@ class ChatCtx(ctx: MessageContext) : BotCommand(ctx) {
     private fun formatUserChatHistory(userChatHistory: List<Chat.MessageData>) =
         if (userChatHistory.isNotEmpty()) {
             userChatHistory
-                .filter { it.role == Chat.CHAT_ROLE_USER }
+                .filter { it.role == Chat.ROLE_USER }
                 .joinToString("\n") { "- ${it.content}" }
         } else
             Strings.CHAT_CONTEXT_EMPTY

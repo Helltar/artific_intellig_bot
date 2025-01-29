@@ -9,20 +9,20 @@ object Chat {
       https://api-docs.deepseek.com/api/create-chat-completion
     */
 
-    const val OPENAI_CHAT_API_URL = "https://api.openai.com/v1/chat/completions"
-    const val OPENAI_TTS_API_URL = "https://api.openai.com/v1/audio/speech"
-    const val DEEPSEEK_CHAT_API_URL = "https://api.deepseek.com/chat/completions"
+    const val CHAT_API_URL = "https://api.openai.com/v1/chat/completions"
+    const val TTS_API_URL = "https://api.openai.com/v1/audio/speech"
+    const val DEEPSEEK_API_URL = "https://api.deepseek.com/chat/completions"
 
-    const val CHAT_GPT_MODEL = "gpt-4o"
+    const val GPT_MODEL = "gpt-4o"
     const val DEEPSEEK_MODEL = "deepseek-chat"
 
-    const val CHAT_ROLE_USER = "user"
-    const val CHAT_ROLE_ASSISTANT = "assistant"
-    const val CHAT_ROLE_DEVELOPER = "system" // developer
+    const val ROLE_USER = "user"
+    const val ROLE_ASSISTANT = "assistant"
+    const val ROLE_DEVELOPER = "system" // developer
 
     @Serializable
     data class RequestData(
-        val model: String = CHAT_GPT_MODEL,
+        val model: String = GPT_MODEL,
         val messages: List<MessageData>
     )
 

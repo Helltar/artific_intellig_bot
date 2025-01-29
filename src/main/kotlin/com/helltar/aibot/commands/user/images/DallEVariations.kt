@@ -7,8 +7,8 @@ import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.OpenAICommand
 import com.helltar.aibot.commands.user.images.models.Dalle
-import com.helltar.aibot.commands.user.images.models.Dalle.DALLE_VARIATIONS_API_URL
-import com.helltar.aibot.commands.user.images.models.Dalle.DALLE_VARIATIONS_FILEDATAPART_NAME
+import com.helltar.aibot.commands.user.images.models.Dalle.VARIATIONS_API_URL
+import com.helltar.aibot.commands.user.images.models.Dalle.VARIATIONS_FILEDATAPART_NAME
 import com.helltar.aibot.commands.user.images.models.Dalle.dalleVariationsParams
 import com.helltar.aibot.utils.Network.uploadWithFile
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -97,9 +97,9 @@ open class DallEVariations(ctx: MessageContext) : OpenAICommand(ctx) {
     }
 
     private suspend fun uploadImage(imageData: ByteArrayOutputStream): String {
-        val url = DALLE_VARIATIONS_API_URL
+        val url = VARIATIONS_API_URL
         val parameters = dalleVariationsParams
         val file = File.createTempFile("tmp", ".$IMAGE_FORMAT").apply { writeBytes(imageData.toByteArray()) } // todo: temp file
-        return uploadWithFile(url, createAuthHeader(), parameters, FileDataPart(file, DALLE_VARIATIONS_FILEDATAPART_NAME))
+        return uploadWithFile(url, createAuthHeader(), parameters, FileDataPart(file, VARIATIONS_FILEDATAPART_NAME))
     }
 }

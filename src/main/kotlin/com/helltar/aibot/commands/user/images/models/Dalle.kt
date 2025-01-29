@@ -6,22 +6,22 @@ object Dalle {
 
     /* https://platform.openai.com/docs/api-reference/images/createVariation */
 
-    const val DALLE_VARIATIONS_API_URL = "https://api.openai.com/v1/images/variations"
-    const val DALLE_VARIATIONS_FILEDATAPART_NAME = "image"
+    const val VARIATIONS_API_URL = "https://api.openai.com/v1/images/variations"
+    const val VARIATIONS_FILEDATAPART_NAME = "image"
     val dalleVariationsParams = listOf("n" to "1", "size" to "256x256")
 
     /* https://platform.openai.com/docs/api-reference/images */
 
-    const val DALLE_GENERATIONS_API_URL = "https://api.openai.com/v1/images/generations"
-    const val DALLE_GENERATIONS_MODEL = "dall-e-3"
-    const val DALLE_GENERATIONS_IMAGE_SIZE = "1024x1024"
+    const val GENERATIONS_API_URL = "https://api.openai.com/v1/images/generations"
+    const val GENERATIONS_MODEL = "dall-e-3"
+    const val GENERATIONS_IMAGE_SIZE = "1024x1024"
 
     @Serializable
     data class RequestData(
-        val model: String = DALLE_GENERATIONS_MODEL,
+        val model: String = GENERATIONS_MODEL,
         val prompt: String,
         val n: Int = 1,
-        val size: String = DALLE_GENERATIONS_IMAGE_SIZE
+        val size: String = GENERATIONS_IMAGE_SIZE
     )
 
     @Serializable

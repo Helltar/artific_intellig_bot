@@ -3,7 +3,7 @@ package com.helltar.aibot.commands.user.images
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.commands.user.chat.models.Chat.OPENAI_CHAT_API_URL
+import com.helltar.aibot.commands.user.chat.models.Chat.CHAT_API_URL
 import com.helltar.aibot.commands.user.images.models.Dalle
 import com.helltar.aibot.commands.user.images.models.Vision
 import com.helltar.aibot.utils.Network.postAsString
@@ -54,6 +54,6 @@ class Vision(ctx: MessageContext) : DallEVariations(ctx) {
         val contentTextData = Vision.ContentData(Vision.MESSAGE_CONTENT_TYPE_TEXT, text)
         val contentImageData = Vision.ContentData(Vision.MESSAGE_CONTENT_TYPE_IMAGE, image_url = imageData)
         val requestData = Vision.RequestData(messages = listOf(Vision.MessageData(content = listOf(contentTextData, contentImageData))))
-        return postAsString(OPENAI_CHAT_API_URL, createOpenAIHeaders(), json.encodeToString(requestData))
+        return postAsString(CHAT_API_URL, createOpenAIHeaders(), json.encodeToString(requestData))
     }
 }
