@@ -1,8 +1,6 @@
 package com.helltar.aibot.commands.user.chat
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.github.kittinunf.fuel.core.Response
-import com.github.kittinunf.fuel.core.isSuccessful
 import com.helltar.aibot.Config.PROVIDER_DEEPSEEK
 import com.helltar.aibot.Config.PROVIDER_OPENAI
 import com.helltar.aibot.Strings
@@ -11,9 +9,13 @@ import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.OpenAICommand
 import com.helltar.aibot.commands.user.chat.models.Chat
 import com.helltar.aibot.commands.user.chat.models.Chat.CHAT_GPT_MODEL
+import com.helltar.aibot.commands.user.chat.models.Chat.DEEPSEEK_CHAT_API_URL
 import com.helltar.aibot.commands.user.chat.models.Chat.DEEPSEEK_MODEL
+import com.helltar.aibot.commands.user.chat.models.Chat.OPENAI_CHAT_API_URL
+import com.helltar.aibot.commands.user.chat.models.Chat.OPENAI_TTS_API_URL
 import com.helltar.aibot.db.dao.configurationsDao
-import com.helltar.aibot.utils.Network.postJson
+import com.helltar.aibot.utils.Network.postAsByteArray
+import com.helltar.aibot.utils.Network.postAsString
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.encodeToString
 import java.io.ByteArrayInputStream
@@ -77,7 +79,8 @@ class Chat(ctx: MessageContext) : OpenAICommand(ctx) {
 
         if (chatHistoryManager.userChatDialogHistory.isEmpty()) {
             val systemPromt = localizedString(Strings.CHAT_GPT_SYSTEM_MESSAGE, userLanguageCode)
-            val systemPromtData = Chat.MessageData(Chat.CHAT_ROLE_DEVELOPER, systemPromt.format(chatTitle, username, userId))
+            val systemPromtContent = systemPromt.format(chatTitle, username, userId)
+            val systemPromtData = Chat.MessageData(Chat.CHAT_ROLE_DEVELOPER, systemPromtContent)
             chatHistoryManager.addMessage(systemPromtData)
         }
 
@@ -124,31 +127,24 @@ class Chat(ctx: MessageContext) : OpenAICommand(ctx) {
     }
 
     private suspend fun getBotReply(): String {
-        val response = sendPrompt(chatHistoryManager.userChatDialogHistory)
-        val responseJson = response.data.decodeToString()
-
-        if (response.isSuccessful)
-            return json.decodeFromString<Chat.ResponseData>(responseJson).choices.first().message.content
-        else
-            throw Exception("$response")
+        val responseJson = sendPrompt(chatHistoryManager.userChatDialogHistory)
+        return json.decodeFromString<Chat.ResponseData>(responseJson).choices.first().message.content
     }
 
-    private suspend fun sendPrompt(messages: List<Chat.MessageData>): Response {
-        val (url, model, provider) =
-            if (!configurationsDao.isDeepSeekEnabled())
-                Triple("https://api.openai.com/v1/chat/completions", CHAT_GPT_MODEL, PROVIDER_OPENAI)
-            else
-                Triple("https://api.deepseek.com/chat/completions", DEEPSEEK_MODEL, PROVIDER_DEEPSEEK)
+    private suspend fun sendPrompt(messages: List<Chat.MessageData>): String {
+        val (url, model, provider) = if (!configurationsDao.isDeepSeekEnabled())
+            Triple(OPENAI_CHAT_API_URL, CHAT_GPT_MODEL, PROVIDER_OPENAI)
+        else
+            Triple(DEEPSEEK_CHAT_API_URL, DEEPSEEK_MODEL, PROVIDER_DEEPSEEK)
 
         log.debug { "$url $messages" }
 
         val body = json.encodeToString(Chat.RequestData(model, messages))
-        return postJson(url, createOpenAIHeaders(provider), body)
+        return postAsString(url, createOpenAIHeaders(provider), body)
     }
 
     private suspend fun textToSpeech(input: String): ByteArray {
-        val url = "https://api.openai.com/v1/audio/speech"
         val body = json.encodeToString(Chat.SpeechRequestData(input = input))
-        return postJson(url, createOpenAIHeaders(), body).data
+        return postAsByteArray(OPENAI_TTS_API_URL, createOpenAIHeaders(), body)
     }
 }

@@ -77,7 +77,7 @@ abstract class BotCommand(val ctx: MessageContext) : Command {
     protected suspend fun getApiKey(provider: String) =
         apiKeysDao.getKey(provider)
 
-    protected fun replyToMessageWithPhoto(url: String, caption: String = "", messageId: Int = message.messageId): Message =
+    protected fun replyToMessageWithPhoto(url: String, caption: String = "", messageId: Int? = message.messageId): Message =
         ctx.replyToMessageWithPhoto()
             .setFile(InputFile(url))
             .setCaption(caption)

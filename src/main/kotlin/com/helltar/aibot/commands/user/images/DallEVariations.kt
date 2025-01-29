@@ -7,11 +7,11 @@ import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.OpenAICommand
 import com.helltar.aibot.commands.user.images.models.Dalle
-import com.helltar.aibot.commands.user.images.models.Dalle.DALLE_VARIATIONS_IMAGE_SIZE
+import com.helltar.aibot.commands.user.images.models.Dalle.DALLE_VARIATIONS_API_URL
+import com.helltar.aibot.commands.user.images.models.Dalle.DALLE_VARIATIONS_FILEDATAPART_NAME
+import com.helltar.aibot.commands.user.images.models.Dalle.dalleVariationsParams
 import com.helltar.aibot.utils.Network.uploadWithFile
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import java.awt.Image
 import java.awt.RenderingHints
@@ -20,9 +20,12 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.imageio.ImageIO
 
-private val log = KotlinLogging.logger {}
-
 open class DallEVariations(ctx: MessageContext) : OpenAICommand(ctx) {
+
+    private companion object {
+        const val IMAGE_FORMAT = "png"
+        val log = KotlinLogging.logger {}
+    }
 
     override suspend fun run() {
         if (isNotReply) {
@@ -30,28 +33,25 @@ open class DallEVariations(ctx: MessageContext) : OpenAICommand(ctx) {
             return
         }
 
-        if (!replyMessage!!.hasPhoto()) {
+        if (replyMessage?.hasPhoto() == false) {
             replyToMessage(Strings.NO_PHOTO_IN_MESSAGE)
             return
         }
 
-        val photo = downloadPhotoIfValid() ?: return
-        val squarePngImage = ByteArrayOutputStream()
+        val photoFile = downloadPhotoOrReplyIfInvalid() ?: return
 
         try {
-            withContext(Dispatchers.IO) {
-                val originalImage = ImageIO.read(photo)
-                val resizedImage = resizeImage(originalImage)
-                ImageIO.write(resizedImage, "png", squarePngImage)
+            val originalImage = ImageIO.read(photoFile)
+            val resizedImage = resizeImage(originalImage)
+
+            ByteArrayOutputStream().use { outputStream ->
+                ImageIO.write(resizedImage, IMAGE_FORMAT, outputStream)
+
+                val responseJson = uploadImage(outputStream).also { log.debug { it } }
+                val imageUrl = json.decodeFromString<Dalle.ResponseData>(responseJson).data.first().url
+
+                replyToMessageWithPhoto(imageUrl, messageId = replyMessage?.messageId)
             }
-
-            val responseJson = uploadImage(squarePngImage)
-
-            log.debug { responseJson }
-
-            val url = json.decodeFromString<Dalle.ResponseData>(responseJson).data.first().url
-
-            replyToMessageWithPhoto(url, messageId = replyMessage.messageId)
         } catch (e: Exception) {
             log.error { e.message }
             replyToMessage(Strings.BAD_REQUEST)
@@ -61,19 +61,21 @@ open class DallEVariations(ctx: MessageContext) : OpenAICommand(ctx) {
     override fun getCommandName() =
         Commands.CMD_DALLE_VARIATIONS
 
-    protected fun downloadPhotoIfValid(): File? {
-        val photo = replyMessage!!.photo.last()
+    protected fun downloadPhotoOrReplyIfInvalid(): File? {
+        val photo = replyMessage?.photo?.maxByOrNull { it.fileSize }
 
-        if (photo.fileSize > 1024 * 1024) {
-            replyToMessage(Strings.IMAGE_MUST_BE_LESS_THAN.format("1MB"))
-            return null
-        }
-
-        return try {
-            ctx.sender.downloadFile(Methods.getFile(photo.fileId).call(ctx.sender))
-        } catch (e: TelegramApiException) {
-            log.error { e.message }
-            null
+        return photo?.let {
+            if (it.fileSize <= 1024 * 1024) {
+                try {
+                    ctx.sender.downloadFile(Methods.getFile(it.fileId).call(ctx.sender))
+                } catch (e: TelegramApiException) {
+                    log.error { e.message }
+                    null
+                }
+            } else {
+                replyToMessage(Strings.IMAGE_MUST_BE_LESS_THAN.format("1.MB"))
+                null
+            }
         }
     }
 
@@ -81,32 +83,23 @@ open class DallEVariations(ctx: MessageContext) : OpenAICommand(ctx) {
         val targetWidth = 512
         val targetHeight = 512
 
-        val resizedImage = BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB)
+        val scaledImage = BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB)
 
-        resizedImage.createGraphics().apply {
+        scaledImage.createGraphics().apply {
             setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
             setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
             setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
-
             drawImage(image.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH), 0, 0, targetWidth, targetHeight, null)
-
             dispose()
         }
 
-        return resizedImage
+        return scaledImage
     }
 
-    /*  https://platform.openai.com/docs/api-reference/images/createVariation */
-
-    private suspend fun uploadImage(byteArrayStream: ByteArrayOutputStream): String {
-        val url = "https://api.openai.com/v1/images/variations"
-        val parameters = listOf("n" to "1", "size" to DALLE_VARIATIONS_IMAGE_SIZE)
-
-        val file = // todo: tempFile
-            withContext(Dispatchers.IO) { File.createTempFile("tmp", ".png") }.apply {
-                writeBytes(byteArrayStream.toByteArray())
-            }
-
-        return uploadWithFile(url, createAuthHeader(), parameters, FileDataPart(file, "image")).data.decodeToString()
+    private suspend fun uploadImage(imageData: ByteArrayOutputStream): String {
+        val url = DALLE_VARIATIONS_API_URL
+        val parameters = dalleVariationsParams
+        val file = File.createTempFile("tmp", ".$IMAGE_FORMAT").apply { writeBytes(imageData.toByteArray()) } // todo: temp file
+        return uploadWithFile(url, createAuthHeader(), parameters, FileDataPart(file, DALLE_VARIATIONS_FILEDATAPART_NAME))
     }
 }

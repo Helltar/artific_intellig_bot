@@ -5,7 +5,8 @@ import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.OpenAICommand
 import com.helltar.aibot.commands.user.images.models.Dalle
-import com.helltar.aibot.utils.Network.postJson
+import com.helltar.aibot.commands.user.images.models.Dalle.DALLE_GENERATIONS_API_URL
+import com.helltar.aibot.utils.Network.postAsString
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.serialization.encodeToString
 
@@ -25,13 +26,12 @@ class DallEGenerations(ctx: MessageContext) : OpenAICommand(ctx) {
         }
 
         try {
-            val responseJson = sendPrompt(argumentsString)
-            log.debug { responseJson }
-            val url = json.decodeFromString<Dalle.ResponseData>(responseJson).data.first().url
-            replyToMessageWithPhoto(url, argumentsString)
+            val responseJson = sendPrompt(argumentsString).also { log.debug { it } }
+            val imageUrl = json.decodeFromString<Dalle.ResponseData>(responseJson).data.first().url
+            replyToMessageWithPhoto(imageUrl, argumentsString)
         } catch (e: Exception) {
-            replyToMessage(Strings.CHAT_EXCEPTION)
             log.error { e.message }
+            replyToMessage(Strings.CHAT_EXCEPTION)
         }
     }
 
@@ -39,8 +39,7 @@ class DallEGenerations(ctx: MessageContext) : OpenAICommand(ctx) {
         Commands.CMD_DALLE
 
     private suspend fun sendPrompt(prompt: String): String {
-        val url = "https://api.openai.com/v1/images/generations"
         val body = json.encodeToString(Dalle.RequestData(prompt = prompt))
-        return postJson(url, createOpenAIHeaders(), body).data.decodeToString()
+        return postAsString(DALLE_GENERATIONS_API_URL, createOpenAIHeaders(), body)
     }
 }
