@@ -1,10 +1,10 @@
 package com.helltar.aibot.commands.admin.ban
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.Strings
-import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.db.dao.banlistDao
+import com.helltar.aibot.commands.base.BotCommand
+import com.helltar.aibot.config.Strings
+import com.helltar.aibot.database.dao.banlistDao
 
 class Banlist(ctx: MessageContext) : BotCommand(ctx) {
 
@@ -20,5 +20,5 @@ class Banlist(ctx: MessageContext) : BotCommand(ctx) {
     }
 
     override fun getCommandName() =
-        Commands.CMD_BAN_LIST
+        Commands.Admin.CMD_BAN_LIST
 }

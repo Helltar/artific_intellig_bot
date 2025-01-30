@@ -1,9 +1,9 @@
 package com.helltar.aibot.commands.user.chat
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.Strings
-import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
+import com.helltar.aibot.commands.base.BotCommand
+import com.helltar.aibot.config.Strings
 
 class ChatCtxRemove(ctx: MessageContext) : BotCommand(ctx) {
 
@@ -39,5 +39,5 @@ class ChatCtxRemove(ctx: MessageContext) : BotCommand(ctx) {
     }
 
     override fun getCommandName() =
-        Commands.CMD_CHAT_CTX_REMOVE
+        Commands.User.CMD_CHAT_CTX_REMOVE
 }

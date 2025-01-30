@@ -1,12 +1,12 @@
 package com.helltar.aibot.commands.admin.system
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.Config.PROVIDER_DEEPSEEK
-import com.helltar.aibot.Config.PROVIDER_OPENAI
-import com.helltar.aibot.Strings
-import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.db.dao.apiKeysDao
+import com.helltar.aibot.commands.base.BotCommand
+import com.helltar.aibot.config.Config.API_KEY_PROVIDER_DEEPSEEK
+import com.helltar.aibot.config.Config.API_KEY_PROVIDER_OPENAI
+import com.helltar.aibot.config.Strings
+import com.helltar.aibot.database.dao.apiKeyDao
 
 class UpdateApiKey(ctx: MessageContext) : BotCommand(ctx) {
 
@@ -16,12 +16,12 @@ class UpdateApiKey(ctx: MessageContext) : BotCommand(ctx) {
             return
         }
 
-        var provider = PROVIDER_OPENAI
+        var provider = API_KEY_PROVIDER_OPENAI
         var apiKey = argumentsString
 
         if (arguments.size > 1) {
             provider =
-                arguments.first().takeIf { it == PROVIDER_DEEPSEEK }
+                arguments.first().takeIf { it == API_KEY_PROVIDER_DEEPSEEK }
                     ?: run {
                         replyToMessage(Strings.UPDATE_API_KEYS_COMMAND_EXAMPLE)
                         return
@@ -35,13 +35,13 @@ class UpdateApiKey(ctx: MessageContext) : BotCommand(ctx) {
             return
         }
 
-        if (apiKeysDao.getKey(provider) != null) {
-            if (apiKeysDao.update(provider, apiKey)) {
+        if (apiKeyDao.getKey(provider) != null) {
+            if (apiKeyDao.update(provider, apiKey)) {
                 replyToMessage(Strings.PROVIDER_API_KEY_SUCCESS_UPDATE.format(provider))
             } else
                 replyToMessage(Strings.API_KEY_FAIL_UPDATE.format("$provider $apiKey"))
         } else {
-            if (apiKeysDao.add(provider, apiKey))
+            if (apiKeyDao.add(provider, apiKey))
                 replyToMessage(Strings.PROVIDER_API_KEY_SUCCESS_ADD.format(provider))
             else
                 replyToMessage(Strings.API_KEY_FAIL_ADD.format("$provider $apiKey"))
@@ -49,5 +49,5 @@ class UpdateApiKey(ctx: MessageContext) : BotCommand(ctx) {
     }
 
     override fun getCommandName() =
-        Commands.CMD_UPDATE_API_KEY
+        Commands.Creator.CMD_UPDATE_API_KEY
 }

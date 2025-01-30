@@ -1,17 +1,17 @@
 package com.helltar.aibot.commands.admin.system
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.Config.PROVIDER_DEEPSEEK
-import com.helltar.aibot.Strings
-import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.db.dao.apiKeysDao
-import com.helltar.aibot.db.dao.configurationsDao
+import com.helltar.aibot.commands.base.BotCommand
+import com.helltar.aibot.config.Config.API_KEY_PROVIDER_DEEPSEEK
+import com.helltar.aibot.config.Strings
+import com.helltar.aibot.database.dao.apiKeyDao
+import com.helltar.aibot.database.dao.configurationsDao
 
 class DeepSeekState(ctx: MessageContext, private val enable: Boolean = false) : BotCommand(ctx) {
 
     override suspend fun run() {
-        apiKeysDao.getKey(PROVIDER_DEEPSEEK)?.let {
+        apiKeyDao.getKey(API_KEY_PROVIDER_DEEPSEEK)?.let {
             configurationsDao.setDeepSeekState(enable)
             replyToMessage(if (enable) Strings.DEEPSEEK_ENABLED else Strings.DEEPSEEK_DISABLED)
         }
@@ -19,5 +19,8 @@ class DeepSeekState(ctx: MessageContext, private val enable: Boolean = false) : 
     }
 
     override fun getCommandName() =
-        if (enable) Commands.CMD_DEEP_SEEK_ON else Commands.CMD_DEEP_SEEK_OFF
+        if (enable)
+            Commands.Creator.CMD_DEEP_SEEK_ON
+        else
+            Commands.Creator.CMD_DEEP_SEEK_OFF
 }

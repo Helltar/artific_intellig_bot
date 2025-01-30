@@ -1,8 +1,8 @@
 package com.helltar.aibot.commands.simple
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
+import com.helltar.aibot.commands.base.BotCommand
 
 class About(ctx: MessageContext) : BotCommand(ctx) {
 
@@ -18,5 +18,5 @@ class About(ctx: MessageContext) : BotCommand(ctx) {
     }
 
     override fun getCommandName() =
-        Commands.CMD_ABOUT
+        Commands.Simple.CMD_ABOUT
 }

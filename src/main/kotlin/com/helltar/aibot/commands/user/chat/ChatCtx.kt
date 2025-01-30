@@ -1,10 +1,11 @@
 package com.helltar.aibot.commands.user.chat
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.Strings
-import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.commands.user.chat.models.Chat
+import com.helltar.aibot.commands.base.BotCommand
+import com.helltar.aibot.config.Strings
+import com.helltar.aibot.openai.api.ApiConfig.CHAT_ROLE_USER
+import com.helltar.aibot.openai.api.models.common.MessageData
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val log = KotlinLogging.logger {}
@@ -33,7 +34,7 @@ class ChatCtx(ctx: MessageContext) : BotCommand(ctx) {
     }
 
     override fun getCommandName() =
-        Commands.CMD_CHATCTX
+        Commands.User.CMD_CHATCTX
 
     private suspend fun getUserId() =
         if (!isReply)
@@ -47,10 +48,10 @@ class ChatCtx(ctx: MessageContext) : BotCommand(ctx) {
             }
         }
 
-    private fun formatUserChatHistory(userChatHistory: List<Chat.MessageData>) =
+    private fun formatUserChatHistory(userChatHistory: List<MessageData>) =
         if (userChatHistory.isNotEmpty()) {
             userChatHistory
-                .filter { it.role == Chat.ROLE_USER }
+                .filter { it.role == CHAT_ROLE_USER }
                 .joinToString("\n") { "- ${it.content}" }
         } else
             Strings.CHAT_CONTEXT_EMPTY

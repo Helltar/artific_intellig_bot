@@ -1,10 +1,10 @@
 package com.helltar.aibot.commands.admin.system
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.Strings
-import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.db.dao.configurationsDao
+import com.helltar.aibot.commands.base.BotCommand
+import com.helltar.aibot.config.Strings
+import com.helltar.aibot.database.dao.configurationsDao
 
 class GlobalSlowmode(ctx: MessageContext) : BotCommand(ctx) {
 
@@ -22,5 +22,5 @@ class GlobalSlowmode(ctx: MessageContext) : BotCommand(ctx) {
     }
 
     override fun getCommandName() =
-        Commands.CMD_GLOBAL_SLOW_MODE
+        Commands.Creator.CMD_GLOBAL_SLOW_MODE
 }

@@ -1,10 +1,10 @@
 package com.helltar.aibot.commands.admin.chat
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.Strings
-import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.db.dao.chatWhitelistDao
+import com.helltar.aibot.commands.base.BotCommand
+import com.helltar.aibot.config.Strings
+import com.helltar.aibot.database.dao.chatWhitelistDao
 
 class RemoveChat(ctx: MessageContext) : BotCommand(ctx) {
 
@@ -22,5 +22,5 @@ class RemoveChat(ctx: MessageContext) : BotCommand(ctx) {
     }
 
     override fun getCommandName() =
-        Commands.CMD_RM_CHAT
+        Commands.Admin.CMD_RM_CHAT
 }

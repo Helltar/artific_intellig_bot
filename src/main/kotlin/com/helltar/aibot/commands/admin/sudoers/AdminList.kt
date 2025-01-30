@@ -1,11 +1,11 @@
 package com.helltar.aibot.commands.admin.sudoers
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.Strings
-import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.db.dao.sudoersDao
-import com.helltar.aibot.db.models.SudoersData
+import com.helltar.aibot.commands.base.BotCommand
+import com.helltar.aibot.config.Strings
+import com.helltar.aibot.database.dao.sudoersDao
+import com.helltar.aibot.database.models.SudoersData
 
 class AdminList(ctx: MessageContext) : BotCommand(ctx) {
 
@@ -15,7 +15,7 @@ class AdminList(ctx: MessageContext) : BotCommand(ctx) {
     }
 
     override fun getCommandName() =
-        Commands.CMD_ADMIN_LIST
+        Commands.Admin.CMD_ADMIN_LIST
 
     private fun getFormattedSudoersList(sudoers: List<SudoersData>) =
         sudoers.joinToString("\n") { sudoer -> formatSudoer(sudoer) }

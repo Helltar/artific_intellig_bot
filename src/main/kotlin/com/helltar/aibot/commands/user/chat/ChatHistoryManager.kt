@@ -1,19 +1,19 @@
 package com.helltar.aibot.commands.user.chat
 
-import com.helltar.aibot.commands.user.chat.models.Chat
+import com.helltar.aibot.openai.api.models.common.MessageData
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
 class ChatHistoryManager(private val userId: Long) {
 
     private companion object {
-        val userChatContextMap = ConcurrentHashMap<Long, CopyOnWriteArrayList<Chat.MessageData>>() // todo: mutex, sync., etc.
+        val userChatContextMap = ConcurrentHashMap<Long, CopyOnWriteArrayList<MessageData>>() // todo: mutex, sync., etc.
     }
 
-    val userChatDialogHistory: List<Chat.MessageData>
+    val userChatDialogHistory: List<MessageData>
         get() = getUserChatHistory()
 
-    fun addMessage(messageData: Chat.MessageData) =
+    fun addMessage(messageData: MessageData) =
         getUserChatHistory().add(messageData)
 
     fun removeSecondMessage() {
@@ -27,5 +27,5 @@ class ChatHistoryManager(private val userId: Long) {
         getUserChatHistory().clear()
 
     private fun getUserChatHistory() =
-        userChatContextMap.getOrPut(userId) { CopyOnWriteArrayList<Chat.MessageData>() }
+        userChatContextMap.getOrPut(userId) { CopyOnWriteArrayList<MessageData>() }
 }

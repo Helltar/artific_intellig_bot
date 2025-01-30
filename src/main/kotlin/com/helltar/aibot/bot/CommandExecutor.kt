@@ -1,18 +1,18 @@
 package com.helltar.aibot.bot
 
-import com.helltar.aibot.Config
-import com.helltar.aibot.Config.DIR_FILES
-import com.helltar.aibot.Config.LOADING_GIF_FILE_NAME
-import com.helltar.aibot.Strings
-import com.helltar.aibot.commands.BotCommand
+import com.helltar.aibot.commands.base.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.db.dao.*
+import com.helltar.aibot.config.Config
+import com.helltar.aibot.config.Strings
+import com.helltar.aibot.database.dao.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
 import org.telegram.telegrambots.meta.api.objects.User
 import org.telegram.telegrambots.meta.api.objects.chat.Chat
 import java.io.File
-import java.time.*
+import java.time.Clock
+import java.time.Duration
+import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.hours
 
@@ -27,6 +27,8 @@ class CommandExecutor {
     )
 
     private companion object {
+        const val LOADING_GIF_FILE_NAME = "loading.gif"
+        const val DIR_FILES = "data/files"
         const val SLOW_MODE_DURATION_HOURS = 1
         val log = KotlinLogging.logger {}
     }

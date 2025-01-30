@@ -1,10 +1,10 @@
 package com.helltar.aibot.commands.admin.system
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.Strings
-import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.db.dao.commandsDao
+import com.helltar.aibot.commands.base.BotCommand
+import com.helltar.aibot.config.Strings
+import com.helltar.aibot.database.dao.commandsDao
 
 class CommandState(ctx: MessageContext, private val disable: Boolean = false) : BotCommand(ctx) {
 
@@ -33,7 +33,10 @@ class CommandState(ctx: MessageContext, private val disable: Boolean = false) : 
     }
 
     override fun getCommandName() =
-        if (disable) Commands.CMD_DISABLE else Commands.CMD_ENABLE
+        if (disable)
+            Commands.Admin.CMD_DISABLE
+        else
+            Commands.Admin.CMD_ENABLE
 
     private suspend fun getCommandsStatusText() =
         Commands.disableableCommands.map { commandName ->

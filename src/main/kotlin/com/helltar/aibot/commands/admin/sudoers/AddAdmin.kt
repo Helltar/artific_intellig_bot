@@ -1,10 +1,10 @@
 package com.helltar.aibot.commands.admin.sudoers
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.Strings
-import com.helltar.aibot.commands.BotCommand
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.db.dao.sudoersDao
+import com.helltar.aibot.commands.base.BotCommand
+import com.helltar.aibot.config.Strings
+import com.helltar.aibot.database.dao.sudoersDao
 
 class AddAdmin(ctx: MessageContext) : BotCommand(ctx) {
 
@@ -24,5 +24,5 @@ class AddAdmin(ctx: MessageContext) : BotCommand(ctx) {
     }
 
     override fun getCommandName() =
-        Commands.CMD_ADD_ADMIN
+        Commands.Creator.CMD_ADD_ADMIN
 }
