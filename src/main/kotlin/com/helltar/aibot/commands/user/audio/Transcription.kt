@@ -15,22 +15,26 @@ import org.telegram.telegrambots.meta.api.objects.Voice
 import org.telegram.telegrambots.meta.api.objects.message.Message
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import java.io.File
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 /* todo: refact. */
 
 class Transcription(ctx: MessageContext) : BotCommand(ctx) {
 
+    private data class MediaData(
+        val fileId: String,
+        val fileName: String,
+        val isVideo: Boolean = false
+    )
+
     private companion object {
-        const val MAX_AUDIO_SIZE = 1024000
-        const val MAX_VOICE_SIZE = MAX_AUDIO_SIZE
+        const val ONE_MB = 1024 * 1024
+        const val MAX_AUDIO_SIZE_BYTES = ONE_MB * 2
+        const val MAX_VOICE_SIZE_BYTES = MAX_AUDIO_SIZE_BYTES
         const val MAX_VIDEO_DURATION = 60
         const val MAX_VIDEO_NOTE_DURATION = 90
         val log = KotlinLogging.logger {}
     }
-
-    private val tempDir = System.getProperty("java.io.tmpdir")
 
     override suspend fun run() {
         if (isNotReply) {
@@ -38,85 +42,89 @@ class Transcription(ctx: MessageContext) : BotCommand(ctx) {
             return
         }
 
-        val fileData =
-            getFileDataBasedOnMediaType(replyMessage!!)
-                ?: run {
-                    replyToMessage(Strings.VIDEO_OR_AUDIO_NOT_FOUND)
+        val media = try {
+            checkAndGetFileInfo(replyMessage!!)
+        } catch (_: IllegalStateException) {
+            replyToMessage(Strings.VIDEO_OR_AUDIO_NOT_FOUND)
+            return
+        }
+
+        media ?: return
+
+        var outFile = File.createTempFile("tmp", media.fileName)
+
+        try {
+            try {
+                ctx.sender.downloadFile(Methods.getFile(media.fileId).call(ctx.sender)).renameTo(outFile)
+            } catch (e: TelegramApiException) {
+                log.error { e.message }
+                return
+            }
+
+            if (media.isVideo) {
+                extractAudioFromVideo(outFile)?.let {
+                    outFile.delete()
+                    outFile = it
+                } ?: run {
+                    replyToMessage(Strings.ERROR_RETRIEVING_AUDIO_FROM_VIDEO)
                     return
                 }
 
-        val fileId = fileData.first?.first ?: return
-        val fileName = fileData.first?.second ?: return
-        var outFile = File.createTempFile("file", fileName)
-
-        try {
-            ctx.sender.downloadFile(Methods.getFile(fileId).call(ctx.sender)).renameTo(outFile)
-        } catch (e: TelegramApiException) {
-            log.error { e.message }
-            return
-        }
-
-        val isVideo = fileData.second
-
-        if (isVideo)
-            outFile =
-                extractAudioFromVideo(outFile)
-                    ?: run {
-                        replyToMessage(Strings.ERROR_RETRIEVING_AUDIO_FROM_VIDEO)
-                        return
-                    }
-
-        if (outFile.length() > MAX_AUDIO_SIZE) {
-            replyToMessage(Strings.VOICE_MUST_BE_LESS_THAN.format("${MAX_AUDIO_SIZE / 1024000} mb."))
-            return
-        }
-
-        try {
-            val text = TranscriptionService(OpenAiClient(openaiKey())).transcribeAudio(outFile)
-
-            if (text.isNotBlank()) {
-                text.chunked(4000).forEach {
-                    replyToMessage(it, replyMessage.messageId)
+                if (outFile.length() > MAX_AUDIO_SIZE_BYTES) {
+                    replyToMessage(Strings.AUDIO_MUST_BE_LESS_THAN.format("${MAX_AUDIO_SIZE_BYTES / ONE_MB} MB."))
+                    return
                 }
-            } else
-                replyToMessage(Strings.COULDNT_RECOGNIZE_VOICE, replyMessage.messageId)
-        } catch (e: Exception) {
-            log.error { e.message }
-            replyToMessage(Strings.CHAT_EXCEPTION)
+            }
+
+            try {
+                val text = TranscriptionService(OpenAiClient(openaiKey())).transcribeAudio(outFile)
+
+                if (text.isNotBlank()) {
+                    text.chunked(4000).forEach {
+                        replyToMessage(it, replyMessage.messageId)
+                    }
+                } else
+                    replyToMessage(Strings.COULDNT_RECOGNIZE_VOICE, replyMessage.messageId)
+            } catch (e: Exception) {
+                log.error { e.message }
+                replyToMessage(Strings.CHAT_EXCEPTION)
+            }
+        } finally {
+            outFile.delete()
         }
     }
 
     override fun getCommandName() =
         Commands.User.CMD_ASR
 
-    private fun getFileDataBasedOnMediaType(message: Message): Pair<Pair<String, String>?, Boolean>? = // fileId, fileName, isVideo
+    private fun checkAndGetFileInfo(message: Message): MediaData? =
         when {
-            message.hasVoice() -> Pair(checkVoiceAndGetFileData(message.voice), false)
-            message.hasAudio() -> Pair(checkAudioAndGetFileData(message.audio), false)
-            message.hasVideo() -> Pair(checkVideoAndGetFileData(message.video), true)
-            message.hasVideoNote() -> Pair(checkVideoNoteAndGetFileData(message.videoNote), true)
-            else -> null
+            message.hasVoice() -> checkVoiceAndGetFileData(message.voice)
+            message.hasAudio() -> checkAudioAndGetFileData(message.audio)
+            message.hasVideo() -> checkVideoAndGetFileData(message.video)
+            message.hasVideoNote() -> checkVideoNoteAndGetFileData(message.videoNote)
+            else -> throw IllegalStateException("supported media type not found in the message")
         }
 
     private fun checkAudioAndGetFileData(audio: Audio) =
-        if (audio.fileSize <= MAX_AUDIO_SIZE)
-            Pair(audio.fileId, audio.fileName)
+        if (audio.fileSize <= MAX_AUDIO_SIZE_BYTES)
+            MediaData(audio.fileId, audio.fileName)
         else {
-            replyToMessage(Strings.AUDIO_MUST_BE_LESS_THAN.format("${MAX_AUDIO_SIZE / 1000} kb."))
+            replyToMessage(Strings.AUDIO_MUST_BE_LESS_THAN.format("${MAX_AUDIO_SIZE_BYTES / ONE_MB} MB."))
             null
         }
 
     private fun checkVoiceAndGetFileData(voice: Voice) =
-        if (voice.fileSize <= MAX_VOICE_SIZE)
-            Pair(voice.fileId, "voice.ogg")
+        if (voice.fileSize <= MAX_VOICE_SIZE_BYTES)
+            MediaData(voice.fileId, "_voice.ogg")
         else {
-            replyToMessage(Strings.VOICE_MUST_BE_LESS_THAN.format("${MAX_VOICE_SIZE / 1000} kb."))
+            replyToMessage(Strings.VOICE_MUST_BE_LESS_THAN.format("${MAX_VOICE_SIZE_BYTES / ONE_MB} MB."))
             null
         }
 
     private fun checkVideoAndGetFileData(video: Video) =
         if (video.duration <= MAX_VIDEO_DURATION)
-            Pair(video.fileId, "video.mp4") // todo: temp fix. (todo check mime_type or som. else)
+            MediaData(video.fileId, "_video.mp4", true)
         else {
             replyToMessage(Strings.BAD_VIDEO_DURATION.format(MAX_VIDEO_DURATION))
             null
@@ -124,39 +132,34 @@ class Transcription(ctx: MessageContext) : BotCommand(ctx) {
 
     private fun checkVideoNoteAndGetFileData(videoNote: VideoNote) =
         if (videoNote.duration <= MAX_VIDEO_NOTE_DURATION)
-            Pair(videoNote.fileId, "video_note.mp4")
+            MediaData(videoNote.fileId, "_video-note.mp4", true)
         else {
             replyToMessage(Strings.BAD_VIDEO_NOTE_DURATION.format(MAX_VIDEO_NOTE_DURATION))
             null
         }
 
-    private fun extractAudioFromVideo(file: File): File? {
-        val filename = "$tempDir/audio_${UUID.randomUUID()}.wav"
-        val command = listOf("ffmpeg", "-i", file.absolutePath, "-acodec", "pcm_s16le", "-ac", "1", "-ar", "16000", filename)
+    private fun extractAudioFromVideo(video: File): File? {
+        val outFile = File.createTempFile("tmp", ".wav")
+        val command = listOf("ffmpeg", "-y", "-i", video.absolutePath, "-acodec", "pcm_s16le", "-ac", "1", "-ar", "16000", outFile.absolutePath)
 
-        return startProcess(command)?.let { process ->
-            try {
-                if (!process.waitFor(2, TimeUnit.MINUTES))
-                    process.destroy()
-
-                File(filename).takeIf { it.exists() }
-            } catch (e: Exception) {
-                log.error { e.message }
-                null
-            } finally {
-                if (process.isAlive)
-                    process.destroyForcibly()
-            }
+        val process = try {
+            ProcessBuilder(command).start()
+        } catch (e: Exception) {
+            log.error { "failed to start process $command: ${e.message}" }
+            return null
         }
-    }
 
-    private fun startProcess(command: List<String>): Process? =
-        try {
-            ProcessBuilder(command)
-                .directory(File(tempDir))
-                .start()
+        return try {
+            if (!process.waitFor(2, TimeUnit.MINUTES))
+                process.destroy()
+
+            outFile.takeIf { it.length() > 0 }
         } catch (e: Exception) {
             log.error { e.message }
             null
+        } finally {
+            if (process.isAlive)
+                process.destroyForcibly()
         }
+    }
 }
