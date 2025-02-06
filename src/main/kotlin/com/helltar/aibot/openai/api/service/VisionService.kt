@@ -25,7 +25,7 @@ class VisionService(private val apiClient: OpenAiClient) {
         val imageBase64 = Base64.getEncoder().encodeToString(image.readBytes())
         val imageData = ImageData("data:image/jpeg;base64,$imageBase64")
         val contentTextData = VisionContentData(MESSAGE_CONTENT_TYPE_TEXT, text)
-        val contentImageData = VisionContentData(MESSAGE_CONTENT_TYPE_IMAGE, image_url = imageData)
+        val contentImageData = VisionContentData(MESSAGE_CONTENT_TYPE_IMAGE, imageUrl = imageData)
         val requestData = VisionRequestData(CHAT_MODEL, listOf(VisionMessageData(CHAT_ROLE_USER, listOf(contentTextData, contentImageData))))
 
         val responseJson = apiClient.postAsString(COMPLETIONS_API_URL, json.encodeToString(requestData))

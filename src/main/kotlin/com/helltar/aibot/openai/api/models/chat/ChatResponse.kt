@@ -1,6 +1,7 @@
 package com.helltar.aibot.openai.api.models.chat
 
 import com.helltar.aibot.openai.api.models.common.MessageData
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -14,12 +15,20 @@ data class ChatResponseData(
 data class ChatChoiceData(
     val index: Int,
     val message: MessageData,
-    val finish_reason: String
+
+    @SerialName("finish_reason")
+    val finishReason: String
 )
 
 @Serializable
 data class ChatUsageData(
-    val prompt_tokens: Int,
-    val completion_tokens: Int,
-    val total_tokens: Int
+
+    @SerialName("prompt_tokens")
+    val promptTokens: Int,
+
+    @SerialName("completion_tokens")
+    val completionTokens: Int,
+
+    @SerialName("total_tokens")
+    val totalTokens: Int
 )

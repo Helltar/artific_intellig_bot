@@ -4,7 +4,11 @@ import com.helltar.aibot.openai.api.models.common.MessageData
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class VisionResponseData(val choices: List<VisionChoiseData>)
+data class VisionResponseData(
+    val choices: List<VisionChoiseData>
+)
 
 @Serializable
-data class VisionChoiseData(val message: MessageData)
+data class VisionChoiseData(
+    val message: MessageData
+)

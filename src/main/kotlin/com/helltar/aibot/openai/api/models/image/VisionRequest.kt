@@ -1,6 +1,7 @@
 package com.helltar.aibot.openai.api.models.image
 
 import com.helltar.aibot.openai.api.models.common.ImageData
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /* https://platform.openai.com/docs/guides/vision */
@@ -21,5 +22,7 @@ data class VisionMessageData(
 data class VisionContentData(
     val type: String,
     val text: String? = null,
-    val image_url: ImageData? = null
+
+    @SerialName("image_url")
+    val imageUrl: ImageData? = null
 )
