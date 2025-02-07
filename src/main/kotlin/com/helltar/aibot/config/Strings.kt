@@ -49,7 +49,7 @@ object Strings {
     const val PROVIDER_API_KEY_SUCCESS_ADD = "✅ API Key for <b>%s</b> succesfully added"
     const val PROVIDER_API_KEY_SUCCESS_UPDATE = "✅ API Key for <b>%s</b> succesfully updated"
     const val TELEGRAM_API_EXCEPTION_CONTEXT_SAVED_TO_FILE = "An error occurred (TelegramApiException). The context has been saved to a file. You can try fixing it using the /$CMD_CHAT_CTX_REMOVE command ☺\uFE0F"
-    const val TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE = "TelegramApiException, response saved to file \uD83D\uDE48" // 🙈
+    const val TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE = "An error occurred (TelegramApiException). The response has been saved to a file. You can try fixing it using the /$CMD_CHAT_CTX_REMOVE command ☺\uFE0F"
     const val UPDATE_API_KEYS_COMMAND_EXAMPLE = "ℹ\uFE0F Example: <code>/$CMD_UPDATE_API_KEY sk-key_here</code> for <b>OpenAI</b>, <code>/$CMD_UPDATE_API_KEY $API_KEY_PROVIDER_DEEPSEEK sk-key_here</code> for <b>DeepSeek</b>" // ℹ️
     const val VIDEO_OR_AUDIO_NOT_FOUND = "Message does not contain audio or video \uD83E\uDD14" // 🤔
     const val VOICE_MUST_BE_LESS_THAN = "Voice must be less than %s 😥" // 😥
