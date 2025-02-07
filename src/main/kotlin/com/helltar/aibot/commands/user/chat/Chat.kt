@@ -35,51 +35,56 @@ class Chat(ctx: MessageContext) : BotCommand(ctx) {
         Commands.User.CMD_CHAT
 
     private suspend fun processUserMessage() {
-        var messageId = ctx.messageId()
-        var text = argumentsString
-        var isVoiceOut = false
+        if (isNotReply && argumentsString.isBlank()) {
+            replyToMessage(Strings.CHAT_HELLO)
+            return
+        }
+
+        var text: String? = argumentsString
+        var messageId = message.messageId
+        var botReplyWithVoice = false
 
         if (isReply) {
-            if (isNotMe(replyMessage!!.from?.userName)) {
-                text =
-                    replyMessage.text ?: replyMessage.caption ?: run {
-                        replyToMessage(Strings.MESSAGE_TEXT_NOT_FOUND)
-                        return
-                    }
+            val message = replyMessage!!
 
-                isVoiceOut = argumentsString == VOICE_OUT_TAG
-                messageId = replyMessage.messageId
-            } else
-                text = message.text
-        } else
-            if (argumentsString.isEmpty()) {
-                replyToMessage(Strings.CHAT_HELLO)
-                return
-            }
+            if (isNotMyMessage(message)) {
+                text = message.text ?: message.caption // photos, etc
+                messageId = message.messageId
+                botReplyWithVoice = argumentsString == VOICE_OUT_TAG
 
-        if (text.length > MAX_USER_MESSAGE_TEXT_LENGTH) {
+                if (text.isNullOrBlank()) {
+                    replyToMessage(Strings.MESSAGE_TEXT_NOT_FOUND, messageId)
+                    return
+                }
+
+                /*
+                  ----------------------------------------------------------
+                  userA: the only true wisdom is in knowing you know nothing
+                  userB: /chat whose quote?
+                  ----------------------------------------------------------
+                */
+                if (argumentsString.isNotBlank()) { // if 'userB' used the '/chat' command with args as a reply to a message from 'userA'
+                    text = "$argumentsString: \"$text\"" // whose quote?: "the only true wisdom is in knowing you know nothing"
+                    messageId = this.message.messageId
+                }
+            } else // ArtificIntelligBotHandler onUpdate
+                text = this.message.text
+        }
+
+        if (text!!.length > MAX_USER_MESSAGE_TEXT_LENGTH) {
             replyToMessage(String.format(Strings.MANY_CHARACTERS, MAX_USER_MESSAGE_TEXT_LENGTH))
             return
         }
 
-        val username = message.from.firstName
-        val chatTitle = message.chat.title ?: username
+        // todo: botReplyWithVoice
+        if (!botReplyWithVoice) {
+            botReplyWithVoice = text.contains(VOICE_OUT_TAG)
 
-        // todo: isVoiceOut
-        if (!isVoiceOut) {
-            isVoiceOut = text.contains(VOICE_OUT_TAG)
-
-            if (isVoiceOut)
+            if (botReplyWithVoice)
                 text = text.replace(VOICE_OUT_TAG, "").trim()
         }
 
-        if (chatHistoryManager.userChatDialogHistory.isEmpty()) {
-            val systemPromt = localizedString(Strings.CHAT_GPT_SYSTEM_MESSAGE, userLanguageCode)
-            val systemPromtContent = systemPromt.format(chatTitle, username, userId)
-            val systemPromtData = MessageData(CHAT_ROLE_SYSTEM, systemPromtContent)
-            chatHistoryManager.addMessage(systemPromtData)
-        }
-
+        addSystemPromtIfNeeded()
         chatHistoryManager.addMessage(MessageData(CHAT_ROLE_USER, text))
         ensureDialogLengthWithinLimit()
 
@@ -95,9 +100,9 @@ class Chat(ctx: MessageContext) : BotCommand(ctx) {
 
         chatHistoryManager.addMessage(MessageData(CHAT_ROLE_ASSISTANT, answer))
 
-        log.debug { "answer: $answer" }
+        log.debug { chatHistoryManager.userChatDialogHistory.joinToString("\n") { "- ${it.role}: ${it.content}" } }
 
-        if (!isVoiceOut)
+        if (!botReplyWithVoice)
             replyToMessage(answer, messageId)
         else
             try {
@@ -124,6 +129,17 @@ class Chat(ctx: MessageContext) : BotCommand(ctx) {
         } catch (e: Exception) {
             log.error { e.message }
             errorReplyWithTextDocument(answer, Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE)
+        }
+    }
+
+    private fun addSystemPromtIfNeeded() {
+        if (chatHistoryManager.userChatDialogHistory.isEmpty()) {
+            val systemPromt = localizedString(Strings.CHAT_GPT_SYSTEM_MESSAGE, userLanguageCode)
+            val username = message.from.firstName
+            val chatTitle = message.chat.title ?: username
+            val systemPromtContent = systemPromt.format(chatTitle, username, userId)
+            val systemPromtData = MessageData(CHAT_ROLE_SYSTEM, systemPromtContent)
+            chatHistoryManager.addMessage(systemPromtData)
         }
     }
 
