@@ -14,6 +14,10 @@ import java.util.concurrent.CompletableFuture
 
 abstract class BotCommand(val ctx: MessageContext) : Command {
 
+    private companion object {
+        const val MAX_MESSAGE_LENGTH = 4096
+    }
+
     val userLanguageCode = ctx.user().languageCode ?: "en"
 
     protected val userId = ctx.user().id
@@ -40,21 +44,22 @@ abstract class BotCommand(val ctx: MessageContext) : Command {
     fun isCreator(userId: Long = this.userId) =
         userId == creatorId
 
-    fun isNotMe(username: String?) =
-        username != telegramBotUsername
+    fun isNotMyMessage(message: Message?) =
+        message?.from?.userName != telegramBotUsername
 
-    fun replyToMessage(
-        text: String,
-        messageId: Int = message.messageId,
-        enableWebPagePreview: Boolean = false,
-        markdown: Boolean = false
-    ): Int =
-        ctx.replyToMessage(text)
-            .setReplyToMessageId(if (replyMessage?.from?.isBot == false) messageId else message.messageId) // todo: refact.
-            .setParseMode(if (!markdown) ParseMode.HTML else ParseMode.MARKDOWN)
-            .setWebPagePreviewEnabled(enableWebPagePreview)
-            .call(ctx.sender)
-            .messageId
+    fun replyToMessage(text: String, messageId: Int = message.messageId, webPagePreview: Boolean = false, markdown: Boolean = false) {
+        val parseMode = if (markdown) ParseMode.MARKDOWN else ParseMode.HTML
+        val messageIdToReply = if (replyMessage?.from?.isBot == false) messageId else message.messageId // todo: refact.
+
+        if (text.length <= MAX_MESSAGE_LENGTH) {
+            ctx.replyToMessage(text)
+                .setReplyToMessageId(messageIdToReply)
+                .setParseMode(parseMode)
+                .setWebPagePreviewEnabled(webPagePreview)
+                .call(ctx.sender)
+        } else
+            chunkedReplyToMessage(text, messageIdToReply, webPagePreview, parseMode)
+    }
 
     fun replyToMessageWithDocument(fileId: String, caption: String): Int =
         ctx.replyWithDocument()
@@ -102,4 +107,20 @@ abstract class BotCommand(val ctx: MessageContext) : Command {
             .setReplyToMessageId(message.messageId)
             .call(ctx.sender)
             .messageId
+
+    private fun chunkedReplyToMessage(text: String, messageId: Int, webPagePreview: Boolean, parseMode: String) {
+        var messageIdToReply = messageId
+
+        text.chunked(MAX_MESSAGE_LENGTH).forEach {
+            if (it.isNotBlank()) {
+                messageIdToReply =
+                    ctx.replyToMessage(it)
+                        .setReplyToMessageId(messageIdToReply)
+                        .setParseMode(parseMode)
+                        .setWebPagePreviewEnabled(webPagePreview)
+                        .call(ctx.sender)
+                        .messageId
+            }
+        }
+    }
 }

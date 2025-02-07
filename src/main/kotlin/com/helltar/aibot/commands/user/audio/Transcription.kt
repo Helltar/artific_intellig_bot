@@ -79,11 +79,9 @@ class Transcription(ctx: MessageContext) : BotCommand(ctx) {
             try {
                 val text = TranscriptionService(OpenAiClient(openaiKey())).transcribeAudio(outFile)
 
-                if (text.isNotBlank()) {
-                    text.chunked(4000).forEach {
-                        replyToMessage(it, replyMessage.messageId)
-                    }
-                } else
+                if (text.isNotBlank())
+                    replyToMessage(text, replyMessage.messageId)
+                else
                     replyToMessage(Strings.COULDNT_RECOGNIZE_VOICE, replyMessage.messageId)
             } catch (e: Exception) {
                 log.error { e.message }

@@ -13,7 +13,7 @@ class About(ctx: MessageContext) : BotCommand(ctx) {
             Contact: https://helltar.com
             Source Code:
             """
-                .trimIndent(), enableWebPagePreview = true
+                .trimIndent(), webPagePreview = true
         )
     }
 
