@@ -3,10 +3,11 @@ package com.helltar.aibot.commands.user.chat
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.base.BotCommand
+import com.helltar.aibot.commands.user.chat.ChatHistoryManager.ChatMessage
 import com.helltar.aibot.config.Strings
 import com.helltar.aibot.openai.api.ApiConfig.CHAT_ROLE_USER
-import com.helltar.aibot.openai.api.models.common.MessageData
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.time.format.DateTimeFormatter
 
 private val log = KotlinLogging.logger {}
 
@@ -48,11 +49,13 @@ class ChatCtx(ctx: MessageContext) : BotCommand(ctx) {
             }
         }
 
-    private fun formatUserChatHistory(userChatHistory: List<MessageData>) =
+    private fun formatUserChatHistory(userChatHistory: List<ChatMessage>) =
         if (userChatHistory.isNotEmpty()) {
+            val formatter = DateTimeFormatter.ofPattern("dd.MM HH:mm")
+
             userChatHistory
-                .filter { it.role == CHAT_ROLE_USER }
-                .joinToString("\n") { "- ${it.content}" }
+                .filter { it.message.role == CHAT_ROLE_USER }
+                .joinToString("\n") { "▫\uFE0F *${it.datetime.format(formatter)}* - ${it.message.content}" } // ▫️
         } else
             Strings.CHAT_CONTEXT_EMPTY
 }

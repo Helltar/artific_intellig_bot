@@ -100,7 +100,11 @@ class Chat(ctx: MessageContext) : BotCommand(ctx) {
 
         chatHistoryManager.addMessage(MessageData(CHAT_ROLE_ASSISTANT, answer))
 
-        log.debug { chatHistoryManager.userChatDialogHistory.joinToString("\n") { "- ${it.role}: ${it.content}" } }
+        log.debug {
+            chatHistoryManager.userChatDialogHistory.joinToString("\n") {
+                "- ${it.message.role}: ${it.message.content}"
+            }
+        }
 
         if (!botReplyWithVoice)
             replyToMessage(answer, messageId)
@@ -115,7 +119,7 @@ class Chat(ctx: MessageContext) : BotCommand(ctx) {
     }
 
     private suspend fun getBotReply(chatGPTService: ChatService): String {
-        val messages = chatHistoryManager.userChatDialogHistory
+        val messages = chatHistoryManager.userChatDialogHistory.map { it.message }
 
         return if (isDeepSeekNotEnabled())
             chatGPTService.getReply(messages)
