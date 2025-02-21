@@ -1,7 +1,7 @@
 package com.helltar.aibot.bot
 
-import com.helltar.aibot.commands.base.BotCommand
 import com.helltar.aibot.commands.Commands
+import com.helltar.aibot.commands.base.BotCommand
 import com.helltar.aibot.config.Config
 import com.helltar.aibot.config.Strings
 import com.helltar.aibot.database.dao.*
@@ -118,19 +118,21 @@ class CommandExecutor {
     }
 
     private suspend fun runCommand(botCommand: BotCommand, isLongRunningCommand: Boolean) {
-        if (isLongRunningCommand) {
-            val caption = Strings.localizedString(Strings.CHAT_WAIT_MESSAGE, botCommand.userLanguageCode)
-            val messageId = sendWaitingGif(botCommand, caption)
+        try {
+            if (isLongRunningCommand) {
+                val caption = Strings.localizedString(Strings.CHAT_WAIT_MESSAGE, botCommand.userLanguageCode)
+                val messageId = sendWaitingGif(botCommand, caption)
 
-            try {
+                try {
+                    botCommand.run()
+                } finally {
+                    botCommand.deleteMessage(messageId)
+                }
+            } else
                 botCommand.run()
-            } catch (e: Exception) {
-                log.error { e.message }
-            } finally {
-                botCommand.deleteMessage(messageId)
-            }
-        } else
-            botCommand.run()
+        } catch (e: Exception) {
+            log.error { e.message }
+        }
     }
 
     private suspend fun getSlowmodeRemainingSeconds(user: User): Long {
