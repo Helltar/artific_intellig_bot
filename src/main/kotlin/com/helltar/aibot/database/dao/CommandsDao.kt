@@ -21,7 +21,7 @@ class CommandsDao {
         CommandsStateTable
             .select(CommandsStateTable.isDisabled)
             .where { CommandsStateTable.name eq command }
-            .singleOrNull()?.get(CommandsStateTable.isDisabled) ?: false
+            .singleOrNull()?.get(CommandsStateTable.isDisabled) == true
     }
 }
 

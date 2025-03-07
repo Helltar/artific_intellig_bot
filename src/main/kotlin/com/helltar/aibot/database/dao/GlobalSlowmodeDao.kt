@@ -27,8 +27,8 @@ class GlobalSlowmodeDao {
         GlobalSlowmodeTable
             .select(usageCount, lastUsage)
             .where { GlobalSlowmodeTable.userId eq userId }
-            .map { GlobalSlowmodeData(it[usageCount], it[lastUsage]) }
             .singleOrNull()
+            ?.let { GlobalSlowmodeData(it[usageCount], it[lastUsage]) }
     }
 }
 

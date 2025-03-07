@@ -11,18 +11,23 @@ import java.time.Instant
 class PrivacyPoliciesDao {
 
     suspend fun update(text: String) = dbQuery {
-        val existingPolicy = PrivacyPoliciesTable.selectAll().singleOrNull()
+        val now = Instant.now(Clock.systemUTC())
 
-        if (existingPolicy == null)
-            PrivacyPoliciesTable.insert {
-                it[policyText] = text
-                it[lastUpdated] = Instant.now(Clock.systemUTC())
+        PrivacyPoliciesTable
+            .selectAll()
+            .singleOrNull()
+            ?.let {
+                PrivacyPoliciesTable
+                    .update {
+                        it[policyText] = text
+                        it[lastUpdated] = now
+                    }
             }
-        else
-            PrivacyPoliciesTable.update {
-                it[policyText] = text
-                it[lastUpdated] = Instant.now(Clock.systemUTC())
-            }
+            ?: PrivacyPoliciesTable
+                .insert {
+                    it[policyText] = text
+                    it[lastUpdated] = now
+                }
     }
 
     suspend fun getPolicyText() = dbQuery {

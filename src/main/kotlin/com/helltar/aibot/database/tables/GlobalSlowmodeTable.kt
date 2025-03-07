@@ -7,7 +7,7 @@ object GlobalSlowmodeTable : Table() {
 
     val userId = long("user_id")
     val usageCount = integer("usage_count").default(0)
-    val lastUsage = timestamp("last_usage").nullable().default(null)
+    val lastUsage = timestamp("last_usage").nullable()
 
     override val primaryKey = PrimaryKey(userId)
 }

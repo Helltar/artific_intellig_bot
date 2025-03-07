@@ -23,22 +23,22 @@ class ConfigurationsDao {
         setConfiguration("deepseek_enabled", enable.toString())
     }
 
-    private suspend fun getConfiguration(key: String) = dbQuery {
+    private fun getConfiguration(key: String): String? =
         ConfigurationsTable
             .select(ConfigurationsTable.value)
             .where { ConfigurationsTable.key eq key }
             .singleOrNull()?.get(ConfigurationsTable.value)
-    }
 
-    private suspend fun setConfiguration(key: String, value: String) = dbQuery { // todo: insert update
-        ConfigurationsTable.insertIgnore {
-            it[this.key] = key
-            it[this.value] = value
-        }
-
-        ConfigurationsTable
-            .update({ ConfigurationsTable.key eq key }) { it[this.value] = value }
-    }
+    private fun setConfiguration(key: String, value: String): Boolean =
+        (ConfigurationsTable
+            .update({ ConfigurationsTable.key eq key }) {
+                it[this.value] = value
+            }.takeIf { it > 0 }
+            ?: ConfigurationsTable
+                .insertIgnore {
+                    it[this.key] = key
+                    it[this.value] = value
+                }.insertedCount) > 0
 }
 
 val configurationsDao = ConfigurationsDao()
