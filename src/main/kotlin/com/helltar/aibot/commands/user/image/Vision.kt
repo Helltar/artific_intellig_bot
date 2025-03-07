@@ -7,9 +7,11 @@ import com.helltar.aibot.openai.api.OpenAiClient
 import com.helltar.aibot.openai.api.service.VisionService
 import io.github.oshai.kotlinlogging.KotlinLogging
 
-private val log = KotlinLogging.logger {}
-
 class Vision(ctx: MessageContext) : DallEVariations(ctx) {
+
+    private companion object {
+        val log = KotlinLogging.logger {}
+    }
 
     override suspend fun run() {
         if (isNotReply) {

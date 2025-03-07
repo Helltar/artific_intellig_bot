@@ -9,9 +9,11 @@ import com.helltar.aibot.openai.api.ApiConfig.CHAT_ROLE_USER
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.time.format.DateTimeFormatter
 
-private val log = KotlinLogging.logger {}
-
 class ChatCtx(ctx: MessageContext) : BotCommand(ctx) {
+
+    private companion object {
+        val log = KotlinLogging.logger {}
+    }
 
     override suspend fun run() {
         val userId = getUserId() ?: return
