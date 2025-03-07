@@ -1,12 +1,12 @@
 package com.helltar.aibot.database
 
+import com.helltar.aibot.commands.Commands.disableableCommands
 import com.helltar.aibot.config.Config.creatorId
 import com.helltar.aibot.config.Config.databaseName
 import com.helltar.aibot.config.Config.databasePassword
 import com.helltar.aibot.config.Config.databaseUser
 import com.helltar.aibot.config.Config.postgresqlHost
 import com.helltar.aibot.config.Config.postgresqlPort
-import com.helltar.aibot.commands.Commands.disableableCommands
 import com.helltar.aibot.database.tables.*
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
@@ -17,7 +17,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Clock
 import java.time.Instant
 
-object DatabaseFactory {
+object Database {
 
     private const val DRIVER_CLASS_NAME = "org.postgresql.Driver"
     private const val JDBC_URL_FORMAT = "jdbc:postgresql://%s:%s/%s"

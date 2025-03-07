@@ -1,6 +1,6 @@
 package com.helltar.aibot.database.dao
 
-import com.helltar.aibot.database.DatabaseFactory.dbQuery
+import com.helltar.aibot.database.Database.dbQuery
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertIgnore

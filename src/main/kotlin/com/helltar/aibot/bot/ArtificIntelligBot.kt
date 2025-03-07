@@ -5,14 +5,14 @@ import com.annimon.tgbotsmodule.BotModuleOptions
 import com.annimon.tgbotsmodule.Runner
 import com.annimon.tgbotsmodule.beans.Config
 import com.helltar.aibot.config.Config.telegramBotToken
-import com.helltar.aibot.database.DatabaseFactory
+import com.helltar.aibot.database.Database
 
 class ArtificIntelligBot : BotModule {
 
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            DatabaseFactory.init()
+            Database.init()
             Runner.run("", listOf(ArtificIntelligBot()))
         }
     }

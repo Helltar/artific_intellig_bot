@@ -1,6 +1,6 @@
 package com.helltar.aibot.database.dao
 
-import com.helltar.aibot.database.DatabaseFactory.dbQuery
+import com.helltar.aibot.database.Database.dbQuery
 import com.helltar.aibot.database.tables.CommandsStateTable
 import org.jetbrains.exposed.sql.update
 import java.time.Clock
