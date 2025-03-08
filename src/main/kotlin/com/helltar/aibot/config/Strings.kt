@@ -4,8 +4,6 @@ import com.annimon.tgbotsmodule.services.ResourceBundleLocalizationService
 import com.helltar.aibot.commands.Commands.Admin.CMD_SLOW_MODE
 import com.helltar.aibot.commands.Commands.Creator.CMD_GLOBAL_SLOW_MODE
 import com.helltar.aibot.commands.Commands.Creator.CMD_UPDATE_API_KEY
-import com.helltar.aibot.commands.Commands.Creator.CMD_UPDATE_PRIVACY_POLICY
-import com.helltar.aibot.commands.Commands.Simple.CMD_PRIVACY
 import com.helltar.aibot.commands.Commands.User.CMD_CHAT
 import com.helltar.aibot.commands.Commands.User.CMD_CHAT_CTX_REMOVE
 import com.helltar.aibot.config.Config.API_KEY_PROVIDER_DEEPSEEK
@@ -86,9 +84,6 @@ object Strings {
 
     const val GLOBAL_SLOW_MODE_CURRENT_VALUE = "ℹ\uFE0F The current value is <b>%d</b> requests per hour per user.\n\nTo change it, use the command <code>/$CMD_GLOBAL_SLOW_MODE 15</code>"
     const val GLOBAL_SLOW_MODE_SUCCESFULLY_CHANGED = "✅ The value for global-slowmode has been successfully changed to <b>%d</b> requests per hour per user."
-
-    const val UPDATE_PRIVACY_POLICY_EXAMPLE = "<code>/$CMD_UPDATE_PRIVACY_POLICY</code> text"
-    const val PRIVACY_POLICY_SUCCESFULLY_UPDATED = "✅ Privacy Policy succesfully updated, to view use /$CMD_PRIVACY"
 
     private val localization = ResourceBundleLocalizationService("language")
 

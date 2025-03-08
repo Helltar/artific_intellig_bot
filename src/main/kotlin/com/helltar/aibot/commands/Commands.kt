@@ -11,7 +11,6 @@ object Commands {
     object Simple {
         const val CMD_ABOUT = "about"
         const val CMD_MYID = "myid"
-        const val CMD_PRIVACY = "privacy"
         const val CMD_START = "start"
     }
 

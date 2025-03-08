@@ -26,7 +26,6 @@ import com.helltar.aibot.commands.Commands.Creator.CMD_GLOBAL_SLOW_MODE
 import com.helltar.aibot.commands.Commands.Creator.CMD_UPDATE_API_KEY
 import com.helltar.aibot.commands.Commands.Simple.CMD_ABOUT
 import com.helltar.aibot.commands.Commands.Simple.CMD_MYID
-import com.helltar.aibot.commands.Commands.Simple.CMD_PRIVACY
 import com.helltar.aibot.commands.Commands.Simple.CMD_START
 import com.helltar.aibot.commands.Commands.User.CMD_ASR
 import com.helltar.aibot.commands.Commands.User.CMD_CHAT
@@ -54,7 +53,6 @@ import com.helltar.aibot.commands.admin.system.UpdateApiKey
 import com.helltar.aibot.commands.base.BotCommand
 import com.helltar.aibot.commands.simple.About
 import com.helltar.aibot.commands.simple.MyId
-import com.helltar.aibot.commands.simple.Privacy
 import com.helltar.aibot.commands.simple.Start
 import com.helltar.aibot.commands.user.audio.Transcription
 import com.helltar.aibot.commands.user.chat.Chat
@@ -82,7 +80,6 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
         registerSimpleCommand(CMD_START, ::Start)
         registerSimpleCommand(CMD_MYID, ::MyId)
         registerSimpleCommand(CMD_ABOUT, ::About)
-        registerSimpleCommand(CMD_PRIVACY, ::Privacy)
         registerSimpleCommand(CMD_CHATCTX, ::ChatCtx, checkRights = true)
         registerSimpleCommand(CMD_CHAT_CTX_REMOVE, ::ChatCtxRemove, checkRights = true)
 
