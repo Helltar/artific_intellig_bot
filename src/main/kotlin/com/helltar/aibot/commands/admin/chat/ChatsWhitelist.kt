@@ -12,7 +12,7 @@ class ChatsWhitelist(ctx: MessageContext) : BotCommand(ctx) {
         val text =
             chatWhitelistDao.list().joinToString("\n") {
                 val title = it.title?.let { title -> "<i>($title)</i>" } ?: "null"
-                "<code>${it.chatId}</code> $title <i>(${it.datetime})</i>"
+                "<code>${it.chatId}</code> $title <i>(${it.createdAt})</i>"
             }
 
         replyToMessage(text.ifEmpty { Strings.LIST_IS_EMPTY })

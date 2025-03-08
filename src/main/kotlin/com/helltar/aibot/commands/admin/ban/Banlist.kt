@@ -13,7 +13,7 @@ class Banlist(ctx: MessageContext) : BotCommand(ctx) {
             banlistDao.list().joinToString("\n") {
                 val username = it.username ?: it.firstName
                 val reason = it.reason?.let { reason -> "<i>($reason)</i>" } ?: ""
-                "<code>${it.userId}</code> <b>$username</b> $reason <i>(${it.datetime})</i>"
+                "<code>${it.userId}</code> <b>$username</b> $reason <i>(${it.bannedAt})</i>"
             }
 
         replyToMessage(list.ifEmpty { Strings.LIST_IS_EMPTY })

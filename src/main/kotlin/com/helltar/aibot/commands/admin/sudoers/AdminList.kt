@@ -21,5 +21,5 @@ class AdminList(ctx: MessageContext) : BotCommand(ctx) {
         sudoers.joinToString("\n") { sudoer -> formatSudoer(sudoer) }
 
     private fun formatSudoer(sudoer: SudoersData) =
-        "<code>${sudoer.userId}</code> <b>${sudoer.username}</b> <i>(${sudoer.datetime})</i>"
+        "<code>${sudoer.userId}</code> <b>${sudoer.username}</b> <i>(${sudoer.createdAt})</i>"
 }

@@ -11,13 +11,13 @@ data class SlowmodeData(
     val lastUsage: Instant?
 )
 
-data class GlobalSlowmodeData(
+data class SlowmodeStateData(
+    val limit: Int,
     val usageCount: Int,
     val lastUsage: Instant?
 )
 
-data class SlowmodeStateData(
-    val limit: Int,
+data class GlobalSlowmodeData(
     val usageCount: Int,
     val lastUsage: Instant?
 )

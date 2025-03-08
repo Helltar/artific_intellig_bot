@@ -7,5 +7,5 @@ data class BanlistData(
     val username: String?,
     val firstName: String,
     val reason: String?,
-    val datetime: Instant
+    val bannedAt: Instant
 )
