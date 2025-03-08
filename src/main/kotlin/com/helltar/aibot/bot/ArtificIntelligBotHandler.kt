@@ -24,7 +24,6 @@ import com.helltar.aibot.commands.Commands.Creator.CMD_DEEP_SEEK_OFF
 import com.helltar.aibot.commands.Commands.Creator.CMD_DEEP_SEEK_ON
 import com.helltar.aibot.commands.Commands.Creator.CMD_GLOBAL_SLOW_MODE
 import com.helltar.aibot.commands.Commands.Creator.CMD_UPDATE_API_KEY
-import com.helltar.aibot.commands.Commands.Creator.CMD_UPDATE_PRIVACY_POLICY
 import com.helltar.aibot.commands.Commands.Simple.CMD_ABOUT
 import com.helltar.aibot.commands.Commands.Simple.CMD_MYID
 import com.helltar.aibot.commands.Commands.Simple.CMD_PRIVACY
@@ -48,7 +47,10 @@ import com.helltar.aibot.commands.admin.slowmode.SlowmodeOff
 import com.helltar.aibot.commands.admin.sudoers.AddAdmin
 import com.helltar.aibot.commands.admin.sudoers.AdminList
 import com.helltar.aibot.commands.admin.sudoers.RemoveAdmin
-import com.helltar.aibot.commands.admin.system.*
+import com.helltar.aibot.commands.admin.system.CommandState
+import com.helltar.aibot.commands.admin.system.DeepSeekState
+import com.helltar.aibot.commands.admin.system.GlobalSlowmode
+import com.helltar.aibot.commands.admin.system.UpdateApiKey
 import com.helltar.aibot.commands.base.BotCommand
 import com.helltar.aibot.commands.simple.About
 import com.helltar.aibot.commands.simple.MyId
@@ -109,7 +111,6 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
         registerCreatorCommand(CMD_UPDATE_API_KEY, ::UpdateApiKey, privateChatOnly = true)
         registerCreatorCommand(CMD_DEEP_SEEK_ON, { DeepSeekState(it, true) }, privateChatOnly = true)
         registerCreatorCommand(CMD_DEEP_SEEK_OFF, ::DeepSeekState, privateChatOnly = true)
-        registerCreatorCommand(CMD_UPDATE_PRIVACY_POLICY, ::UpdatePrivacyPolicy, privateChatOnly = true)
     }
 
     override fun onUpdate(update: Update): BotApiMethod<*>? {

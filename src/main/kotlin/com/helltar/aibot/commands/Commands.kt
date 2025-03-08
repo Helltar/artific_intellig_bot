@@ -32,7 +32,6 @@ object Commands {
         const val CMD_DEEP_SEEK_ON = "deepseekon"
         const val CMD_GLOBAL_SLOW_MODE = "globalslowmode"
         const val CMD_UPDATE_API_KEY = "updatekey"
-        const val CMD_UPDATE_PRIVACY_POLICY = "updateprivacy"
     }
 
     object Admin {

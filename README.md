@@ -106,9 +106,5 @@ By default, **gpt-4o** is used.
 - `/rmchat` (Remove chat from whitelist, Use in chat or by ID)
 - `/chats` (View chats list)
 
-#### Other
-
-- `/updateprivacy` (Update bot privacy policy `/privacy`)
-
 <br>
 <a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA.png" alt="IntelliJ IDEA logo." width="32%"></a>
