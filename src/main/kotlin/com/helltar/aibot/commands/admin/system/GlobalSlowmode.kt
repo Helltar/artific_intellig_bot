@@ -16,7 +16,7 @@ class GlobalSlowmode(ctx: MessageContext) : BotCommand(ctx) {
 
         val newMax = arguments[0].toInt()
 
-        configurationsDao.setGlobalSlowmodeMaxUsageCount(newMax)
+        configurationsDao.setGlobalSlowmodeMaxUsageCount(newMax) // todo: if
 
         replyToMessage(Strings.GLOBAL_SLOW_MODE_SUCCESFULLY_CHANGED.format(newMax))
     }

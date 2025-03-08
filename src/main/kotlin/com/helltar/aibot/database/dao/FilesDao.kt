@@ -1,31 +1,43 @@
 package com.helltar.aibot.database.dao
 
-import com.helltar.aibot.database.Database.dbQuery
+import com.helltar.aibot.database.Database.dbTransaction
+import com.helltar.aibot.database.Database.utcNow
+import com.helltar.aibot.database.tables.FilesTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertIgnore
-import com.helltar.aibot.database.tables.FilesTable as FilesIdsTable
+import org.jetbrains.exposed.sql.update
 
 class FilesDao {
 
-    suspend fun add(name: String, fileId: String) = dbQuery {
-        FilesIdsTable
+    suspend fun add(fileName: String, fileId: String): Boolean = dbTransaction {
+        FilesTable
             .insertIgnore {
-                it[this.name] = name
+                it[this.fileName] = fileName
                 it[this.fileId] = fileId
+                it[this.createdAt] = utcNow()
             }
             .insertedCount > 0
     }
 
-    suspend fun getFileId(name: String) = dbQuery {
-        FilesIdsTable
-            .select(FilesIdsTable.fileId)
-            .where { FilesIdsTable.name eq name }
-            .singleOrNull()?.get(FilesIdsTable.fileId)
+    suspend fun getFileId(fileName: String): String? = dbTransaction {
+        FilesTable
+            .select(FilesTable.fileId)
+            .where { FilesTable.fileName eq fileName }
+            .singleOrNull()?.get(FilesTable.fileId)
     }
 
-    suspend fun delete(name: String) = dbQuery {
-        FilesIdsTable.deleteWhere { FilesIdsTable.name eq name }
+    suspend fun update(fileName: String, fileId: String): Boolean = dbTransaction {
+        FilesTable
+            .update({ FilesTable.fileName eq fileName }) {
+                it[this.fileId] = fileId
+                it[this.updatedAt] = utcNow()
+            } > 0
+    }
+
+    suspend fun delete(fileName: String) = dbTransaction {
+        FilesTable
+            .deleteWhere { FilesTable.fileName eq fileName }
     }
 }
 

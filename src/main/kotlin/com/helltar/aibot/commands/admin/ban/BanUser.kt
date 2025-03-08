@@ -12,7 +12,7 @@ class BanUser(ctx: MessageContext) : BotCommand(ctx) {
         val user = ctx.message().replyToMessage?.from ?: return
         val reason = argumentsString.ifEmpty { null }
 
-        if (banlistDao.banUser(user, reason))
+        if (banlistDao.ban(user, reason))
             replyToMessage(Strings.USER_BANNED)
         else
             replyToMessage(Strings.USER_ALREADY_BANNED)

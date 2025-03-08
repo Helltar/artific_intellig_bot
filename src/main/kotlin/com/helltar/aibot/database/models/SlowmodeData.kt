@@ -7,8 +7,8 @@ data class SlowmodeData(
     val username: String?,
     val firstName: String,
     val limit: Int,
-    val requests: Int,
-    val lastRequest: Instant?
+    val usageCount: Int,
+    val lastUsage: Instant?
 )
 
 data class GlobalSlowmodeData(
@@ -18,6 +18,6 @@ data class GlobalSlowmodeData(
 
 data class SlowmodeStateData(
     val limit: Int,
-    val requests: Int,
-    val lastRequest: Instant?
+    val usageCount: Int,
+    val lastUsage: Instant?
 )

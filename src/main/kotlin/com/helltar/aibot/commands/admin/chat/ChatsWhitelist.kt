@@ -10,7 +10,7 @@ class ChatsWhitelist(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
         val text =
-            chatWhitelistDao.getList().joinToString("\n") {
+            chatWhitelistDao.list().joinToString("\n") {
                 val title = it.title?.let { title -> "<i>($title)</i>" } ?: "null"
                 "<code>${it.chatId}</code> $title <i>(${it.datetime})</i>"
             }

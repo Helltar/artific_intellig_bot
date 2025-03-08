@@ -15,7 +15,7 @@ class SlowmodeOff(ctx: MessageContext) : BotCommand(ctx) {
             else
                 message.replyToMessage?.from?.id
 
-        if (slowmodeDao.offSlowMode(userId ?: return))
+        if (slowmodeDao.disableSlowmode(userId ?: return))
             replyToMessage(Strings.SLOW_MODE_OFF)
         else
             replyToMessage(Strings.SLOW_MODE_OFF_NOT_ENABLED)

@@ -1,6 +1,7 @@
 package com.helltar.aibot.database.dao
 
-import com.helltar.aibot.database.Database.dbQuery
+import com.helltar.aibot.database.Database.dbTransaction
+import com.helltar.aibot.database.Database.utcNow
 import com.helltar.aibot.database.models.BanlistData
 import com.helltar.aibot.database.tables.BannedUsersTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -8,42 +9,41 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.selectAll
 import org.telegram.telegrambots.meta.api.objects.User
-import java.time.Clock
-import java.time.Instant
 
 class BanlistDao {
 
-    suspend fun banUser(user: User, reason: String?) = dbQuery {
+    suspend fun ban(user: User, reason: String?): Boolean = dbTransaction {
         BannedUsersTable
             .insertIgnore {
                 it[userId] = user.id
                 it[username] = user.userName
                 it[firstName] = user.firstName
                 it[this.reason] = reason
-                it[datetime] = Instant.now(Clock.systemUTC())
+                it[bannedAt] = utcNow()
             }
             .insertedCount > 0
     }
 
-    suspend fun unbanUser(userId: Long) = dbQuery {
-        BannedUsersTable.deleteWhere { this.userId eq userId } > 0
+    suspend fun unban(userId: Long): Boolean = dbTransaction {
+        BannedUsersTable
+            .deleteWhere { BannedUsersTable.userId eq userId } > 0
     }
 
-    suspend fun isUserBanned(userId: Long) = dbQuery {
+    suspend fun isBanned(userId: Long): Boolean = dbTransaction {
         BannedUsersTable
             .select(BannedUsersTable.userId)
             .where { BannedUsersTable.userId eq userId }
-            .count() > 0
+            .empty().not()
     }
 
-    suspend fun getReason(userId: Long) = dbQuery {
+    suspend fun reason(userId: Long): String? = dbTransaction {
         BannedUsersTable
             .select(BannedUsersTable.reason)
             .where { BannedUsersTable.userId eq userId }
             .singleOrNull()?.get(BannedUsersTable.reason)
     }
 
-    suspend fun getList(): List<BanlistData> = dbQuery {
+    suspend fun list(): List<BanlistData> = dbTransaction {
         BannedUsersTable
             .selectAll()
             .map {
@@ -52,7 +52,7 @@ class BanlistDao {
                     it[BannedUsersTable.username],
                     it[BannedUsersTable.firstName],
                     it[BannedUsersTable.reason],
-                    it[BannedUsersTable.datetime]
+                    it[BannedUsersTable.bannedAt]
                 )
             }
     }

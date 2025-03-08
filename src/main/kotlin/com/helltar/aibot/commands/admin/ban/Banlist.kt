@@ -10,7 +10,7 @@ class Banlist(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
         val list =
-            banlistDao.getList().joinToString("\n") {
+            banlistDao.list().joinToString("\n") {
                 val username = it.username ?: it.firstName
                 val reason = it.reason?.let { reason -> "<i>($reason)</i>" } ?: ""
                 "<code>${it.userId}</code> <b>$username</b> $reason <i>(${it.datetime})</i>"

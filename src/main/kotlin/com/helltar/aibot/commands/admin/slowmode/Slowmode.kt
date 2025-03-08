@@ -18,7 +18,7 @@ class Slowmode(ctx: MessageContext) : BotCommand(ctx) {
                     if (slowmodeDao.add(user, limit))
                         replyToMessage(String.format(Strings.SLOW_MODE_ON, limit))
                     else {
-                        slowmodeDao.update(user, limit)
+                        slowmodeDao.updateUserDataAndLimit(user, limit)
                         replyToMessage(String.format(Strings.SLOW_MODE_ON_UPDATE, limit))
                     }
 
@@ -30,7 +30,7 @@ class Slowmode(ctx: MessageContext) : BotCommand(ctx) {
                     val limit = arguments[1].toIntOrNull()
 
                     if (userId != null && limit != null) {
-                        if (slowmodeDao.update(userId, limit))
+                        if (slowmodeDao.updateLimit(userId, limit))
                             replyToMessage(Strings.SLOW_MODE_ON_UPDATE.format(limit))
                         else
                             replyToMessage(Strings.SLOW_MODE_USER_NOT_FOUND)

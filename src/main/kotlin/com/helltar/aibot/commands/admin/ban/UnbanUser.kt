@@ -15,7 +15,7 @@ class UnbanUser(ctx: MessageContext) : BotCommand(ctx) {
             else
                 ctx.message().replyToMessage?.from?.id
 
-        if (banlistDao.unbanUser(userId ?: return))
+        if (banlistDao.unban(userId ?: return))
             replyToMessage(Strings.USER_UNBANNED)
         else
             replyToMessage(Strings.USER_NOT_BANNED)

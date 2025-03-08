@@ -1,66 +1,86 @@
 package com.helltar.aibot.database.dao
 
-import com.helltar.aibot.database.Database.dbQuery
+import com.helltar.aibot.database.Database.dbTransaction
+import com.helltar.aibot.database.Database.utcNow
 import com.helltar.aibot.database.models.SlowmodeData
 import com.helltar.aibot.database.models.SlowmodeStateData
 import com.helltar.aibot.database.tables.SlowmodeTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import org.telegram.telegrambots.meta.api.objects.User
-import java.time.Clock
-import java.time.Instant
 
 class SlowmodeDao {
 
-    suspend fun add(user: User, limit: Int) = dbQuery {
+    suspend fun add(user: User, limit: Int) = dbTransaction {
         SlowmodeTable
             .insertIgnore {
                 it[userId] = user.id
                 it[username] = user.userName
                 it[firstName] = user.firstName
                 it[this.limit] = limit
-                it[requests] = 0
-                it[lastRequest] = null
-            }.insertedCount > 0
+                it[createdAt] = utcNow()
+            }
+            .insertedCount > 0
     }
 
-    suspend fun update(user: User, limit: Int, requestsCount: Int? = null) = dbQuery {
+    suspend fun updateUserDataAndLimit(user: User, limit: Int) = dbTransaction {
         SlowmodeTable
             .update({ SlowmodeTable.userId eq user.id }) {
                 it[username] = user.userName
                 it[firstName] = user.firstName
                 it[this.limit] = limit
-                it[lastRequest] = Instant.now(Clock.systemUTC())
-                requestsCount?.let { rc -> it[requests] = rc }
+                it[updatedAt] = utcNow()
             }
     }
 
-    suspend fun update(userId: Long, limit: Int) = dbQuery {
-        SlowmodeTable.update({ SlowmodeTable.userId eq userId }) { it[this.limit] = limit } > 0
-    }
-
-    suspend fun offSlowMode(userId: Long) = dbQuery {
-        SlowmodeTable.deleteWhere { SlowmodeTable.userId eq userId } > 0
-    }
-
-    suspend fun getSlowmodeState(userId: Long) = dbQuery {
+    suspend fun updateLimit(userId: Long, limit: Int): Boolean = dbTransaction {
         SlowmodeTable
-            .select(SlowmodeTable.limit, SlowmodeTable.requests, SlowmodeTable.lastRequest)
+            .update({ SlowmodeTable.userId eq userId }) {
+                it[this.limit] = limit
+                it[updatedAt] = utcNow()
+            } > 0
+    }
+
+    suspend fun incrementUsageCount(userId: Long): Boolean = dbTransaction {
+        SlowmodeTable
+            .update({ SlowmodeTable.userId eq userId }) {
+                it[this.usageCount] = usageCount + 1
+                it[updatedAt] = utcNow()
+            } > 0
+    }
+
+    suspend fun releaseUsageCount(userId: Long): Boolean = dbTransaction {
+        SlowmodeTable
+            .update({ SlowmodeTable.userId eq userId }) {
+                it[this.usageCount] = 0
+                it[updatedAt] = utcNow()
+            } > 0
+    }
+
+    suspend fun disableSlowmode(userId: Long): Boolean = dbTransaction {
+        SlowmodeTable
+            .deleteWhere { SlowmodeTable.userId eq userId } > 0
+    }
+
+    suspend fun slowmodeState(userId: Long) = dbTransaction {
+        SlowmodeTable
+            .select(SlowmodeTable.limit, SlowmodeTable.usageCount, SlowmodeTable.updatedAt)
             .where { SlowmodeTable.userId eq userId }
-            .map {
+            .singleOrNull()
+            ?.let {
                 SlowmodeStateData(
                     it[SlowmodeTable.limit],
-                    it[SlowmodeTable.requests],
-                    it[SlowmodeTable.lastRequest]
+                    it[SlowmodeTable.usageCount],
+                    it[SlowmodeTable.updatedAt]
                 )
             }
-            .singleOrNull()
     }
 
-    suspend fun getList() = dbQuery {
+    suspend fun list() = dbTransaction {
         SlowmodeTable
             .selectAll()
             .map {
@@ -69,8 +89,8 @@ class SlowmodeDao {
                     it[SlowmodeTable.username],
                     it[SlowmodeTable.firstName],
                     it[SlowmodeTable.limit],
-                    it[SlowmodeTable.requests],
-                    it[SlowmodeTable.lastRequest]
+                    it[SlowmodeTable.usageCount],
+                    it[SlowmodeTable.updatedAt]
                 )
             }
     }

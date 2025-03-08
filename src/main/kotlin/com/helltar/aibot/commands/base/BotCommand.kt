@@ -33,10 +33,10 @@ abstract class BotCommand(val ctx: MessageContext) : Command {
         commandsDao.isDisabled(command)
 
     suspend fun isChatInWhiteList() =
-        chatWhitelistDao.isChatExists(ctx.chatId())
+        chatWhitelistDao.isExists(ctx.chatId())
 
     suspend fun isUserBanned(userId: Long) =
-        banlistDao.isUserBanned(userId)
+        banlistDao.isBanned(userId)
 
     suspend fun isAdmin() =
         sudoersDao.isAdmin(userId)

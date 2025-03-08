@@ -40,7 +40,7 @@ class CommandState(ctx: MessageContext, private val disable: Boolean = false) : 
 
     private suspend fun getCommandsStatusText() =
         Commands.disableableCommands.map { commandName ->
-            val isDisabled = commandsDao.isDisabled(commandName)
+            val isDisabled = commandsDao.isDisabled(commandName) // todo: batch
             val status = if (isDisabled) DISABLED_SYMBOL else ENABLED_SYMBOL
             "$status <code>$commandName</code>"
         }

@@ -1,46 +1,47 @@
 package com.helltar.aibot.database.dao
 
-import com.helltar.aibot.database.Database.dbQuery
+import com.helltar.aibot.database.Database.dbTransaction
+import com.helltar.aibot.database.Database.utcNow
 import com.helltar.aibot.database.models.SudoersData
 import com.helltar.aibot.database.tables.SudoersTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.selectAll
-import java.time.Clock
-import java.time.Instant
 
 class SudoersDao {
 
-    suspend fun add(userId: Long, username: String?) = dbQuery {
-        SudoersTable.insertIgnore {
-            it[this.userId] = userId
-            it[this.username] = username
-            it[datetime] = Instant.now(Clock.systemUTC())
-        }
+    suspend fun add(userId: Long, username: String?): Boolean = dbTransaction {
+        SudoersTable
+            .insertIgnore {
+                it[this.userId] = userId
+                it[this.username] = username
+                it[createdAt] = utcNow()
+            }
     }
         .insertedCount > 0
 
 
-    suspend fun isAdmin(userId: Long) = dbQuery {
+    suspend fun isAdmin(userId: Long): Boolean = dbTransaction {
         SudoersTable
             .select(SudoersTable.userId)
             .where { SudoersTable.userId eq userId }
-            .count() > 0
+            .empty().not()
     }
 
-    suspend fun remove(userId: Long) = dbQuery {
-        SudoersTable.deleteWhere { this.userId eq userId } > 0
+    suspend fun remove(userId: Long) = dbTransaction {
+        SudoersTable
+            .deleteWhere { this.userId eq userId } > 0
     }
 
-    suspend fun getList() = dbQuery {
+    suspend fun list() = dbTransaction {
         SudoersTable
             .selectAll()
             .map {
                 SudoersData(
                     it[SudoersTable.userId],
                     it[SudoersTable.username],
-                    it[SudoersTable.datetime]
+                    it[SudoersTable.createdAt]
                 )
             }
     }
