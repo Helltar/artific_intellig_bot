@@ -1,13 +1,12 @@
 package com.helltar.aibot.database.tables
 
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.timestamp
 
-object GlobalSlowmodeTable : Table() {
+object GlobalSlowmodeTable : IntIdTable() {
 
-    val userId = long("user_id")
+    val userId = long("user_id").uniqueIndex()
     val usageCount = integer("usage_count").default(0)
-    val lastUsage = timestamp("last_usage").nullable()
-
-    override val primaryKey = PrimaryKey(userId)
+    val updatedAt = timestamp("updated_at").nullable()
+    val createdAt = timestamp("created_at")
 }

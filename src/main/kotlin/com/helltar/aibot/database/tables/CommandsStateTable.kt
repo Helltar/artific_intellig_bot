@@ -1,13 +1,12 @@
 package com.helltar.aibot.database.tables
 
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.timestamp
 
-object CommandsStateTable : Table() {
+object CommandsStateTable : IntIdTable() {
 
-    val name = varchar("name", 40)
+    val commandName = varchar("command_name", 40).uniqueIndex()
     val isDisabled = bool("is_disabled")
-    val datetime = timestamp("datetime")
-
-    override val primaryKey = PrimaryKey(name)
+    val updatedAt = timestamp("updated_at").nullable()
+    val createdAt = timestamp("created_at")
 }

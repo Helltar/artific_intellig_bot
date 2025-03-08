@@ -1,11 +1,12 @@
 package com.helltar.aibot.database.tables
 
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.javatime.timestamp
 
-object FilesTable : Table() {
+object FilesTable : IntIdTable() {
 
-    val name = varchar("name", 50)
+    val fileName = varchar("file_name", 50).uniqueIndex()
     val fileId = varchar("file_id", 255)
-
-    override val primaryKey = PrimaryKey(name)
+    val updatedAt = timestamp("updated_at").nullable()
+    val createdAt = timestamp("created_at")
 }

@@ -1,16 +1,15 @@
 package com.helltar.aibot.database.tables
 
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.timestamp
 
-object SlowmodeTable : Table() {
+object SlowmodeTable : IntIdTable() {
 
-    val userId = long("user_id")
+    val userId = long("user_id").uniqueIndex()
     val username = varchar("username", 32).nullable()
     val firstName = varchar("first_name", 64)
     val limit = integer("limit")
-    val requests = integer("requests_count")
-    val lastRequest = timestamp("last_request").nullable()
-
-    override val primaryKey = PrimaryKey(userId)
+    val usageCount = integer("usage_count")
+    val updatedAt = timestamp("updated_at").nullable()
+    val createdAt = timestamp("created_at")
 }
