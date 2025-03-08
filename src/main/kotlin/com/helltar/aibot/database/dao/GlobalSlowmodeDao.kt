@@ -27,7 +27,15 @@ class GlobalSlowmodeDao {
             }
     }
 
-    suspend fun getUsageState(userId: Long): GlobalSlowmodeData? = dbTransaction {
+    suspend fun resetUsageCount(userId: Long): Boolean = dbTransaction {
+        GlobalSlowmodeTable
+            .update({ GlobalSlowmodeTable.userId eq userId }) {
+                it[this.usageCount] = 0
+                it[updatedAt] = utcNow()
+            } > 0
+    }
+
+    suspend fun userSlowmodeData(userId: Long): GlobalSlowmodeData? = dbTransaction {
         GlobalSlowmodeTable
             .select(usageCount, GlobalSlowmodeTable.updatedAt)
             .where { GlobalSlowmodeTable.userId eq userId }

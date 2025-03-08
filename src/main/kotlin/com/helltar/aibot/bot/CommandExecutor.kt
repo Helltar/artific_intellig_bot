@@ -27,8 +27,8 @@ class CommandExecutor {
     )
 
     private companion object {
-        const val LOADING_GIF_FILE_NAME = "loading.gif"
         const val DIR_FILES = "data/files"
+        const val LOADING_GIF_FILE_NAME = "loading.gif"
         const val SLOW_MODE_DURATION_HOURS = 1
         val log = KotlinLogging.logger {}
     }
@@ -84,7 +84,7 @@ class CommandExecutor {
         val userId = botCommand.ctx.user().id
 
         if (botCommand.isUserBanned(userId)) {
-            val reason = banlistDao.getReason(userId) ?: "\uD83E\uDD37\u200D♂️" // 🤷‍♂️
+            val reason = banlistDao.reason(userId) ?: "\uD83E\uDD37\u200D♂️" // 🤷‍♂️
             botCommand.replyToMessage(Strings.BAN_AND_REASON.format(reason))
             return false
         }
@@ -136,38 +136,39 @@ class CommandExecutor {
     }
 
     private suspend fun getSlowmodeRemainingSeconds(user: User): Long {
-        val slowmodeState =
-            slowmodeDao.getSlowmodeState(user.id)
+        val slowmodeData =
+            slowmodeDao.userSlowmodeData(user.id)
                 ?: return getGlobalSlowmodeRemainingSeconds(user.id)
 
-        val limit = slowmodeState.limit
-        val lastRequest = slowmodeState.lastRequest
-        var requestCount = slowmodeState.requests
+        val limit = slowmodeData.limit
+        val lastUsage = slowmodeData.lastUsage
+        var usageCount = slowmodeData.usageCount
 
-        lastRequest?.let {
+        lastUsage?.let {
             val timeElapsed = Duration.between(it, Instant.now(Clock.systemUTC()))
 
-            if (requestCount >= limit && timeElapsed.toHours() < SLOW_MODE_DURATION_HOURS)
+            if (usageCount >= limit && timeElapsed.toHours() < SLOW_MODE_DURATION_HOURS)
                 return SLOW_MODE_DURATION_HOURS.hours.inWholeSeconds - timeElapsed.seconds
             else if (timeElapsed.toHours() >= SLOW_MODE_DURATION_HOURS)
-                requestCount = 0
+                slowmodeDao.resetUsageCount(user.id)
         }
 
-        slowmodeDao.update(user, limit, requestCount + 1)
+        slowmodeDao.incrementUsageCount(user.id)
 
         return 0
     }
 
     private suspend fun getGlobalSlowmodeRemainingSeconds(userId: Long): Long {
-        var slowmodeState = globalSlowmodeDao.getUsageState(userId)
+        val slowmodeData = globalSlowmodeDao.userSlowmodeData(userId)
 
-        if (slowmodeState == null) {
+        if (slowmodeData == null) {
             globalSlowmodeDao.add(userId)
-            slowmodeState = globalSlowmodeDao.getUsageState(userId) ?: return 0
+            globalSlowmodeDao.incrementUsageCount(userId)
+            return 0
         }
 
-        var usageCount = slowmodeState.usageCount
-        val lastUsage = slowmodeState.lastUsage
+        var usageCount = slowmodeData.usageCount
+        val lastUsage = slowmodeData.lastUsage
 
         lastUsage?.let {
             val timeElapsed = Duration.between(it, Instant.now(Clock.systemUTC()))
@@ -176,10 +177,10 @@ class CommandExecutor {
             if (usageCount >= globalSlowmodeMaxUsageCount && timeElapsed.toHours() < SLOW_MODE_DURATION_HOURS)
                 return SLOW_MODE_DURATION_HOURS.hours.inWholeSeconds - timeElapsed.seconds
             else if (timeElapsed.toHours() >= SLOW_MODE_DURATION_HOURS)
-                usageCount = 0
+                globalSlowmodeDao.resetUsageCount(userId)
         }
 
-        globalSlowmodeDao.update(userId, usageCount + 1)
+        globalSlowmodeDao.incrementUsageCount(userId)
 
         return 0
     }

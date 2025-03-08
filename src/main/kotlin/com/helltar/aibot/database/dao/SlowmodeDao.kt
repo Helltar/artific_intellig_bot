@@ -53,7 +53,7 @@ class SlowmodeDao {
             } > 0
     }
 
-    suspend fun releaseUsageCount(userId: Long): Boolean = dbTransaction {
+    suspend fun resetUsageCount(userId: Long): Boolean = dbTransaction {
         SlowmodeTable
             .update({ SlowmodeTable.userId eq userId }) {
                 it[this.usageCount] = 0
@@ -66,7 +66,7 @@ class SlowmodeDao {
             .deleteWhere { SlowmodeTable.userId eq userId } > 0
     }
 
-    suspend fun slowmodeState(userId: Long) = dbTransaction {
+    suspend fun userSlowmodeData(userId: Long) = dbTransaction {
         SlowmodeTable
             .select(SlowmodeTable.limit, SlowmodeTable.usageCount, SlowmodeTable.updatedAt)
             .where { SlowmodeTable.userId eq userId }
