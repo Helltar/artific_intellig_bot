@@ -46,8 +46,6 @@ If you want to use **DeepSeek** for `/chat`, also add the key [DeepSeek API Key]
 - `/dalle` - Creates an image given a prompt (dall-e-3)
 - `/dallevar` - Creates a variation of a given image (dall-e-2)
 - `/asr` - Transcribes audio (whisper-1)
-- `/privacy`
-- `/about`
 
 ### Additional Chat Commands
 
@@ -78,7 +76,7 @@ By default, **gpt-4o** is used.
 
 #### Ban User
 
-- `/ban` (Use as reply to user message, Example: `/ban reason`)
+- `/ban` (Use as reply to a user message, Example: `/ban reason`)
 - `/unban` (Use as reply to user message or by user ID)
 - `/banlist`
 
@@ -90,13 +88,13 @@ By default, **gpt-4o** is used.
 
 - `/addadmin` (Add admin by ID, Example: `/addadmin 123456789 username`)
 - `/rmadmin` (Remove admin by ID)
-- `/sudoers` (View admin list)
+- `/sudoers` (View an admin list)
 
 #### Manage Chats
 
-- `/addchat` (Add chat to whitelist, Use in chat or by ID)
-- `/rmchat` (Remove chat from whitelist, Use in chat or by ID)
-- `/chats` (View chats list)
+- `/addchat` (Add chat to allowlist, Use in chat or by ID)
+- `/rmchat` (Remove chat from allowlist, Use in chat or by ID)
+- `/chats` (View a chat list)
 
 <br>
 <a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA.png" alt="IntelliJ IDEA logo." width="32%"></a>
