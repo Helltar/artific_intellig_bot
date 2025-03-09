@@ -39,21 +39,37 @@ class CommandExecutor {
 
     fun execute(botCommand: BotCommand, options: CommandOptions) {
         val user = botCommand.ctx.user()
+        val userId = user.id
         val chat = botCommand.ctx.message().chat
         val commandName = botCommand.getCommandName()
 
         logCommandExecution(botCommand, user, chat, commandName)
 
-        val requestKey = "$commandName@${user.id}"
+        val requestKey = "$commandName@$userId"
 
         if (isRequestInProgress(requestKey, botCommand)) return
+
+        log.debug { "options: $options" }
 
         requestsMap[requestKey] =
             scope.launch(CoroutineName(requestKey)) {
                 if (options.privateChatOnly && !chat.isUserChat) return@launch
 
-                if (!options.checkRights || validateCommandAccess(botCommand, options) || canExecuteCommand(botCommand))
+                val isCreator = userId == Config.creatorId
+                val isAdmin = botCommand.isAdmin()
+
+                val shouldRunCommand =
+                    when {
+                        !options.checkRights -> true
+                        options.isCreatorCommand -> isCreator
+                        options.isAdminCommand -> isAdmin
+                        else -> canExecuteCommand(botCommand)
+                    }
+
+                if (shouldRunCommand)
                     runCommand(botCommand, options.isLongRunningCommand)
+                else
+                    log.info { "command $commandName not allowed for user $userId" }
             }
     }
 
@@ -68,18 +84,6 @@ class CommandExecutor {
             true
         } else
             false
-
-    private suspend fun validateCommandAccess(botCommand: BotCommand, options: CommandOptions): Boolean {
-        val isCreator = botCommand.ctx.user().id == Config.creatorId
-        val isAdmin = botCommand.isAdmin()
-
-        return when {
-            options.isCreatorCommand && !isCreator -> false
-            options.isAdminCommand && !isAdmin -> false
-            isCreator || isAdmin -> true
-            else -> false
-        }
-    }
 
     private suspend fun canExecuteCommand(botCommand: BotCommand): Boolean {
         val userId = botCommand.ctx.user().id
