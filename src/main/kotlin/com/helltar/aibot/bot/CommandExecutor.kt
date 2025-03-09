@@ -63,7 +63,7 @@ class CommandExecutor {
                         !options.checkRights -> true
                         options.isCreatorCommand -> isCreator
                         options.isAdminCommand -> isAdmin
-                        else -> canExecuteCommand(botCommand)
+                        else -> isCanExecuteCommand(botCommand)
                     }
 
                 if (shouldRunCommand)
@@ -85,7 +85,7 @@ class CommandExecutor {
         } else
             false
 
-    private suspend fun canExecuteCommand(botCommand: BotCommand): Boolean {
+    private suspend fun isCanExecuteCommand(botCommand: BotCommand): Boolean {
         val userId = botCommand.ctx.user().id
 
         if (botCommand.isUserBanned(userId)) {
@@ -106,10 +106,10 @@ class CommandExecutor {
             return false
         }
 
-        return isInSlowmode(botCommand)
+        return isNotInSlowmode(botCommand)
     }
 
-    private suspend fun isInSlowmode(botCommand: BotCommand): Boolean {
+    private suspend fun isNotInSlowmode(botCommand: BotCommand): Boolean {
         if (botCommand.getCommandName() in Commands.disableableCommands) {
             val slowmodeRemainingSeconds = getSlowmodeRemainingSeconds(botCommand.ctx.user().id)
 
