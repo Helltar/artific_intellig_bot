@@ -1,8 +1,7 @@
 package com.helltar.aibot.config
 
 import com.annimon.tgbotsmodule.services.ResourceBundleLocalizationService
-import com.helltar.aibot.commands.Commands.Admin.CMD_SLOW_MODE
-import com.helltar.aibot.commands.Commands.Creator.CMD_GLOBAL_SLOW_MODE
+import com.helltar.aibot.commands.Commands.Creator.CMD_SLOWMODE
 import com.helltar.aibot.commands.Commands.Creator.CMD_UPDATE_API_KEY
 import com.helltar.aibot.commands.Commands.User.CMD_CHAT
 import com.helltar.aibot.commands.Commands.User.CMD_CHAT_CTX_REMOVE
@@ -74,16 +73,10 @@ object Strings {
     const val CREATOR_CONTEXT_CANNOT_BE_VIEWED = "Creator context cannot be viewed ✋" // ✋
     const val CREATOR_CONTEXT_CANNOT_BE_DELETED = "Creator context cannot be deleted ✋" // ✋
 
-    const val SLOW_MODE_PLEASE_WAIT = "✋ Slow mode, wait <b>%d</b> seconds"
-    const val SLOW_MODE_ON = "✅ Slow mode on, <b>%d</b> requests per hour"
-    const val SLOW_MODE_ON_UPDATE = "\uD83D\uDD04 Slow mode already on, update, <b>%d</b> requests per hour" // 🔄
-    const val SLOW_MODE_OFF = "✅ Slow mode off"
-    const val SLOW_MODE_OFF_NOT_ENABLED = "ℹ\uFE0F Slow mode not enabled for this user" // ℹ️
-    const val SLOW_MODE_BAD_ARG = "\uD83E\uDD2D Bad args., example: <code>/$CMD_SLOW_MODE 123456789 2</code> (userid, limit), or if this is a reply: <code>/$CMD_SLOW_MODE 2</code>" // 🤭
-    const val SLOW_MODE_USER_NOT_FOUND = "\uD83E\uDD37\u200D♂\uFE0F User with this ID is not in the database"
-
-    const val GLOBAL_SLOW_MODE_CURRENT_VALUE = "ℹ\uFE0F The current value is <b>%d</b> requests per hour per user.\n\nTo change it, use the command <code>/$CMD_GLOBAL_SLOW_MODE 15</code>"
-    const val GLOBAL_SLOW_MODE_SUCCESFULLY_CHANGED = "✅ The value for global-slowmode has been successfully changed to <b>%d</b> requests per hour per user."
+    const val SLOWMODE_PLEASE_WAIT = "✋ Slowmode, wait <b>%d</b> seconds"
+    const val SLOWMODE_CURRENT_VALUE = "ℹ\uFE0F The current value is <b>%d</b> requests per hour per user.\n\nTo change it, use the command <code>/$CMD_SLOWMODE 15</code>"
+    const val SLOWMODE_SUCCESFULLY_CHANGED = "✅ The value for system-slowmode has been successfully changed to <b>%d</b> requests per hour per user."
+    const val SLOWMODE_CHANGE_FAIL = "❌ Error when change system-slowmode value"
 
     private val localization = ResourceBundleLocalizationService("language")
 

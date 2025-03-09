@@ -82,17 +82,11 @@ By default, **gpt-4o** is used.
 - `/unban` (Use as reply to user message or by user ID)
 - `/banlist`
 
-#### Slowmode for User
-
-- `/slowmode` (Use as reply to user message, Example: `/slowmode 5`) (Requests per hour)
-- `/slowmodeoff` (Use as reply to user message or by user ID)
-- `/slowmodelist`
-
-#### Global Slowmode
+#### Slowmode
 
 (Default: 10 requests per hour per user)
 
-- `/globalslowmode`
+- `/slowmode`
 
 #### Manage Admins
 

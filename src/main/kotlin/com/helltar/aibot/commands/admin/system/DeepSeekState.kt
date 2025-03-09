@@ -12,7 +12,7 @@ class DeepSeekState(ctx: MessageContext, private val enable: Boolean = false) : 
 
     override suspend fun run() {
         apiKeyDao.getKey(API_KEY_PROVIDER_DEEPSEEK)?.let {
-            configurationsDao.setDeepSeekState(enable)
+            configurationsDao.updateDeepSeekState(enable)
             replyToMessage(if (enable) Strings.DEEPSEEK_ENABLED else Strings.DEEPSEEK_DISABLED)
         }
             ?: replyToMessage(Strings.UPDATE_API_KEYS_COMMAND_EXAMPLE)

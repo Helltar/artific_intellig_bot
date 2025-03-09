@@ -3,8 +3,11 @@ package com.helltar.aibot.bot
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.base.BotCommand
 import com.helltar.aibot.config.Config
+import com.helltar.aibot.config.Config.LOADING_GIF_FILENAME
 import com.helltar.aibot.config.Strings
-import com.helltar.aibot.database.dao.*
+import com.helltar.aibot.database.dao.banlistDao
+import com.helltar.aibot.database.dao.configurationsDao
+import com.helltar.aibot.database.dao.slowmodeDao
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
 import org.telegram.telegrambots.meta.api.objects.User
@@ -27,8 +30,6 @@ class CommandExecutor {
     )
 
     private companion object {
-        const val DIR_FILES = "data/files"
-        const val LOADING_GIF_FILE_NAME = "loading.gif"
         const val SLOW_MODE_DURATION_HOURS = 1
         val log = KotlinLogging.logger {}
     }
@@ -51,7 +52,7 @@ class CommandExecutor {
             scope.launch(CoroutineName(requestKey)) {
                 if (options.privateChatOnly && !chat.isUserChat) return@launch
 
-                if (!options.checkRights || checkPermissions(botCommand, options) || canExecuteCommand(botCommand))
+                if (!options.checkRights || validateCommandAccess(botCommand, options) || canExecuteCommand(botCommand))
                     runCommand(botCommand, options.isLongRunningCommand)
             }
     }
@@ -68,7 +69,7 @@ class CommandExecutor {
         } else
             false
 
-    private suspend fun checkPermissions(botCommand: BotCommand, options: CommandOptions): Boolean {
+    private suspend fun validateCommandAccess(botCommand: BotCommand, options: CommandOptions): Boolean {
         val isCreator = botCommand.ctx.user().id == Config.creatorId
         val isAdmin = botCommand.isAdmin()
 
@@ -101,15 +102,15 @@ class CommandExecutor {
             return false
         }
 
-        return checkSlowMode(botCommand)
+        return isInSlowmode(botCommand)
     }
 
-    private suspend fun checkSlowMode(botCommand: BotCommand): Boolean {
+    private suspend fun isInSlowmode(botCommand: BotCommand): Boolean {
         if (botCommand.getCommandName() in Commands.disableableCommands) {
-            val slowmodeRemainingSeconds = getSlowmodeRemainingSeconds(botCommand.ctx.user())
+            val slowmodeRemainingSeconds = getSlowmodeRemainingSeconds(botCommand.ctx.user().id)
 
             if (slowmodeRemainingSeconds > 0) {
-                botCommand.replyToMessage(Strings.SLOW_MODE_PLEASE_WAIT.format(slowmodeRemainingSeconds))
+                botCommand.replyToMessage(Strings.SLOWMODE_PLEASE_WAIT.format(slowmodeRemainingSeconds))
                 return false
             }
         }
@@ -135,71 +136,52 @@ class CommandExecutor {
         }
     }
 
-    private suspend fun getSlowmodeRemainingSeconds(user: User): Long {
-        val slowmodeData =
-            slowmodeDao.userSlowmodeData(user.id)
-                ?: return getGlobalSlowmodeRemainingSeconds(user.id)
+    private suspend fun getSlowmodeRemainingSeconds(userId: Long): Long {
+        val userSlowmodeStatus = slowmodeDao.slowmodeStatus(userId)
 
-        val limit = slowmodeData.limit
-        val lastUsage = slowmodeData.lastUsage
-        var usageCount = slowmodeData.usageCount
-
-        lastUsage?.let {
-            val timeElapsed = Duration.between(it, Instant.now(Clock.systemUTC()))
-
-            if (usageCount >= limit && timeElapsed.toHours() < SLOW_MODE_DURATION_HOURS)
-                return SLOW_MODE_DURATION_HOURS.hours.inWholeSeconds - timeElapsed.seconds
-            else if (timeElapsed.toHours() >= SLOW_MODE_DURATION_HOURS)
-                slowmodeDao.resetUsageCount(user.id)
-        }
-
-        slowmodeDao.incrementUsageCount(user.id)
-
-        return 0
-    }
-
-    private suspend fun getGlobalSlowmodeRemainingSeconds(userId: Long): Long {
-        val slowmodeData = globalSlowmodeDao.userSlowmodeData(userId)
-
-        if (slowmodeData == null) {
-            globalSlowmodeDao.add(userId)
-            globalSlowmodeDao.incrementUsageCount(userId)
+        if (userSlowmodeStatus == null) {
+            slowmodeDao.add(userId)
+            slowmodeDao.incrementUsageCount(userId)
             return 0
         }
 
-        var usageCount = slowmodeData.usageCount
-        val lastUsage = slowmodeData.lastUsage
+        val lastUsage = userSlowmodeStatus.lastUsage
 
-        lastUsage?.let {
-            val timeElapsed = Duration.between(it, Instant.now(Clock.systemUTC()))
-            val globalSlowmodeMaxUsageCount = configurationsDao.getGlobalSlowmodeMaxUsageCount()
-
-            if (usageCount >= globalSlowmodeMaxUsageCount && timeElapsed.toHours() < SLOW_MODE_DURATION_HOURS)
-                return SLOW_MODE_DURATION_HOURS.hours.inWholeSeconds - timeElapsed.seconds
-            else if (timeElapsed.toHours() >= SLOW_MODE_DURATION_HOURS)
-                globalSlowmodeDao.resetUsageCount(userId)
+        if (lastUsage == null) {
+            slowmodeDao.incrementUsageCount(userId)
+            return 0
         }
 
-        globalSlowmodeDao.incrementUsageCount(userId)
+        val timeElapsed = Duration.between(lastUsage, Instant.now(Clock.systemUTC()))
+
+        if (timeElapsed.toHours() >= SLOW_MODE_DURATION_HOURS) {
+            slowmodeDao.resetUsageCount(userId)
+            return 0
+        }
+
+        val slowmodeMaxUsageCount = configurationsDao.getSlowmodeMaxUsageCount()
+
+        if (userSlowmodeStatus.usageCount >= slowmodeMaxUsageCount)
+            return SLOW_MODE_DURATION_HOURS.hours.inWholeSeconds - timeElapsed.seconds
+
+        slowmodeDao.incrementUsageCount(userId)
 
         return 0
     }
 
     private suspend fun sendWaitingGif(botCommand: BotCommand, caption: String): Int {
-        val fileName = LOADING_GIF_FILE_NAME
 
         suspend fun sendGifAndReturnMessageId(): Int {
-            val message = botCommand.sendDocument(File("$DIR_FILES/$LOADING_GIF_FILE_NAME"))
-            message.document.fileId?.let { filesDao.add(fileName, it) }
+            val message = botCommand.sendDocument(File(LOADING_GIF_FILENAME))
+            message.document.fileId?.let { configurationsDao.updateLoadingGifFileId(it) }
             return message.messageId
         }
 
-        return filesDao.getFileId(fileName)?.let { fileId ->
+        return configurationsDao.getLoadingGifFileId()?.let { fileId ->
             try {
                 botCommand.replyToMessageWithDocument(fileId, caption)
             } catch (e: Exception) {
                 log.error { e.message }
-                filesDao.delete(fileName)
                 sendGifAndReturnMessageId()
             }
         }

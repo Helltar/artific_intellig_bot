@@ -29,7 +29,7 @@ object Commands {
         const val CMD_ADD_CHAT = "addchat"
         const val CMD_DEEP_SEEK_OFF = "deepseekoff"
         const val CMD_DEEP_SEEK_ON = "deepseekon"
-        const val CMD_GLOBAL_SLOW_MODE = "globalslowmode"
+        const val CMD_SLOWMODE = "slowmode"
         const val CMD_UPDATE_API_KEY = "updatekey"
     }
 
@@ -42,9 +42,6 @@ object Commands {
         const val CMD_ENABLE = "enable"
         const val CMD_RM_ADMIN = "rmadmin"
         const val CMD_RM_CHAT = "rmchat"
-        const val CMD_SLOW_MODE = "slowmode"
-        const val CMD_SLOW_MODE_LIST = "slowmodelist"
-        const val CMD_SLOW_MODE_OFF = "slowmodeoff"
         const val CMD_UNBAN_USER = "unban"
 
     }

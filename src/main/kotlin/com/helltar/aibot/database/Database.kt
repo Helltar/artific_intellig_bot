@@ -39,8 +39,7 @@ object Database {
     private fun createTables() {
         SchemaUtils.create(
             ApiKeysTable, BannedUsersTable, ChatWhitelistTable,
-            CommandsStateTable, FilesTable, GlobalSlowmodeTable,
-            SlowmodeTable, SudoersTable, ConfigurationsTable
+            CommandsStateTable, SlowmodeTable, SudoersTable, ConfigurationsTable
         )
     }
 

@@ -6,21 +6,22 @@ import com.helltar.aibot.commands.base.BotCommand
 import com.helltar.aibot.config.Strings
 import com.helltar.aibot.database.dao.configurationsDao
 
-class GlobalSlowmode(ctx: MessageContext) : BotCommand(ctx) {
+class Slowmode(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
         if (arguments.isEmpty() || arguments[0].toIntOrNull() == null) {
-            replyToMessage(Strings.GLOBAL_SLOW_MODE_CURRENT_VALUE.format(configurationsDao.getGlobalSlowmodeMaxUsageCount()))
+            replyToMessage(Strings.SLOWMODE_CURRENT_VALUE.format(configurationsDao.getSlowmodeMaxUsageCount()))
             return
         }
 
         val newMax = arguments[0].toInt()
 
-        configurationsDao.setGlobalSlowmodeMaxUsageCount(newMax) // todo: if
-
-        replyToMessage(Strings.GLOBAL_SLOW_MODE_SUCCESFULLY_CHANGED.format(newMax))
+        if (configurationsDao.updateSlowmodeMaxUsageCount(newMax))
+            replyToMessage(Strings.SLOWMODE_SUCCESFULLY_CHANGED.format(newMax))
+        else
+            replyToMessage(Strings.SLOWMODE_CHANGE_FAIL)
     }
 
     override fun getCommandName() =
-        Commands.Creator.CMD_GLOBAL_SLOW_MODE
+        Commands.Creator.CMD_SLOWMODE
 }

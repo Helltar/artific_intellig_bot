@@ -8,29 +8,38 @@ import org.jetbrains.exposed.sql.update
 
 class ConfigurationsDao {
 
-    suspend fun getGlobalSlowmodeMaxUsageCount() = dbTransaction {
-        getConfigValue("global_slowmode_max_usage_count")?.toIntOrNull() ?: 10
+    private companion object {
+        const val KEY_SLOWMODE_MAX_USAGE_COUNT = "global_slowmode_max_usage_count"
+        const val KEY_DEEPSEEK_ENABLED = "deepseek_enabled"
+        const val KEY_LOADING_GIF_FILE_ID = "loading_gif_file_id"
     }
 
-    suspend fun setGlobalSlowmodeMaxUsageCount(newMax: Int) = dbTransaction {
-        setConfiguration("global_slowmode_max_usage_count", newMax.toString())
-    }
+    suspend fun getLoadingGifFileId() =
+        getConfigValue(KEY_LOADING_GIF_FILE_ID)
 
-    suspend fun isDeepSeekEnabled() = dbTransaction {
-        getConfigValue("deepseek_enabled")?.toBoolean() == true
-    }
+    suspend fun updateLoadingGifFileId(fileId: String) =
+        setConfiguration(KEY_LOADING_GIF_FILE_ID, fileId)
 
-    suspend fun setDeepSeekState(enable: Boolean) = dbTransaction {
-        setConfiguration("deepseek_enabled", enable.toString())
-    }
+    suspend fun getSlowmodeMaxUsageCount() =
+        getConfigValue(KEY_SLOWMODE_MAX_USAGE_COUNT)?.toIntOrNull() ?: 10
 
-    private fun getConfigValue(key: String): String? =
+    suspend fun updateSlowmodeMaxUsageCount(newMax: Int) =
+        setConfiguration(KEY_SLOWMODE_MAX_USAGE_COUNT, newMax.toString())
+
+    suspend fun isDeepSeekEnabled() =
+        getConfigValue(KEY_DEEPSEEK_ENABLED)?.toBoolean() == true
+
+    suspend fun updateDeepSeekState(enable: Boolean) =
+        setConfiguration(KEY_DEEPSEEK_ENABLED, enable.toString())
+
+    private suspend fun getConfigValue(key: String): String? = dbTransaction {
         ConfigurationsTable
             .select(ConfigurationsTable.value)
             .where { ConfigurationsTable.key eq key }
             .singleOrNull()?.get(ConfigurationsTable.value)
+    }
 
-    private fun setConfiguration(key: String, value: String): Boolean =
+    private suspend fun setConfiguration(key: String, value: String): Boolean = dbTransaction {
         (ConfigurationsTable
             .update({ ConfigurationsTable.key eq key }) {
                 it[this.value] = value
@@ -42,6 +51,7 @@ class ConfigurationsDao {
                     it[this.value] = value
                     it[this.createdAt] = utcNow()
                 }.insertedCount) > 0
+    }
 }
 
 val configurationsDao = ConfigurationsDao()

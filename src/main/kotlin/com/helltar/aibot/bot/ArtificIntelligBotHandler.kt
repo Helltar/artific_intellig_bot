@@ -14,15 +14,12 @@ import com.helltar.aibot.commands.Commands.Admin.CMD_DISABLE
 import com.helltar.aibot.commands.Commands.Admin.CMD_ENABLE
 import com.helltar.aibot.commands.Commands.Admin.CMD_RM_ADMIN
 import com.helltar.aibot.commands.Commands.Admin.CMD_RM_CHAT
-import com.helltar.aibot.commands.Commands.Admin.CMD_SLOW_MODE
-import com.helltar.aibot.commands.Commands.Admin.CMD_SLOW_MODE_LIST
-import com.helltar.aibot.commands.Commands.Admin.CMD_SLOW_MODE_OFF
 import com.helltar.aibot.commands.Commands.Admin.CMD_UNBAN_USER
 import com.helltar.aibot.commands.Commands.Creator.CMD_ADD_ADMIN
 import com.helltar.aibot.commands.Commands.Creator.CMD_ADD_CHAT
 import com.helltar.aibot.commands.Commands.Creator.CMD_DEEP_SEEK_OFF
 import com.helltar.aibot.commands.Commands.Creator.CMD_DEEP_SEEK_ON
-import com.helltar.aibot.commands.Commands.Creator.CMD_GLOBAL_SLOW_MODE
+import com.helltar.aibot.commands.Commands.Creator.CMD_SLOWMODE
 import com.helltar.aibot.commands.Commands.Creator.CMD_UPDATE_API_KEY
 import com.helltar.aibot.commands.Commands.Simple.CMD_ABOUT
 import com.helltar.aibot.commands.Commands.Simple.CMD_MYID
@@ -40,15 +37,12 @@ import com.helltar.aibot.commands.admin.ban.UnbanUser
 import com.helltar.aibot.commands.admin.chat.AddChat
 import com.helltar.aibot.commands.admin.chat.ChatsWhitelist
 import com.helltar.aibot.commands.admin.chat.RemoveChat
-import com.helltar.aibot.commands.admin.slowmode.Slowmode
-import com.helltar.aibot.commands.admin.slowmode.SlowmodeList
-import com.helltar.aibot.commands.admin.slowmode.SlowmodeOff
 import com.helltar.aibot.commands.admin.sudoers.AddAdmin
 import com.helltar.aibot.commands.admin.sudoers.AdminList
 import com.helltar.aibot.commands.admin.sudoers.RemoveAdmin
 import com.helltar.aibot.commands.admin.system.CommandState
 import com.helltar.aibot.commands.admin.system.DeepSeekState
-import com.helltar.aibot.commands.admin.system.GlobalSlowmode
+import com.helltar.aibot.commands.admin.system.Slowmode
 import com.helltar.aibot.commands.admin.system.UpdateApiKey
 import com.helltar.aibot.commands.base.BotCommand
 import com.helltar.aibot.commands.simple.About
@@ -94,9 +88,6 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
         registerAdminCommand(CMD_BAN_LIST, ::Banlist)
         registerAdminCommand(CMD_BAN_USER, ::BanUser)
         registerAdminCommand(CMD_UNBAN_USER, ::UnbanUser)
-        registerAdminCommand(CMD_SLOW_MODE, ::Slowmode)
-        registerAdminCommand(CMD_SLOW_MODE_OFF, ::SlowmodeOff)
-        registerAdminCommand(CMD_SLOW_MODE_LIST, ::SlowmodeList)
         registerAdminCommand(CMD_RM_ADMIN, ::RemoveAdmin)
         registerAdminCommand(CMD_RM_CHAT, ::RemoveChat)
         registerAdminCommand(CMD_ADMIN_LIST, ::AdminList, privateChatOnly = true)
@@ -104,7 +95,7 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
 
         registerCreatorCommand(CMD_ADD_ADMIN, ::AddAdmin)
         registerCreatorCommand(CMD_ADD_CHAT, ::AddChat)
-        registerCreatorCommand(CMD_GLOBAL_SLOW_MODE, ::GlobalSlowmode)
+        registerCreatorCommand(CMD_SLOWMODE, ::Slowmode)
         registerCreatorCommand(CMD_UPDATE_API_KEY, ::UpdateApiKey, privateChatOnly = true)
         registerCreatorCommand(CMD_DEEP_SEEK_ON, { DeepSeekState(it, true) }, privateChatOnly = true)
         registerCreatorCommand(CMD_DEEP_SEEK_OFF, ::DeepSeekState, privateChatOnly = true)

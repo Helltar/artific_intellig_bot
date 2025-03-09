@@ -4,6 +4,8 @@ import io.github.cdimascio.dotenv.dotenv
 
 object Config {
 
+    const val LOADING_GIF_FILENAME = "data/files/loading.gif"
+
     const val API_KEY_PROVIDER_OPENAI = "openai.com"
     const val API_KEY_PROVIDER_DEEPSEEK = "deepseek.com"
 
