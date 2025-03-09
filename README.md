@@ -84,9 +84,7 @@ By default, **gpt-4o** is used.
 
 #### Slowmode
 
-(Default: 10 requests per hour per user)
-
-- `/slowmode`
+- `/slowmode` (Default: 10 requests per hour per user)
 
 #### Manage Admins
 
