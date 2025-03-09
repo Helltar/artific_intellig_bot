@@ -6,7 +6,7 @@ import org.jetbrains.exposed.sql.javatime.timestamp
 object SlowmodeTable : IntIdTable() {
 
     val userId = long("user_id").uniqueIndex()
-    val usageCount = integer("usage_count").default(0)
-    val updatedAt = timestamp("updated_at").nullable()
+    val usageCount = integer("usage_count").default(1)
+    val updatedAt = timestamp("updated_at")
     val createdAt = timestamp("created_at")
 }

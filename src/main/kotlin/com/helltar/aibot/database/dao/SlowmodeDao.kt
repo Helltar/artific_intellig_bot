@@ -14,6 +14,7 @@ class SlowmodeDao {
         SlowmodeTable
             .insertIgnore {
                 it[this.userId] = userId
+                it[updatedAt] = utcNow()
                 it[createdAt] = utcNow()
             }
             .insertedCount > 0

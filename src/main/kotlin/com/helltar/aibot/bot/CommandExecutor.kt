@@ -141,17 +141,10 @@ class CommandExecutor {
 
         if (userSlowmodeStatus == null) {
             slowmodeDao.registerUser(userId)
-            slowmodeDao.incrementUsageCount(userId)
             return 0
         }
 
         val lastUsage = userSlowmodeStatus.lastUsage
-
-        if (lastUsage == null) {
-            slowmodeDao.incrementUsageCount(userId)
-            return 0
-        }
-
         val timeElapsed = Duration.between(lastUsage, Instant.now(Clock.systemUTC()))
 
         if (timeElapsed.toHours() >= SLOW_MODE_DURATION_HOURS) {
