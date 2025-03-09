@@ -48,8 +48,6 @@ class CommandExecutor {
 
         if (isRequestInProgress(requestKey, botCommand)) return
 
-        log.debug { "options: $options" }
-
         requestsMap[requestKey] =
             scope.launch(CoroutineName(requestKey)) {
                 if (options.privateChatOnly && !chat.isUserChat) return@launch
@@ -69,7 +67,7 @@ class CommandExecutor {
                 if (shouldRunCommand)
                     runCommand(botCommand, options.isLongRunningCommand)
                 else
-                    log.info { "command $commandName not allowed for user $userId" }
+                    log.info { "command /$commandName not allowed for user $userId" }
             }
     }
 
