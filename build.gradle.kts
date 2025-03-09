@@ -1,12 +1,12 @@
 plugins {
-    kotlin("jvm") version "2.1.0"
-    kotlin("plugin.serialization") version "2.1.0"
+    kotlin("jvm") version "2.1.10"
+    kotlin("plugin.serialization") version "2.1.10"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     application
 }
 
 group = "com.helltar"
-version = "0.9.80"
+version = "0.9.90"
 
 repositories {
     mavenCentral()
