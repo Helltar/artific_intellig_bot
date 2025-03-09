@@ -30,7 +30,7 @@ class CommandExecutor {
     )
 
     private companion object {
-        const val SLOW_MODE_DURATION_HOURS = 1
+        const val SLOW_MODE_TIMEOUT_HOURS = 1
         val log = KotlinLogging.logger {}
     }
 
@@ -151,7 +151,7 @@ class CommandExecutor {
         val lastUsage = userSlowmodeStatus.lastUsage
         val timeElapsed = Duration.between(lastUsage, Instant.now(Clock.systemUTC()))
 
-        if (timeElapsed.toHours() >= SLOW_MODE_DURATION_HOURS) {
+        if (timeElapsed.toHours() >= SLOW_MODE_TIMEOUT_HOURS) {
             slowmodeDao.resetUsageCount(userId)
             return 0
         }
@@ -159,7 +159,7 @@ class CommandExecutor {
         val slowmodeMaxUsageCount = configurationsDao.getSlowmodeMaxUsageCount()
 
         if (userSlowmodeStatus.usageCount >= slowmodeMaxUsageCount)
-            return SLOW_MODE_DURATION_HOURS.hours.inWholeSeconds - timeElapsed.seconds
+            return SLOW_MODE_TIMEOUT_HOURS.hours.inWholeSeconds - timeElapsed.seconds
 
         slowmodeDao.incrementUsageCount(userId)
 
