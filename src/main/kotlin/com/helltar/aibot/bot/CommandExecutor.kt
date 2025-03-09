@@ -140,7 +140,7 @@ class CommandExecutor {
         val userSlowmodeStatus = slowmodeDao.slowmodeStatus(userId)
 
         if (userSlowmodeStatus == null) {
-            slowmodeDao.add(userId)
+            slowmodeDao.registerUser(userId)
             slowmodeDao.incrementUsageCount(userId)
             return 0
         }

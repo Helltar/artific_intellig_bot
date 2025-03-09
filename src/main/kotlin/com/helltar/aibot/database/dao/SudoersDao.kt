@@ -29,12 +29,12 @@ class SudoersDao {
             .empty().not()
     }
 
-    suspend fun remove(userId: Long) = dbTransaction {
+    suspend fun remove(userId: Long): Boolean = dbTransaction {
         SudoersTable
             .deleteWhere { this.userId eq userId } > 0
     }
 
-    suspend fun list() = dbTransaction {
+    suspend fun list(): List<SudoersData> = dbTransaction {
         SudoersTable
             .selectAll()
             .map {

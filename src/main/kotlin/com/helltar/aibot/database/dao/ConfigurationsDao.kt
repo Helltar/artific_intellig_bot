@@ -14,22 +14,22 @@ class ConfigurationsDao {
         const val KEY_LOADING_GIF_FILE_ID = "loading_gif_file_id"
     }
 
-    suspend fun getLoadingGifFileId() =
+    suspend fun getLoadingGifFileId(): String? =
         getConfigValue(KEY_LOADING_GIF_FILE_ID)
 
-    suspend fun updateLoadingGifFileId(fileId: String) =
+    suspend fun updateLoadingGifFileId(fileId: String): Boolean =
         setConfiguration(KEY_LOADING_GIF_FILE_ID, fileId)
 
-    suspend fun getSlowmodeMaxUsageCount() =
+    suspend fun getSlowmodeMaxUsageCount(): Int =
         getConfigValue(KEY_SLOWMODE_MAX_USAGE_COUNT)?.toIntOrNull() ?: 10
 
-    suspend fun updateSlowmodeMaxUsageCount(newMax: Int) =
+    suspend fun updateSlowmodeMaxUsageCount(newMax: Int): Boolean =
         setConfiguration(KEY_SLOWMODE_MAX_USAGE_COUNT, newMax.toString())
 
-    suspend fun isDeepSeekEnabled() =
+    suspend fun isDeepSeekEnabled(): Boolean =
         getConfigValue(KEY_DEEPSEEK_ENABLED)?.toBoolean() == true
 
-    suspend fun updateDeepSeekState(enable: Boolean) =
+    suspend fun updateDeepSeekState(enable: Boolean): Boolean =
         setConfiguration(KEY_DEEPSEEK_ENABLED, enable.toString())
 
     private suspend fun getConfigValue(key: String): String? = dbTransaction {

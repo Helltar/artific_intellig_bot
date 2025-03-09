@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.update
 
 class SlowmodeDao {
 
-    suspend fun add(userId: Long) = dbTransaction {
+    suspend fun registerUser(userId: Long): Boolean = dbTransaction {
         SlowmodeTable
             .insertIgnore {
                 it[this.userId] = userId
@@ -35,7 +35,7 @@ class SlowmodeDao {
             } > 0
     }
 
-    suspend fun slowmodeStatus(userId: Long) = dbTransaction {
+    suspend fun slowmodeStatus(userId: Long): SlowmodeStatusData? = dbTransaction {
         SlowmodeTable
             .select(SlowmodeTable.usageCount, SlowmodeTable.updatedAt)
             .where { SlowmodeTable.userId eq userId }
