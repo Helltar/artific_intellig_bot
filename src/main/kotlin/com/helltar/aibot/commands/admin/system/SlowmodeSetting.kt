@@ -14,7 +14,7 @@ class SlowmodeSetting(ctx: MessageContext) : BotCommand(ctx) {
             return
         }
 
-        val newMax = arguments[0].toInt()
+        val newMax = arguments[0].toIntOrNull() ?: return
 
         if (configurationsDao.updateSlowmodeMaxUsageCount(newMax))
             replyToMessage(Strings.SLOWMODE_SUCCESFULLY_CHANGED.format(newMax))
