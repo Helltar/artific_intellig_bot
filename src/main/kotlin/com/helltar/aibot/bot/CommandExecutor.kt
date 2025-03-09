@@ -164,7 +164,7 @@ class CommandExecutor {
 
     private suspend fun sendWaitingGif(botCommand: BotCommand, caption: String): Int {
 
-        suspend fun sendGifAndReturnMessageId(): Int {
+        suspend fun sendLoadingGifAndUpdateFileId(): Int {
             val message = botCommand.sendDocument(File(LOADING_GIF_FILENAME))
             message.document.fileId?.let { configurationsDao.updateLoadingGifFileId(it) }
             return message.messageId
@@ -175,9 +175,9 @@ class CommandExecutor {
                 botCommand.replyToMessageWithDocument(fileId, caption)
             } catch (e: Exception) {
                 log.error { e.message }
-                sendGifAndReturnMessageId()
+                sendLoadingGifAndUpdateFileId()
             }
         }
-            ?: sendGifAndReturnMessageId()
+            ?: sendLoadingGifAndUpdateFileId()
     }
 }
