@@ -5,6 +5,7 @@ import com.helltar.aibot.commands.base.BotCommand
 import com.helltar.aibot.config.Config
 import com.helltar.aibot.config.Config.LOADING_GIF_FILENAME
 import com.helltar.aibot.config.Strings
+import com.helltar.aibot.database.Database.utcNow
 import com.helltar.aibot.database.dao.banlistDao
 import com.helltar.aibot.database.dao.configurationsDao
 import com.helltar.aibot.database.dao.slowmodeDao
@@ -13,9 +14,7 @@ import kotlinx.coroutines.*
 import org.telegram.telegrambots.meta.api.objects.User
 import org.telegram.telegrambots.meta.api.objects.chat.Chat
 import java.io.File
-import java.time.Clock
 import java.time.Duration
-import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.hours
 
@@ -149,7 +148,7 @@ class CommandExecutor {
         }
 
         val lastUsage = userSlowmodeStatus.lastUsage
-        val timeElapsed = Duration.between(lastUsage, Instant.now(Clock.systemUTC()))
+        val timeElapsed = Duration.between(lastUsage, utcNow())
 
         if (timeElapsed.toHours() >= SLOW_MODE_TIMEOUT_HOURS) {
             slowmodeDao.resetUsageCount(userId)
