@@ -9,7 +9,7 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.commands.Commands.Admin.CMD_ADMIN_LIST
 import com.helltar.aibot.commands.Commands.Admin.CMD_BAN_LIST
 import com.helltar.aibot.commands.Commands.Admin.CMD_BAN_USER
-import com.helltar.aibot.commands.Commands.Admin.CMD_CHATS_WHITE_LIST
+import com.helltar.aibot.commands.Commands.Admin.CMD_CHAT_ALLOW_LIST
 import com.helltar.aibot.commands.Commands.Admin.CMD_DISABLE
 import com.helltar.aibot.commands.Commands.Admin.CMD_ENABLE
 import com.helltar.aibot.commands.Commands.Admin.CMD_RM_ADMIN
@@ -35,7 +35,7 @@ import com.helltar.aibot.commands.admin.ban.BanUser
 import com.helltar.aibot.commands.admin.ban.Banlist
 import com.helltar.aibot.commands.admin.ban.UnbanUser
 import com.helltar.aibot.commands.admin.chat.AddChat
-import com.helltar.aibot.commands.admin.chat.ChatsWhitelist
+import com.helltar.aibot.commands.admin.chat.ChatAllowlist
 import com.helltar.aibot.commands.admin.chat.RemoveChat
 import com.helltar.aibot.commands.admin.sudoers.AddAdmin
 import com.helltar.aibot.commands.admin.sudoers.AdminList
@@ -91,7 +91,7 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
         registerAdminCommand(CMD_RM_ADMIN, ::RemoveAdmin)
         registerAdminCommand(CMD_RM_CHAT, ::RemoveChat)
         registerAdminCommand(CMD_ADMIN_LIST, ::AdminList, privateChatOnly = true)
-        registerAdminCommand(CMD_CHATS_WHITE_LIST, ::ChatsWhitelist, privateChatOnly = true)
+        registerAdminCommand(CMD_CHAT_ALLOW_LIST, ::ChatAllowlist, privateChatOnly = true)
 
         registerCreatorCommand(CMD_ADD_ADMIN, ::AddAdmin)
         registerCreatorCommand(CMD_ADD_CHAT, ::AddChat)

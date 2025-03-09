@@ -4,7 +4,7 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.base.BotCommand
 import com.helltar.aibot.config.Strings
-import com.helltar.aibot.database.dao.chatWhitelistDao
+import com.helltar.aibot.database.dao.chatAllowlistDao
 
 class RemoveChat(ctx: MessageContext) : BotCommand(ctx) {
 
@@ -15,7 +15,7 @@ class RemoveChat(ctx: MessageContext) : BotCommand(ctx) {
             else
                 ctx.chatId()
 
-        if (chatWhitelistDao.remove(chatId))
+        if (chatAllowlistDao.remove(chatId))
             replyToMessage(Strings.CHAT_REMOVED)
         else
             replyToMessage(Strings.CHAT_NOT_EXISTS)

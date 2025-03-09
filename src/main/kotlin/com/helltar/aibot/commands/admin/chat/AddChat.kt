@@ -4,7 +4,7 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.base.BotCommand
 import com.helltar.aibot.config.Strings
-import com.helltar.aibot.database.dao.chatWhitelistDao
+import com.helltar.aibot.database.dao.chatAllowlistDao
 
 class AddChat(ctx: MessageContext) : BotCommand(ctx) {
 
@@ -17,7 +17,7 @@ class AddChat(ctx: MessageContext) : BotCommand(ctx) {
 
         val title = if (arguments.size >= 2) arguments[1] else ctx.message().chat.title
 
-        if (chatWhitelistDao.add(chatId, title))
+        if (chatAllowlistDao.add(chatId, title))
             replyToMessage(Strings.CHAT_ADDED)
         else
             replyToMessage(Strings.CHAT_EXISTS)

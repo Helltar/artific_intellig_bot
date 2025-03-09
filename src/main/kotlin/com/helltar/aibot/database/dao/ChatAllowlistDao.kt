@@ -2,17 +2,17 @@ package com.helltar.aibot.database.dao
 
 import com.helltar.aibot.database.Database.dbTransaction
 import com.helltar.aibot.database.Database.utcNow
-import com.helltar.aibot.database.models.ChatWhitelistData
-import com.helltar.aibot.database.tables.ChatWhitelistTable
+import com.helltar.aibot.database.models.ChatAllowlistData
+import com.helltar.aibot.database.tables.ChatAllowlistTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.selectAll
 
-class ChatWhitelistDao {
+class ChatAllowlistDao {
 
     suspend fun add(chatId: Long, title: String?): Boolean = dbTransaction {
-        ChatWhitelistTable
+        ChatAllowlistTable
             .insertIgnore {
                 it[this.chatId] = chatId
                 it[this.title] = title?.take(70)
@@ -22,28 +22,28 @@ class ChatWhitelistDao {
         .insertedCount > 0
 
     suspend fun remove(chatId: Long): Boolean = dbTransaction {
-        ChatWhitelistTable
+        ChatAllowlistTable
             .deleteWhere { this.chatId eq chatId } > 0
     }
 
-    suspend fun list(): List<ChatWhitelistData> = dbTransaction {
-        ChatWhitelistTable
+    suspend fun list(): List<ChatAllowlistData> = dbTransaction {
+        ChatAllowlistTable
             .selectAll()
             .map {
-                ChatWhitelistData(
-                    it[ChatWhitelistTable.chatId],
-                    it[ChatWhitelistTable.title],
-                    it[ChatWhitelistTable.createdAt],
+                ChatAllowlistData(
+                    it[ChatAllowlistTable.chatId],
+                    it[ChatAllowlistTable.title],
+                    it[ChatAllowlistTable.createdAt],
                 )
             }
     }
 
     suspend fun isExists(chatId: Long): Boolean = dbTransaction {
-        ChatWhitelistTable
-            .select(ChatWhitelistTable.chatId)
-            .where { ChatWhitelistTable.chatId eq chatId }
+        ChatAllowlistTable
+            .select(ChatAllowlistTable.chatId)
+            .where { ChatAllowlistTable.chatId eq chatId }
             .empty().not()
     }
 }
 
-val chatWhitelistDao = ChatWhitelistDao()
+val chatAllowlistDao = ChatAllowlistDao()

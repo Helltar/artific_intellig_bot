@@ -92,7 +92,7 @@ class CommandExecutor {
             return false
         }
 
-        if (!botCommand.isChatInWhiteList()) {
+        if (!botCommand.isChatInAllowlistList()) {
             botCommand.replyToMessage(Strings.COMMAND_NOT_SUPPORTED_IN_CHAT)
             return false
         }

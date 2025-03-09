@@ -32,8 +32,8 @@ abstract class BotCommand(val ctx: MessageContext) : Command {
     suspend fun isCommandDisabled(command: String) =
         commandsDao.isDisabled(command)
 
-    suspend fun isChatInWhiteList() =
-        chatWhitelistDao.isExists(ctx.chatId())
+    suspend fun isChatInAllowlistList() =
+        chatAllowlistDao.isExists(ctx.chatId())
 
     suspend fun isUserBanned(userId: Long) =
         banlistDao.isBanned(userId)

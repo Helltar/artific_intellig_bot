@@ -37,7 +37,7 @@ object Commands {
         const val CMD_ADMIN_LIST = "sudoers"
         const val CMD_BAN_LIST = "banlist"
         const val CMD_BAN_USER = "ban"
-        const val CMD_CHATS_WHITE_LIST = "chats"
+        const val CMD_CHAT_ALLOW_LIST = "chats"
         const val CMD_DISABLE = "disable"
         const val CMD_ENABLE = "enable"
         const val CMD_RM_ADMIN = "rmadmin"

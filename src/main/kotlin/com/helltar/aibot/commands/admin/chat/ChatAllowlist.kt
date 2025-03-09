@@ -4,13 +4,13 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.base.BotCommand
 import com.helltar.aibot.config.Strings
-import com.helltar.aibot.database.dao.chatWhitelistDao
+import com.helltar.aibot.database.dao.chatAllowlistDao
 
-class ChatsWhitelist(ctx: MessageContext) : BotCommand(ctx) {
+class ChatAllowlist(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
         val text =
-            chatWhitelistDao.list().joinToString("\n") {
+            chatAllowlistDao.list().joinToString("\n") {
                 val title = it.title?.let { title -> "<i>($title)</i>" } ?: "null"
                 "<code>${it.chatId}</code> $title <i>(${it.createdAt})</i>"
             }
@@ -19,5 +19,5 @@ class ChatsWhitelist(ctx: MessageContext) : BotCommand(ctx) {
     }
 
     override fun getCommandName() =
-        Commands.Admin.CMD_CHATS_WHITE_LIST
+        Commands.Admin.CMD_CHAT_ALLOW_LIST
 }
