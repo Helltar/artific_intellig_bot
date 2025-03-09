@@ -6,7 +6,7 @@ import com.helltar.aibot.commands.base.BotCommand
 import com.helltar.aibot.config.Strings
 import com.helltar.aibot.database.dao.configurationsDao
 
-class Slowmode(ctx: MessageContext) : BotCommand(ctx) {
+class SlowmodeSetting(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
         if (arguments.isEmpty() || arguments[0].toIntOrNull() == null) {

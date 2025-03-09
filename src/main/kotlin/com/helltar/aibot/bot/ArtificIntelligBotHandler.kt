@@ -42,7 +42,7 @@ import com.helltar.aibot.commands.admin.sudoers.AdminList
 import com.helltar.aibot.commands.admin.sudoers.RemoveAdmin
 import com.helltar.aibot.commands.admin.system.CommandState
 import com.helltar.aibot.commands.admin.system.DeepSeekState
-import com.helltar.aibot.commands.admin.system.Slowmode
+import com.helltar.aibot.commands.admin.system.SlowmodeSetting
 import com.helltar.aibot.commands.admin.system.UpdateApiKey
 import com.helltar.aibot.commands.base.BotCommand
 import com.helltar.aibot.commands.simple.About
@@ -95,7 +95,7 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
 
         registerCreatorCommand(CMD_ADD_ADMIN, ::AddAdmin)
         registerCreatorCommand(CMD_ADD_CHAT, ::AddChat)
-        registerCreatorCommand(CMD_SLOWMODE, ::Slowmode)
+        registerCreatorCommand(CMD_SLOWMODE, ::SlowmodeSetting)
         registerCreatorCommand(CMD_UPDATE_API_KEY, ::UpdateApiKey, privateChatOnly = true)
         registerCreatorCommand(CMD_DEEP_SEEK_ON, { DeepSeekState(it, true) }, privateChatOnly = true)
         registerCreatorCommand(CMD_DEEP_SEEK_OFF, ::DeepSeekState, privateChatOnly = true)
