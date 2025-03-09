@@ -62,6 +62,7 @@ class CommandExecutor {
                         !options.checkRights -> true
                         options.isCreatorCommand -> isCreator
                         options.isAdminCommand -> isAdmin
+                        isCreator || isAdmin -> true
                         else -> isCanExecuteCommand(botCommand)
                     }
 
