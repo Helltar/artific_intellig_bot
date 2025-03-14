@@ -21,7 +21,6 @@ class SudoersDao {
     }
         .insertedCount > 0
 
-
     suspend fun isAdmin(userId: Long): Boolean = dbTransaction {
         SudoersTable
             .select(SudoersTable.userId)
