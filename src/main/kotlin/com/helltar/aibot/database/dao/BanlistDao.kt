@@ -33,7 +33,8 @@ class BanlistDao {
         BannedUsersTable
             .select(BannedUsersTable.userId)
             .where { BannedUsersTable.userId eq userId }
-            .empty().not()
+            .empty()
+            .not()
     }
 
     suspend fun reason(userId: Long): String? = dbTransaction {

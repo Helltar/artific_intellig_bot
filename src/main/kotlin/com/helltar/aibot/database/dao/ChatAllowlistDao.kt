@@ -42,7 +42,8 @@ class ChatAllowlistDao {
         ChatAllowlistTable
             .select(ChatAllowlistTable.chatId)
             .where { ChatAllowlistTable.chatId eq chatId }
-            .empty().not()
+            .empty()
+            .not()
     }
 }
 

@@ -26,7 +26,8 @@ class SudoersDao {
         SudoersTable
             .select(SudoersTable.userId)
             .where { SudoersTable.userId eq userId }
-            .empty().not()
+            .empty()
+            .not()
     }
 
     suspend fun remove(userId: Long): Boolean = dbTransaction {
