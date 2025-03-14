@@ -10,7 +10,10 @@ import com.helltar.aibot.database.dao.banlistDao
 import com.helltar.aibot.database.dao.configurationsDao
 import com.helltar.aibot.database.dao.slowmodeDao
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.telegram.telegrambots.meta.api.objects.User
 import org.telegram.telegrambots.meta.api.objects.chat.Chat
 import java.io.File
@@ -49,25 +52,31 @@ class CommandExecutor {
         if (isRequestInProgress(requestKey, botCommand)) return
 
         requestsMap[requestKey] =
-            scope.launch(CoroutineName(requestKey)) {
+            scope.launch {
                 if (options.privateChatOnly && !chat.isUserChat) return@launch
 
-                val isCreator = userId == Config.creatorId
-                val isAdmin = botCommand.isAdmin()
+                try {
+                    val isCreator = userId == Config.creatorId
+                    val isAdmin = botCommand.isAdmin()
 
-                val shouldRunCommand =
-                    when {
-                        !options.checkRights -> true
-                        options.isCreatorCommand -> isCreator
-                        options.isAdminCommand -> isAdmin
-                        isCreator || isAdmin -> true
-                        else -> isCanExecuteCommand(botCommand)
-                    }
+                    val shouldRunCommand =
+                        when {
+                            !options.checkRights -> true
+                            options.isCreatorCommand -> isCreator
+                            options.isAdminCommand -> isAdmin
+                            isCreator || isAdmin -> true
+                            else -> isCanExecuteCommand(botCommand)
+                        }
 
-                if (shouldRunCommand)
-                    runCommand(botCommand, options.isLongRunningCommand)
-                else
-                    log.info { "command /$commandName not allowed for user $userId" }
+                    if (shouldRunCommand)
+                        runCommand(botCommand, options.isLongRunningCommand)
+                    else
+                        log.info { "command /$commandName not allowed for user $userId" }
+                } catch (e: Exception) {
+                    log.error { e.message }
+                } finally {
+                    requestsMap.remove(requestKey)
+                }
             }
     }
 
@@ -121,21 +130,17 @@ class CommandExecutor {
     }
 
     private suspend fun runCommand(botCommand: BotCommand, isLongRunningCommand: Boolean) {
-        try {
-            if (isLongRunningCommand) {
-                val caption = Strings.localizedString(Strings.CHAT_WAIT_MESSAGE, botCommand.userLanguageCode)
-                val messageId = sendWaitingGif(botCommand, caption)
+        if (isLongRunningCommand) {
+            val caption = Strings.localizedString(Strings.CHAT_WAIT_MESSAGE, botCommand.userLanguageCode)
+            val messageId = sendWaitingGif(botCommand, caption)
 
-                try {
-                    botCommand.run()
-                } finally {
-                    botCommand.deleteMessage(messageId)
-                }
-            } else
+            try {
                 botCommand.run()
-        } catch (e: Exception) {
-            log.error { e.message }
-        }
+            } finally {
+                botCommand.deleteMessage(messageId)
+            }
+        } else
+            botCommand.run()
     }
 
     private suspend fun getSlowmodeRemainingSeconds(userId: Long): Long {
