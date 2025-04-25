@@ -15,7 +15,6 @@ import org.telegram.telegrambots.meta.api.objects.InputFile
 import org.telegram.telegrambots.meta.api.objects.message.Message
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import java.io.File
-import java.io.InputStream
 import java.util.concurrent.CompletableFuture
 
 abstract class BotCommand(open val ctx: MessageContext) : Command {
@@ -90,12 +89,6 @@ abstract class BotCommand(open val ctx: MessageContext) : Command {
             .setCaption(caption)
             .setReplyToMessageId(messageId)
             .setParseMode(ParseMode.HTML)
-            .call(ctx.sender)
-
-    protected fun sendVoice(name: String, inputStream: InputStream, messageId: Int): Message =
-        ctx.replyToMessageWithAudio()
-            .setFile(name, inputStream)
-            .setReplyToMessageId(messageId)
             .call(ctx.sender)
 
     protected fun replyWithTextDocument(text: String, caption: String): Int =
