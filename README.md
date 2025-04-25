@@ -37,10 +37,9 @@ Add it using the command in the bot:
 
 ### Commands
 
-- `/chat` - ChatGPT (gpt-4.1)
-- `/vision` - Describes images with Vision (gpt-4.1)
-- `/dalle` - Creates an image given a prompt (dall-e-3)
-- `/dallevar` - Creates a variation of a given image (dall-e-2)
+- `/chat` - Chat and analyze images using _gpt-4.1_
+- `/dalle` - Generate an image based on a text prompt using _dall-e-3_
+- `/dallevar` - Create a variation of a provided image using _dall-e-2_
 
 ### Additional Chat Commands
 
