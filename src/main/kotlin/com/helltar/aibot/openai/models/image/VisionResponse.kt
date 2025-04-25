@@ -1,6 +1,6 @@
-package com.helltar.aibot.openai.api.models.image
+package com.helltar.aibot.openai.models.image
 
-import com.helltar.aibot.openai.api.models.common.MessageData
+import com.helltar.aibot.openai.models.common.MessageData
 import kotlinx.serialization.Serializable
 
 @Serializable

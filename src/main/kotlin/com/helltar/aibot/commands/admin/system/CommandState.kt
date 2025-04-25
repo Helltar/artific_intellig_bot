@@ -9,8 +9,8 @@ import com.helltar.aibot.database.dao.commandsDao
 class CommandState(ctx: MessageContext, private val disable: Boolean = false) : BotCommand(ctx) {
 
     private companion object {
-        const val ENABLED_SYMBOL = "\uD83D\uDFE2"
-        const val DISABLED_SYMBOL = "⚪\uFE0F"
+        const val ENABLED_SYMBOL = """🟢"""
+        const val DISABLED_SYMBOL = """⚪️"""
     }
 
     override suspend fun run() {
@@ -22,7 +22,8 @@ class CommandState(ctx: MessageContext, private val disable: Boolean = false) : 
         val commandName = arguments[0]
 
         if (!Commands.disableableCommands.contains(commandName)) {
-            replyToMessage(Strings.COMMAND_NOT_AVAILABLE.format(commandName, Commands.disableableCommands.map { "<code>$it</code>" }))
+            val formattedCommands = Commands.disableableCommands.joinToString { "<code>$it</code>" }
+            replyToMessage(Strings.COMMAND_NOT_AVAILABLE.format(commandName, formattedCommands))
             return
         }
 
@@ -32,7 +33,7 @@ class CommandState(ctx: MessageContext, private val disable: Boolean = false) : 
             disable(commandName)
     }
 
-    override fun getCommandName() =
+    override fun commandName() =
         if (disable)
             Commands.Admin.CMD_DISABLE
         else
@@ -40,7 +41,7 @@ class CommandState(ctx: MessageContext, private val disable: Boolean = false) : 
 
     private suspend fun getCommandsStatusText() =
         Commands.disableableCommands.map { commandName ->
-            val isDisabled = commandsDao.isDisabled(commandName) // todo: batch
+            val isDisabled = commandsDao.isDisabled(commandName)
             val status = if (isDisabled) DISABLED_SYMBOL else ENABLED_SYMBOL
             "$status <code>$commandName</code>"
         }

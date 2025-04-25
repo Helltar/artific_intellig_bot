@@ -2,153 +2,132 @@ package com.helltar.aibot.commands.user.chat
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.commands.base.BotCommand
-import com.helltar.aibot.config.Config.API_KEY_PROVIDER_DEEPSEEK
+import com.helltar.aibot.commands.base.AiCommand
+import com.helltar.aibot.commands.user.chat.ChatHistoryManager.Companion.USER_MESSAGE_LIMIT
 import com.helltar.aibot.config.Strings
 import com.helltar.aibot.config.Strings.localizedString
-import com.helltar.aibot.openai.api.ApiConfig.CHAT_ROLE_ASSISTANT
-import com.helltar.aibot.openai.api.ApiConfig.CHAT_ROLE_SYSTEM
-import com.helltar.aibot.openai.api.ApiConfig.CHAT_ROLE_USER
-import com.helltar.aibot.openai.api.OpenAiClient
-import com.helltar.aibot.openai.api.models.common.MessageData
-import com.helltar.aibot.openai.api.service.ChatService
-import com.helltar.aibot.openai.api.service.DeepSeekService
+import com.helltar.aibot.exceptions.ImageTooLargeException
+import com.helltar.aibot.openai.ApiClient
+import com.helltar.aibot.openai.models.common.MessageData
+import com.helltar.aibot.openai.service.ChatService
+import com.helltar.aibot.openai.service.VisionService
 import io.github.oshai.kotlinlogging.KotlinLogging
-import java.io.ByteArrayInputStream
 
-class Chat(ctx: MessageContext) : BotCommand(ctx) {
+class Chat(ctx: MessageContext) : AiCommand(ctx) {
 
     private companion object {
-        const val MAX_USER_MESSAGE_TEXT_LENGTH = 4000
-        const val MAX_DIALOG_HISTORY_LENGTH = MAX_USER_MESSAGE_TEXT_LENGTH * 3
-        const val VOICE_OUT_TAG = "#voice"
         val log = KotlinLogging.logger {}
     }
 
     private val chatHistoryManager = ChatHistoryManager(userId)
 
     override suspend fun run() {
-        processUserMessage()
+        var messageIdToReply = message.messageId
+
+        val answer =
+            if (replyMessage?.hasPhoto() != true) {
+                processUserMessage()?.let { messageId ->
+                    messageIdToReply = messageId
+                    retrieveChatAnswer(chatHistoryManager.messages())
+                }
+            } else {
+                val prompt =
+                    argumentsString.takeIf { it.isNotBlank() }
+                        ?: localizedString(Strings.VISION_DEFAULT_PROMPT, userLanguageCode)
+
+                chatHistoryManager.saveUserMessage(message, prompt)
+
+                retrieveVisionAnswer(prompt)
+            }
+
+        answer?.let {
+            replyToMessage(it, messageIdToReply)
+            chatHistoryManager.saveAssistantMessage(it)
+        }
     }
 
-    override fun getCommandName() =
+    override fun commandName() =
         Commands.User.CMD_CHAT
 
-    private suspend fun processUserMessage() {
+    private suspend fun retrieveChatAnswer(messages: List<MessageData>): String? =
+        try {
+            ChatService(ApiClient(openaiKey()), chatModel())
+                .getReply(messages)
+        } catch (e: Exception) {
+            log.error { e.message }
+            replyToMessage(Strings.CHAT_EXCEPTION)
+            null
+        }
+
+    private suspend fun retrieveVisionAnswer(prompt: String): String? {
+        val photo =
+            try {
+                downloadPhoto() ?: return null
+            } catch (_: ImageTooLargeException) {
+                replyToMessage(Strings.IMAGE_MUST_BE_LESS_THAN.format("1.MB"))
+                return null
+            }
+
+        return try {
+            VisionService(ApiClient(openaiKey()), visionModel())
+                .analyzeImage(prompt, photo)
+        } catch (e: Exception) {
+            log.error { e.message }
+            replyToMessage(Strings.CHAT_EXCEPTION)
+            null
+        } finally {
+            photo.delete()
+        }
+    }
+
+    private fun replyToMessage(text: String, messageId: Int) {
+        try {
+            replyToMessage(text, messageId, markdown = true)
+        } catch (e: Exception) {
+            log.error { e.message }
+            replyWithTextDocument(text, Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE)
+        }
+    }
+
+    private suspend fun processUserMessage(): Int? {
         if (isNotReply && argumentsString.isBlank()) {
             replyToMessage(Strings.CHAT_HELLO)
-            return
+            return null
         }
 
         var text: String? = argumentsString
         var messageId = message.messageId
-        var botReplyWithVoice = false
 
         if (isReply) {
             val message = replyMessage!!
 
             if (isNotMyMessage(message)) {
-                text = message.text ?: message.caption // photos, etc
+                text = message.text ?: message.caption
                 messageId = message.messageId
-                botReplyWithVoice = argumentsString == VOICE_OUT_TAG
 
                 if (text.isNullOrBlank()) {
                     replyToMessage(Strings.MESSAGE_TEXT_NOT_FOUND, messageId)
-                    return
+                    return null
                 }
 
-                /*
-                  ----------------------------------------------------------
-                  userA: the only true wisdom is in knowing you know nothing
-                  userB: /chat whose quote?
-                  ----------------------------------------------------------
-                */
-                if (argumentsString.isNotBlank()) { // if 'userB' used the '/chat' command with args as a reply to a message from 'userA'
-                    text = "$argumentsString: \"$text\"" // whose quote?: "the only true wisdom is in knowing you know nothing"
+                if (argumentsString.isNotBlank()) {
+                    text = "$argumentsString: '$text'"
                     messageId = this.message.messageId
                 }
-            } else // ArtificIntelligBotHandler onUpdate
+            } else
                 text = this.message.text
         }
 
-        if (text!!.length > MAX_USER_MESSAGE_TEXT_LENGTH) {
-            replyToMessage(String.format(Strings.MANY_CHARACTERS, MAX_USER_MESSAGE_TEXT_LENGTH))
-            return
-        }
+        return text?.let {
+            text = it.trim()
 
-        // todo: botReplyWithVoice
-        if (!botReplyWithVoice) {
-            botReplyWithVoice = text.contains(VOICE_OUT_TAG)
-
-            if (botReplyWithVoice)
-                text = text.replace(VOICE_OUT_TAG, "").trim()
-        }
-
-        addSystemPromtIfNeeded()
-        chatHistoryManager.addMessage(MessageData(CHAT_ROLE_USER, text))
-        ensureDialogLengthWithinLimit()
-
-        val chatGPTService = ChatService(OpenAiClient(openaiKey()))
-
-        val answer = try {
-            getBotReply(chatGPTService)
-        } catch (e: Exception) {
-            log.error { e.message }
-            replyToMessage(Strings.CHAT_EXCEPTION)
-            return
-        }
-
-        chatHistoryManager.addMessage(MessageData(CHAT_ROLE_ASSISTANT, answer))
-
-        log.debug {
-            chatHistoryManager.userChatDialogHistory.joinToString("\n") {
-                "- ${it.message.role}: ${it.message.content}"
+            if (text.length <= USER_MESSAGE_LIMIT) {
+                chatHistoryManager.saveUserMessage(message, text)
+                messageId
+            } else {
+                replyToMessage(String.format(Strings.MANY_CHARACTERS, USER_MESSAGE_LIMIT))
+                null
             }
         }
-
-        if (!botReplyWithVoice)
-            replyToMessage(answer, messageId)
-        else
-            try {
-                val voice = ByteArrayInputStream(chatGPTService.textToSpeech(answer))
-                sendVoice("voice-$messageId", voice, messageId)
-            } catch (e: Exception) {
-                log.error { e.message }
-                replyToMessage(answer, messageId)
-            }
-    }
-
-    private suspend fun getBotReply(chatGPTService: ChatService): String {
-        val messages = chatHistoryManager.userChatDialogHistory.map { it.message }
-
-        return if (isDeepSeekNotEnabled())
-            chatGPTService.getReply(messages)
-        else
-            DeepSeekService(OpenAiClient(getApiKey(API_KEY_PROVIDER_DEEPSEEK))).getReply(messages)
-    }
-
-    private fun replyToMessage(answer: String, messageId: Int) {
-        try {
-            replyToMessage(answer, messageId, markdown = true)
-        } catch (e: Exception) {
-            log.error { e.message }
-            errorReplyWithTextDocument(answer, Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE)
-        }
-    }
-
-    private fun addSystemPromtIfNeeded() {
-        if (chatHistoryManager.userChatDialogHistory.isEmpty()) {
-            val systemPromt = localizedString(Strings.CHAT_GPT_SYSTEM_MESSAGE, userLanguageCode)
-            val username = message.from.firstName
-            val chatTitle = message.chat.title ?: username
-            val systemPromtContent = systemPromt.format(chatTitle, username, userId)
-            val systemPromtData = MessageData(CHAT_ROLE_SYSTEM, systemPromtContent)
-            chatHistoryManager.addMessage(systemPromtData)
-        }
-    }
-
-    private fun ensureDialogLengthWithinLimit() {
-        while (chatHistoryManager.getMessagesLengthSum() > MAX_DIALOG_HISTORY_LENGTH)
-            chatHistoryManager.removeSecondMessage()
     }
 }

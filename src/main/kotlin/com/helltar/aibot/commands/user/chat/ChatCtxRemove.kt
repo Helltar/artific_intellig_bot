@@ -8,36 +8,31 @@ import com.helltar.aibot.config.Strings
 class ChatCtxRemove(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
-        val user = message.replyToMessage?.from
-        val userId = user?.id
+        val repliedUser = message.replyToMessage?.from
+        val repliedUserId = repliedUser?.id
 
-        var username = ""
-
-        val targetUserId =
-            if (!isReply)
-                this.userId
-            else {
-                if (isAdmin()) {
-                    username = " (<b>${user?.firstName}</b>)"
-                    userId ?: return
-                } else {
+        val (targetUserId, username) =
+            if (isReply) {
+                if (!isAdmin()) {
                     replyToMessage(Strings.ADMIN_ONLY_COMMAND)
                     return
                 }
-            }
 
-        if (isCreator(targetUserId)) {
-            if (!isCreator()) {
-                replyToMessage(Strings.CREATOR_CONTEXT_CANNOT_BE_DELETED)
-                return
-            }
+                repliedUserId?.let { it to " (<b>${repliedUser.firstName}</b>)" } ?: return
+            } else
+                this.userId to ""
+
+        if (isCreator(targetUserId) && !isCreator(this.userId)) {
+            replyToMessage(Strings.CREATOR_CONTEXT_CANNOT_BE_DELETED)
+            return
         }
 
-        ChatHistoryManager(targetUserId).clear()
-
-        replyToMessage(Strings.CHAT_CONTEXT_REMOVED + username)
+        if (ChatHistoryManager(targetUserId).clear())
+            replyToMessage(Strings.CHAT_CONTEXT_REMOVED + username)
+        else
+            replyToMessage(Strings.CHAT_CONTEXT_EMPTY + username)
     }
 
-    override fun getCommandName() =
+    override fun commandName() =
         Commands.User.CMD_CHAT_CTX_REMOVE
 }

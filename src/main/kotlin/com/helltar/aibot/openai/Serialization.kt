@@ -1,4 +1,4 @@
-package com.helltar.aibot.openai.api
+package com.helltar.aibot.openai
 
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

@@ -17,20 +17,16 @@ import com.helltar.aibot.commands.Commands.Admin.CMD_RM_CHAT
 import com.helltar.aibot.commands.Commands.Admin.CMD_UNBAN_USER
 import com.helltar.aibot.commands.Commands.Creator.CMD_ADD_ADMIN
 import com.helltar.aibot.commands.Commands.Creator.CMD_ADD_CHAT
-import com.helltar.aibot.commands.Commands.Creator.CMD_DEEP_SEEK_OFF
-import com.helltar.aibot.commands.Commands.Creator.CMD_DEEP_SEEK_ON
 import com.helltar.aibot.commands.Commands.Creator.CMD_SLOWMODE
 import com.helltar.aibot.commands.Commands.Creator.CMD_UPDATE_API_KEY
 import com.helltar.aibot.commands.Commands.Simple.CMD_ABOUT
 import com.helltar.aibot.commands.Commands.Simple.CMD_MYID
 import com.helltar.aibot.commands.Commands.Simple.CMD_START
-import com.helltar.aibot.commands.Commands.User.CMD_ASR
 import com.helltar.aibot.commands.Commands.User.CMD_CHAT
 import com.helltar.aibot.commands.Commands.User.CMD_CHATCTX
 import com.helltar.aibot.commands.Commands.User.CMD_CHAT_CTX_REMOVE
 import com.helltar.aibot.commands.Commands.User.CMD_DALLE
 import com.helltar.aibot.commands.Commands.User.CMD_DALLE_VARIATIONS
-import com.helltar.aibot.commands.Commands.User.CMD_GPT_VISION
 import com.helltar.aibot.commands.admin.ban.BanUser
 import com.helltar.aibot.commands.admin.ban.Banlist
 import com.helltar.aibot.commands.admin.ban.UnbanUser
@@ -41,20 +37,17 @@ import com.helltar.aibot.commands.admin.sudoers.AddAdmin
 import com.helltar.aibot.commands.admin.sudoers.AdminList
 import com.helltar.aibot.commands.admin.sudoers.RemoveAdmin
 import com.helltar.aibot.commands.admin.system.CommandState
-import com.helltar.aibot.commands.admin.system.DeepSeekState
 import com.helltar.aibot.commands.admin.system.SlowmodeSetting
 import com.helltar.aibot.commands.admin.system.UpdateApiKey
 import com.helltar.aibot.commands.base.BotCommand
 import com.helltar.aibot.commands.simple.About
 import com.helltar.aibot.commands.simple.MyId
 import com.helltar.aibot.commands.simple.Start
-import com.helltar.aibot.commands.user.audio.Transcription
 import com.helltar.aibot.commands.user.chat.Chat
 import com.helltar.aibot.commands.user.chat.ChatCtx
 import com.helltar.aibot.commands.user.chat.ChatCtxRemove
 import com.helltar.aibot.commands.user.image.DallEGenerations
 import com.helltar.aibot.commands.user.image.DallEVariations
-import com.helltar.aibot.commands.user.image.Vision
 import com.helltar.aibot.config.Config.creatorId
 import com.helltar.aibot.config.Config.telegramBotUsername
 import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod
@@ -78,13 +71,11 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
         registerSimpleCommand(CMD_CHAT_CTX_REMOVE, ::ChatCtxRemove, checkRights = true)
 
         registerLongRunningCommand(CMD_CHAT, ::Chat)
-        registerLongRunningCommand(CMD_GPT_VISION, ::Vision)
         registerLongRunningCommand(CMD_DALLE, ::DallEGenerations)
         registerLongRunningCommand(CMD_DALLE_VARIATIONS, ::DallEVariations)
-        registerLongRunningCommand(CMD_ASR, ::Transcription)
 
         registerAdminCommand(CMD_ENABLE, ::CommandState)
-        registerAdminCommand(CMD_DISABLE, { CommandState(it, true) })
+        registerAdminCommand(CMD_DISABLE, { CommandState(it, disable = true) })
         registerAdminCommand(CMD_BAN_LIST, ::Banlist)
         registerAdminCommand(CMD_BAN_USER, ::BanUser)
         registerAdminCommand(CMD_UNBAN_USER, ::UnbanUser)
@@ -97,14 +88,12 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
         registerCreatorCommand(CMD_ADD_CHAT, ::AddChat)
         registerCreatorCommand(CMD_SLOWMODE, ::SlowmodeSetting)
         registerCreatorCommand(CMD_UPDATE_API_KEY, ::UpdateApiKey, privateChatOnly = true)
-        registerCreatorCommand(CMD_DEEP_SEEK_ON, { DeepSeekState(it, true) }, privateChatOnly = true)
-        registerCreatorCommand(CMD_DEEP_SEEK_OFF, ::DeepSeekState, privateChatOnly = true)
     }
 
     override fun onUpdate(update: Update): BotApiMethod<*>? {
 
-        fun executeChatGPT(ctx: MessageContext) =
-            commandExecutor.execute(Chat(ctx), createCommandOptions(isLongRunningCommand = true))
+        fun executeCommand(botCommand: BotCommand) =
+            commandExecutor.execute(botCommand, createCommandOptions(isLongRunningCommand = true))
 
         fun shouldProcessMessage(replyToMessage: Message, text: String): Boolean {
             val isMe = replyToMessage.from.userName == telegramBotUsername
@@ -112,10 +101,14 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
         }
 
         fun processMessage(message: Message) {
-            val ctx = MessageContext(this, update, "")
+            if (!message.hasEntities() ||
+                !message.entities.any { it.type == EntityType.MENTION || it.type == EntityType.TEXTMENTION }
+            ) {
+                val ctx = MessageContext(this, update, "")
 
-            if (!message.hasEntities() || !message.entities.any { it.type == EntityType.MENTION || it.type == EntityType.TEXTMENTION })
-                executeChatGPT(ctx)
+                if (!message.replyToMessage.hasAudio() && !message.replyToMessage.hasVoice())
+                    executeCommand(Chat(ctx))
+            }
         }
 
         if (update.hasMessage() && update.message.isReply && update.message.hasText()) {
@@ -141,9 +134,9 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
         isLongRunningCommand: Boolean = false,
         privateChatOnly: Boolean = false
     ) =
-        CommandExecutor.CommandOptions(checkRights, isAdminCommand, isCreatorCommand, isLongRunningCommand, privateChatOnly)
+        CommandOptions(checkRights, isAdminCommand, isCreatorCommand, isLongRunningCommand, privateChatOnly)
 
-    private fun registerCommand(command: String, botCommand: (MessageContext) -> BotCommand, options: CommandExecutor.CommandOptions) {
+    private fun registerCommand(command: String, botCommand: (MessageContext) -> BotCommand, options: CommandOptions) {
         registry.register(SimpleCommand("/$command") { commandExecutor.execute(botCommand(it), options) })
     }
 

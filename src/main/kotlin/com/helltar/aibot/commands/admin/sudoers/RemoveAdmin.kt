@@ -9,21 +9,18 @@ import com.helltar.aibot.database.dao.sudoersDao
 class RemoveAdmin(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
-        val userId =
-            if (arguments.isNotEmpty())
-                arguments[0].toLongOrNull() ?: return
+        val userId = if (arguments.isNotEmpty()) arguments[0].toLongOrNull() else return
+
+        userId?.let {
+            if (isCreator(it)) return
+
+            if (sudoersDao.remove(it))
+                replyToMessage(Strings.ADMIN_REMOVED)
             else
-                return
-
-        if (isCreator(userId))
-            return
-
-        if (sudoersDao.remove(userId))
-            replyToMessage(Strings.ADMIN_REMOVED)
-        else
-            replyToMessage(Strings.ADMIN_NOT_EXISTS)
+                replyToMessage(Strings.ADMIN_NOT_EXISTS)
+        }
     }
 
-    override fun getCommandName() =
+    override fun commandName() =
         Commands.Admin.CMD_RM_ADMIN
 }

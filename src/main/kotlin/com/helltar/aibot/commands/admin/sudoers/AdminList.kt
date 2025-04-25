@@ -14,7 +14,7 @@ class AdminList(ctx: MessageContext) : BotCommand(ctx) {
         replyToMessage(list.ifEmpty { Strings.LIST_IS_EMPTY })
     }
 
-    override fun getCommandName() =
+    override fun commandName() =
         Commands.Admin.CMD_ADMIN_LIST
 
     private fun getFormattedSudoersList(sudoers: List<SudoersData>) =

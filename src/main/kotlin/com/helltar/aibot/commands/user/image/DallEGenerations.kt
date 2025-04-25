@@ -2,13 +2,13 @@ package com.helltar.aibot.commands.user.image
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.commands.base.BotCommand
+import com.helltar.aibot.commands.base.AiCommand
 import com.helltar.aibot.config.Strings
-import com.helltar.aibot.openai.api.OpenAiClient
-import com.helltar.aibot.openai.api.service.DalleService
+import com.helltar.aibot.openai.ApiClient
+import com.helltar.aibot.openai.service.DalleService
 import io.github.oshai.kotlinlogging.KotlinLogging
 
-class DallEGenerations(ctx: MessageContext) : BotCommand(ctx) {
+class DallEGenerations(ctx: MessageContext) : AiCommand(ctx) {
 
     private companion object {
         val log = KotlinLogging.logger {}
@@ -26,7 +26,8 @@ class DallEGenerations(ctx: MessageContext) : BotCommand(ctx) {
         }
 
         try {
-            val imageUrl = DalleService(OpenAiClient(openaiKey())).generateImageFromPrompt(argumentsString).also { log.debug { it } }
+            val imageUrl = DalleService(ApiClient(openaiKey())).generateImage(argumentsString)
+            log.debug { "image url: $imageUrl" }
             replyToMessageWithPhoto(imageUrl, argumentsString)
         } catch (e: Exception) {
             log.error { e.message }
@@ -34,6 +35,6 @@ class DallEGenerations(ctx: MessageContext) : BotCommand(ctx) {
         }
     }
 
-    override fun getCommandName() =
+    override fun commandName() =
         Commands.User.CMD_DALLE
 }

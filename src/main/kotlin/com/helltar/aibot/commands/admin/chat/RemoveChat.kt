@@ -9,18 +9,16 @@ import com.helltar.aibot.database.dao.chatAllowlistDao
 class RemoveChat(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
-        val chatId =
-            if (arguments.isNotEmpty())
-                arguments[0].toLongOrNull() ?: return
-            else
-                ctx.chatId()
+        val chatId = if (arguments.isNotEmpty()) arguments[0].toLongOrNull() else ctx.chatId()
 
-        if (chatAllowlistDao.remove(chatId))
-            replyToMessage(Strings.CHAT_REMOVED)
-        else
-            replyToMessage(Strings.CHAT_NOT_EXISTS)
+        chatId?.let {
+            if (chatAllowlistDao.remove(it))
+                replyToMessage(Strings.CHAT_REMOVED)
+            else
+                replyToMessage(Strings.CHAT_NOT_EXISTS)
+        }
     }
 
-    override fun getCommandName() =
+    override fun commandName() =
         Commands.Admin.CMD_RM_CHAT
 }

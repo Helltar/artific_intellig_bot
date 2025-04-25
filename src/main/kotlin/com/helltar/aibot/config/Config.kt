@@ -4,12 +4,9 @@ import io.github.cdimascio.dotenv.dotenv
 
 object Config {
 
-    const val LOADING_GIF_FILENAME = "data/files/loading.gif"
+    const val LOADING_ANIMATION_FILE = "data/files/loading.gif"
 
-    const val API_KEY_PROVIDER_OPENAI = "openai.com"
-    const val API_KEY_PROVIDER_DEEPSEEK = "deepseek.com"
-
-    val creatorId = readEnvVar("CREATOR_ID").toLongOrNull() ?: throw IllegalArgumentException("Invalid value for creator-id")
+    val creatorId = readEnvVar("CREATOR_ID").toLongOrNull() ?: throw IllegalArgumentException("invalid CREATOR_ID environment variable")
     val telegramBotToken = readEnvVar("BOT_TOKEN")
     val telegramBotUsername = readEnvVar("BOT_USERNAME")
     val postgresqlHost = readEnvVar("POSTGRESQL_HOST")
@@ -19,6 +16,6 @@ object Config {
     val databasePassword = readEnvVar("DATABASE_PASSWORD")
 
     private fun readEnvVar(env: String) =
-        dotenv { ignoreIfMissing = true }[env].ifBlank { throw IllegalArgumentException("$env environment variable is blank") }
-            ?: throw IllegalArgumentException("Error reading $env environment variable")
+        dotenv { ignoreIfMissing = true }[env].ifBlank { throw IllegalArgumentException("environment variable $env is blank") }
+            ?: throw IllegalArgumentException("environment variable $env is missing")
 }

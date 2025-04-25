@@ -3,7 +3,6 @@ package com.helltar.aibot.database.dao
 import com.helltar.aibot.database.Database.dbTransaction
 import com.helltar.aibot.database.Database.utcNow
 import com.helltar.aibot.database.tables.ApiKeysTable
-import com.helltar.aibot.database.tables.ApiKeysTable.apiKey
 import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.update
 
@@ -29,9 +28,9 @@ class ApiKeyDao {
 
     suspend fun getKey(provider: String): String? = dbTransaction {
         ApiKeysTable
-            .select(apiKey)
+            .select(ApiKeysTable.apiKey)
             .where { ApiKeysTable.provider eq provider }
-            .singleOrNull()?.get(apiKey)
+            .singleOrNull()?.getOrNull(ApiKeysTable.apiKey)
     }
 }
 

@@ -41,7 +41,7 @@ class BanlistDao {
         BannedUsersTable
             .select(BannedUsersTable.reason)
             .where { BannedUsersTable.userId eq userId }
-            .singleOrNull()?.get(BannedUsersTable.reason)
+            .singleOrNull()?.getOrNull(BannedUsersTable.reason)
     }
 
     suspend fun list(): List<BanlistData> = dbTransaction {

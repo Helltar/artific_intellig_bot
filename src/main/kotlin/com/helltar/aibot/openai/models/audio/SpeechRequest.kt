@@ -1,4 +1,4 @@
-package com.helltar.aibot.openai.api.models.audio
+package com.helltar.aibot.openai.models.audio
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -7,10 +7,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SpeechRequest(
-    val model: String = "tts-1",
+    val model: String,
     val input: String,
-    val voice: String = "nova",
+    val voice: String,
 
     @SerialName("response_format")
-    val responseFormat: String = "opus"
+    val responseFormat: String
 )

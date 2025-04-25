@@ -1,22 +1,20 @@
 package com.helltar.aibot.commands.user.image
 
-import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.commands.base.BotCommand
+import com.helltar.aibot.commands.base.AiCommand
 import com.helltar.aibot.config.Strings
-import com.helltar.aibot.openai.api.OpenAiClient
-import com.helltar.aibot.openai.api.service.DalleService
+import com.helltar.aibot.exceptions.ImageTooLargeException
+import com.helltar.aibot.openai.ApiClient
+import com.helltar.aibot.openai.service.DalleService
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import java.awt.Image
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
-import java.io.File
 import javax.imageio.ImageIO
 
-open class DallEVariations(ctx: MessageContext) : BotCommand(ctx) {
+class DallEVariations(ctx: MessageContext) : AiCommand(ctx) {
 
     private companion object {
         const val IMAGE_FORMAT = "png"
@@ -34,15 +32,21 @@ open class DallEVariations(ctx: MessageContext) : BotCommand(ctx) {
             return
         }
 
-        val photoFile = downloadPhotoOrReplyIfInvalid() ?: return
+        val photo =
+            try {
+                downloadPhoto() ?: return
+            } catch (_: ImageTooLargeException) {
+                replyToMessage(Strings.IMAGE_MUST_BE_LESS_THAN.format("1.MB"))
+                return
+            }
 
         try {
-            val originalImage = ImageIO.read(photoFile)
+            val originalImage = ImageIO.read(photo)
             val resizedImage = resizeImage(originalImage)
 
             ByteArrayOutputStream().use { outputStream ->
                 ImageIO.write(resizedImage, IMAGE_FORMAT, outputStream)
-                val imageUrl = DalleService(OpenAiClient(openaiKey())).generateImageVariations(outputStream, IMAGE_FORMAT)
+                val imageUrl = DalleService(ApiClient(openaiKey())).generateImageVariations(outputStream, IMAGE_FORMAT)
                 replyToMessageWithPhoto(imageUrl, messageId = replyMessage?.messageId)
             }
         } catch (e: Exception) {
@@ -51,26 +55,8 @@ open class DallEVariations(ctx: MessageContext) : BotCommand(ctx) {
         }
     }
 
-    override fun getCommandName() =
+    override fun commandName() =
         Commands.User.CMD_DALLE_VARIATIONS
-
-    protected fun downloadPhotoOrReplyIfInvalid(): File? {
-        val photo = replyMessage?.photo?.maxByOrNull { it.fileSize }
-
-        return photo?.let {
-            if (it.fileSize <= 1024 * 1024) {
-                try {
-                    ctx.sender.downloadFile(Methods.getFile(it.fileId).call(ctx.sender))
-                } catch (e: TelegramApiException) {
-                    log.error { e.message }
-                    null
-                }
-            } else {
-                replyToMessage(Strings.IMAGE_MUST_BE_LESS_THAN.format("1.MB"))
-                null
-            }
-        }
-    }
 
     private fun resizeImage(image: BufferedImage): BufferedImage {
         val targetWidth = 512

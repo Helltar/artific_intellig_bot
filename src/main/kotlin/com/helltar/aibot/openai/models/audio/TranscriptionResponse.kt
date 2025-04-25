@@ -1,4 +1,4 @@
-package com.helltar.aibot.openai.api.models.audio
+package com.helltar.aibot.openai.models.audio
 
 import kotlinx.serialization.Serializable
 

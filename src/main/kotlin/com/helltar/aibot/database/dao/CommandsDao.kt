@@ -19,7 +19,7 @@ class CommandsDao {
         CommandsStateTable
             .select(CommandsStateTable.isDisabled)
             .where { CommandsStateTable.commandName eq command }
-            .singleOrNull()?.get(CommandsStateTable.isDisabled) == true
+            .singleOrNull()?.getOrNull(CommandsStateTable.isDisabled) == true
     }
 }
 

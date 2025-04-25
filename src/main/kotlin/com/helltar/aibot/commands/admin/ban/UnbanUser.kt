@@ -9,18 +9,16 @@ import com.helltar.aibot.database.dao.banlistDao
 class UnbanUser(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
-        val userId =
-            if (arguments.isNotEmpty())
-                arguments[0].toLongOrNull()
-            else
-                ctx.message().replyToMessage?.from?.id
+        val userId = if (arguments.isNotEmpty()) arguments[0].toLongOrNull() else ctx.message().replyToMessage?.from?.id
 
-        if (banlistDao.unban(userId ?: return))
-            replyToMessage(Strings.USER_UNBANNED)
-        else
-            replyToMessage(Strings.USER_NOT_BANNED)
+        userId?.let {
+            if (banlistDao.unban(it))
+                replyToMessage(Strings.USER_UNBANNED)
+            else
+                replyToMessage(Strings.USER_NOT_BANNED)
+        }
     }
 
-    override fun getCommandName() =
+    override fun commandName() =
         Commands.Admin.CMD_UNBAN_USER
 }

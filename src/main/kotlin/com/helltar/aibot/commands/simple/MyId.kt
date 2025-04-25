@@ -10,6 +10,6 @@ class MyId(ctx: MessageContext) : BotCommand(ctx) {
         replyToMessage("<code>$userId</code>")
     }
 
-    override fun getCommandName() =
+    override fun commandName() =
         Commands.Simple.CMD_MYID
 }

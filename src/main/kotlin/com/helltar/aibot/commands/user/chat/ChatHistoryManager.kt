@@ -1,40 +1,79 @@
 package com.helltar.aibot.commands.user.chat
 
-import com.helltar.aibot.openai.api.models.common.MessageData
-import java.time.LocalDateTime
+import com.helltar.aibot.config.Strings
+import com.helltar.aibot.config.Strings.localizedString
+import com.helltar.aibot.database.Database.utcNow
+import com.helltar.aibot.database.dao.chatHistoryDao
+import com.helltar.aibot.openai.ApiConfig.ChatRole
+import com.helltar.aibot.openai.models.common.MessageData
+import org.telegram.telegrambots.meta.api.objects.message.Message
+import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
 class ChatHistoryManager(private val userId: Long) {
 
-    data class ChatMessage(
-        val datetime: LocalDateTime,
-        val message: MessageData,
-    )
-
-    private companion object {
-        val userChatContextMap = ConcurrentHashMap<Long, CopyOnWriteArrayList<ChatMessage>>()
+    companion object {
+        const val USER_MESSAGE_LIMIT = 4000
+        private const val DIALOG_HISTORY_LIMIT = USER_MESSAGE_LIMIT * 3
+        private val userChatContextMap = ConcurrentHashMap<Long, CopyOnWriteArrayList<Pair<MessageData, Instant>>>()
     }
 
-    val userChatDialogHistory: List<ChatMessage>
-        get() = getOrCreateChatHistory()
+    suspend fun history(): List<Pair<MessageData, Instant>> =
+        chatHistory()
 
-    fun addMessage(messageData: MessageData) {
-        val history = getOrCreateChatHistory()
-        history.add(ChatMessage(LocalDateTime.now(), messageData))
+    suspend fun messages(): List<MessageData> =
+        history().map { it.first }
+
+    suspend fun saveAssistantMessage(message: String): Unit =
+        saveMessage(MessageData(ChatRole.ASSISTANT, message))
+
+    suspend fun saveUserMessage(message: Message, messageText: String) {
+        addSystemPromptIfNeeded(message)
+        saveMessage(MessageData(ChatRole.USER, messageText))
+        ensureDialogLengthWithinLimit()
     }
 
-    fun removeSecondMessage() {
-        val history = getOrCreateChatHistory()
-        if (history.size > 1) history.removeAt(1)
+    suspend fun clear(): Boolean =
+        if (chatHistoryDao.clearHistory(userId)) {
+            chatHistory().clear()
+            true
+        } else
+            false
+
+    private suspend fun saveMessage(message: MessageData) {
+        if (chatHistoryDao.insert(userId, message))
+            chatHistory().add(message to utcNow())
     }
 
-    fun getMessagesLengthSum() =
-        getOrCreateChatHistory().sumOf { it.message.content.length }
+    private suspend fun contentLength(): Int =
+        messages().sumOf { it.content.length }
 
-    fun clear() =
-        getOrCreateChatHistory().clear()
+    private suspend fun removeSecondMessage() {
+        if (chatHistoryDao.deleteOldestEntry(userId)) {
+            val history = chatHistory()
+            if (history.size > 1) history.removeAt(1)
+        }
+    }
 
-    private fun getOrCreateChatHistory() =
-        userChatContextMap.getOrPut(userId) { CopyOnWriteArrayList<ChatMessage>() }
+    private suspend fun ensureDialogLengthWithinLimit() {
+        while (contentLength() > DIALOG_HISTORY_LIMIT)
+            removeSecondMessage()
+    }
+
+    private suspend fun addSystemPromptIfNeeded(message: Message) {
+        if (chatHistory().isEmpty()) {
+            val languageCode = message.from.languageCode ?: "en"
+            val systemPrompt = localizedString(Strings.CHAT_GPT_SYSTEM_MESSAGE, languageCode)
+            val username = message.from.userName ?: message.from.firstName
+            val chatTitle = message.chat.title ?: username
+            val systemPromptContent = systemPrompt.format(chatTitle, username, userId)
+            val systemPromptData = MessageData(ChatRole.SYSTEM, systemPromptContent)
+            saveMessage(systemPromptData)
+        }
+    }
+
+    private suspend fun chatHistory() =
+        userChatContextMap
+            .getOrPut(userId) { CopyOnWriteArrayList(chatHistoryDao.loadHistory(userId)) }
 }

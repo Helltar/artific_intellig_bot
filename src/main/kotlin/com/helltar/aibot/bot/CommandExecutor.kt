@@ -3,7 +3,7 @@ package com.helltar.aibot.bot
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.base.BotCommand
 import com.helltar.aibot.config.Config
-import com.helltar.aibot.config.Config.LOADING_GIF_FILENAME
+import com.helltar.aibot.config.Config.LOADING_ANIMATION_FILE
 import com.helltar.aibot.config.Strings
 import com.helltar.aibot.database.Database.utcNow
 import com.helltar.aibot.database.dao.banlistDao
@@ -23,27 +23,18 @@ import kotlin.time.Duration.Companion.hours
 
 class CommandExecutor {
 
-    data class CommandOptions(
-        val checkRights: Boolean,
-        val isAdminCommand: Boolean,
-        val isCreatorCommand: Boolean,
-        val isLongRunningCommand: Boolean,
-        val privateChatOnly: Boolean
-    )
-
     private companion object {
         const val SLOW_MODE_TIMEOUT_HOURS = 1
+        val scope = CoroutineScope(Dispatchers.IO)
+        val requestsMap = ConcurrentHashMap<String, Job>()
         val log = KotlinLogging.logger {}
     }
-
-    private val scope = CoroutineScope(Dispatchers.IO)
-    private val requestsMap = ConcurrentHashMap<String, Job>()
 
     fun execute(botCommand: BotCommand, options: CommandOptions) {
         val user = botCommand.ctx.user()
         val userId = user.id
         val chat = botCommand.ctx.message().chat
-        val commandName = botCommand.getCommandName()
+        val commandName = botCommand.commandName()
 
         logCommandExecution(botCommand, user, chat, commandName)
 
@@ -96,17 +87,17 @@ class CommandExecutor {
         val userId = botCommand.ctx.user().id
 
         if (botCommand.isUserBanned(userId)) {
-            val reason = banlistDao.reason(userId) ?: "\uD83E\uDD37\u200D♂️" // 🤷‍♂️
+            val reason = banlistDao.reason(userId) ?: """🤷‍♂️"""
             botCommand.replyToMessage(Strings.BAN_AND_REASON.format(reason))
             return false
         }
 
-        if (!botCommand.isChatInAllowlistList()) {
+        if (!botCommand.isChatInAllowlist()) {
             botCommand.replyToMessage(Strings.COMMAND_NOT_SUPPORTED_IN_CHAT)
             return false
         }
 
-        val commandName = botCommand.getCommandName()
+        val commandName = botCommand.commandName()
 
         if (botCommand.isCommandDisabled(commandName)) {
             botCommand.replyToMessage(Strings.COMMAND_TEMPORARY_DISABLED)
@@ -117,7 +108,7 @@ class CommandExecutor {
     }
 
     private suspend fun isNotInSlowmode(botCommand: BotCommand): Boolean {
-        if (botCommand.getCommandName() in Commands.disableableCommands) {
+        if (botCommand.commandName() in Commands.disableableCommands) {
             val slowmodeRemainingSeconds = getSlowmodeRemainingSeconds(botCommand.ctx.user().id)
 
             if (slowmodeRemainingSeconds > 0) {
@@ -171,20 +162,26 @@ class CommandExecutor {
 
     private suspend fun sendWaitingGif(botCommand: BotCommand, caption: String): Int {
 
-        suspend fun sendLoadingGifAndUpdateFileId(): Int {
-            val message = botCommand.sendDocument(File(LOADING_GIF_FILENAME))
-            message.document.fileId?.let { configurationsDao.updateLoadingGifFileId(it) }
+        suspend fun sendGifAndUpdateFileId(): Int {
+            val message = botCommand.sendDocument(File(LOADING_ANIMATION_FILE))
+            val fileId = message.document.fileId
+
+            if (fileId != null)
+                configurationsDao.updateLoadingGifFileId(fileId)
+
             return message.messageId
         }
 
-        return configurationsDao.getLoadingGifFileId()?.let { fileId ->
+        val fileId = configurationsDao.getLoadingGifFileId()
+
+        return if (fileId != null) {
             try {
                 botCommand.replyToMessageWithDocument(fileId, caption)
             } catch (e: Exception) {
                 log.error { e.message }
-                sendLoadingGifAndUpdateFileId()
+                sendGifAndUpdateFileId()
             }
-        }
-            ?: sendLoadingGifAndUpdateFileId()
+        } else
+            sendGifAndUpdateFileId()
     }
 }

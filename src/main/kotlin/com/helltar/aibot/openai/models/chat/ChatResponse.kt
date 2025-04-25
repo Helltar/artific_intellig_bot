@@ -1,6 +1,6 @@
-package com.helltar.aibot.openai.api.models.chat
+package com.helltar.aibot.openai.models.chat
 
-import com.helltar.aibot.openai.api.models.common.MessageData
+import com.helltar.aibot.openai.models.common.MessageData
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

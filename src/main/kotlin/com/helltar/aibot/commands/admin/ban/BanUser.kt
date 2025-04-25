@@ -18,6 +18,6 @@ class BanUser(ctx: MessageContext) : BotCommand(ctx) {
             replyToMessage(Strings.USER_ALREADY_BANNED)
     }
 
-    override fun getCommandName() =
+    override fun commandName() =
         Commands.Admin.CMD_BAN_USER
 }

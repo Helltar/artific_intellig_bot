@@ -10,7 +10,6 @@ class ConfigurationsDao {
 
     private companion object {
         const val KEY_SLOWMODE_MAX_USAGE_COUNT = "global_slowmode_max_usage_count"
-        const val KEY_DEEPSEEK_ENABLED = "deepseek_enabled"
         const val KEY_LOADING_GIF_FILE_ID = "loading_gif_file_id"
     }
 
@@ -26,17 +25,11 @@ class ConfigurationsDao {
     suspend fun updateSlowmodeMaxUsageCount(newMax: Int): Boolean =
         setConfiguration(KEY_SLOWMODE_MAX_USAGE_COUNT, newMax.toString())
 
-    suspend fun isDeepSeekEnabled(): Boolean =
-        getConfigValue(KEY_DEEPSEEK_ENABLED)?.toBoolean() == true
-
-    suspend fun updateDeepSeekState(enable: Boolean): Boolean =
-        setConfiguration(KEY_DEEPSEEK_ENABLED, enable.toString())
-
     private suspend fun getConfigValue(key: String): String? = dbTransaction {
         ConfigurationsTable
             .select(ConfigurationsTable.value)
             .where { ConfigurationsTable.key eq key }
-            .singleOrNull()?.get(ConfigurationsTable.value)
+            .singleOrNull()?.getOrNull(ConfigurationsTable.value)
     }
 
     private suspend fun setConfiguration(key: String, value: String): Boolean = dbTransaction {

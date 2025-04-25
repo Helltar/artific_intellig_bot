@@ -35,37 +35,19 @@ Add it using the command in the bot:
 
 - `/updatekey sk-qwerty...`
 
-If you want to use **DeepSeek** for `/chat`, also add the key [DeepSeek API Key](https://platform.deepseek.com/api_keys) with the command:
-
-- `/updatekey deepseek.com sk-qwerty...`
-
 ### Commands
 
-- `/chat` - ChatGPT (gpt-4o, deepseek-chat)
-- `/vision` - Describes images with GPT-4 Vision (gpt-4o)
+- `/chat` - ChatGPT (gpt-4.1)
+- `/vision` - Describes images with Vision (gpt-4.1)
 - `/dalle` - Creates an image given a prompt (dall-e-3)
 - `/dallevar` - Creates a variation of a given image (dall-e-2)
-- `/asr` - Transcribes audio (whisper-1)
 
 ### Additional Chat Commands
 
 - `/chatctx` - View dialogue history
 - `/chatrm` - Clear history
 
-For audio responses (TTS), add the **#voice** tag to your message, for example:
-
-```text
-Hello, how are you? #voice
-```
-
 ### Admin Commands
-
-#### DeepSeek
-
-- `/deepseekon` (DeepSeek **deepseek-chat** will be used for **text** requests in the `/chat` command)
-- `/deepseekoff` (OpenAI **gpt-4o** will be used)
-
-By default, **gpt-4o** is used.
 
 #### Change Command State
 

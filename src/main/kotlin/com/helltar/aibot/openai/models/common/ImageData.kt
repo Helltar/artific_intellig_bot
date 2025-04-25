@@ -1,4 +1,4 @@
-package com.helltar.aibot.openai.api.models.common
+package com.helltar.aibot.openai.models.common
 
 import kotlinx.serialization.Serializable
 

@@ -23,7 +23,7 @@ class SlowmodeDao {
     suspend fun incrementUsageCount(userId: Long): Boolean = dbTransaction {
         SlowmodeTable
             .update({ SlowmodeTable.userId eq userId }) {
-                it[this.usageCount] = usageCount + 1
+                it[usageCount] = usageCount + 1
                 it[updatedAt] = utcNow()
             } > 0
     }
@@ -31,7 +31,7 @@ class SlowmodeDao {
     suspend fun resetUsageCount(userId: Long): Boolean = dbTransaction {
         SlowmodeTable
             .update({ SlowmodeTable.userId eq userId }) {
-                it[this.usageCount] = 1
+                it[usageCount] = 1
                 it[updatedAt] = utcNow()
             } > 0
     }

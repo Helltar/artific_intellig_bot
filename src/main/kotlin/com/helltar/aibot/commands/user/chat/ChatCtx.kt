@@ -3,10 +3,12 @@ package com.helltar.aibot.commands.user.chat
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.base.BotCommand
-import com.helltar.aibot.commands.user.chat.ChatHistoryManager.ChatMessage
 import com.helltar.aibot.config.Strings
-import com.helltar.aibot.openai.api.ApiConfig.CHAT_ROLE_USER
+import com.helltar.aibot.openai.ApiConfig.ChatRole
+import com.helltar.aibot.openai.models.common.MessageData
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.time.Instant
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 class ChatCtx(ctx: MessageContext) : BotCommand(ctx) {
@@ -18,12 +20,12 @@ class ChatCtx(ctx: MessageContext) : BotCommand(ctx) {
     override suspend fun run() {
         val userId = getUserId() ?: return
 
-        if (isCreator(userId) && !isCreator()) {
+        if (isCreator(userId) && !isCreator(this.userId)) {
             replyToMessage(Strings.CREATOR_CONTEXT_CANNOT_BE_VIEWED)
             return
         }
 
-        val userChatHistory = ChatHistoryManager(userId).userChatDialogHistory
+        val userChatHistory = ChatHistoryManager(userId).history()
         val text = formatUserChatHistory(userChatHistory)
 
         try {
@@ -32,11 +34,11 @@ class ChatCtx(ctx: MessageContext) : BotCommand(ctx) {
             log.error { e.message }
 
             if (userChatHistory.isNotEmpty())
-                errorReplyWithTextDocument(text, Strings.TELEGRAM_API_EXCEPTION_CONTEXT_SAVED_TO_FILE)
+                replyWithTextDocument(text, Strings.TELEGRAM_API_EXCEPTION_CONTEXT_SAVED_TO_FILE)
         }
     }
 
-    override fun getCommandName() =
+    override fun commandName() =
         Commands.User.CMD_CHATCTX
 
     private suspend fun getUserId() =
@@ -51,13 +53,13 @@ class ChatCtx(ctx: MessageContext) : BotCommand(ctx) {
             }
         }
 
-    private fun formatUserChatHistory(userChatHistory: List<ChatMessage>) =
+    private fun formatUserChatHistory(userChatHistory: List<Pair<MessageData, Instant>>) =
         if (userChatHistory.isNotEmpty()) {
-            val formatter = DateTimeFormatter.ofPattern("dd.MM HH:mm")
+            val formatter = DateTimeFormatter.ofPattern("dd.MM HH:mm").withZone(ZoneId.systemDefault())
 
             userChatHistory
-                .filter { it.message.role == CHAT_ROLE_USER }
-                .joinToString("\n") { "▫\uFE0F *${it.datetime.format(formatter)}* - ${it.message.content}" } // ▫️
+                .filter { it.first.role == ChatRole.USER }
+                .joinToString("\n") { """▫️ *${formatter.format(it.second)}* - ${it.first.content}""" }
         } else
             Strings.CHAT_CONTEXT_EMPTY
 }

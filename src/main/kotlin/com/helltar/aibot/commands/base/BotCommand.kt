@@ -1,21 +1,28 @@
 package com.helltar.aibot.commands.base
 
+import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.config.Config.API_KEY_PROVIDER_OPENAI
 import com.helltar.aibot.config.Config.creatorId
 import com.helltar.aibot.config.Config.telegramBotUsername
-import com.helltar.aibot.database.dao.*
+import com.helltar.aibot.database.dao.banlistDao
+import com.helltar.aibot.database.dao.chatAllowlistDao
+import com.helltar.aibot.database.dao.commandsDao
+import com.helltar.aibot.database.dao.sudoersDao
+import com.helltar.aibot.exceptions.ImageTooLargeException
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.InputFile
 import org.telegram.telegrambots.meta.api.objects.message.Message
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 import java.io.File
 import java.io.InputStream
 import java.util.concurrent.CompletableFuture
 
-abstract class BotCommand(val ctx: MessageContext) : Command {
+abstract class BotCommand(open val ctx: MessageContext) : Command {
 
     private companion object {
-        const val MAX_MESSAGE_LENGTH = 4096
+        const val TELEGRAM_MAX_MESSAGE_LENGTH = 4096
+        val log = KotlinLogging.logger {}
     }
 
     val userLanguageCode = ctx.user().languageCode ?: "en"
@@ -32,7 +39,7 @@ abstract class BotCommand(val ctx: MessageContext) : Command {
     suspend fun isCommandDisabled(command: String) =
         commandsDao.isDisabled(command)
 
-    suspend fun isChatInAllowlistList() =
+    suspend fun isChatInAllowlist() =
         chatAllowlistDao.isExists(ctx.chatId())
 
     suspend fun isUserBanned(userId: Long) =
@@ -41,7 +48,7 @@ abstract class BotCommand(val ctx: MessageContext) : Command {
     suspend fun isAdmin() =
         sudoersDao.isAdmin(userId)
 
-    fun isCreator(userId: Long = this.userId) =
+    fun isCreator(userId: Long) =
         userId == creatorId
 
     fun isNotMyMessage(message: Message?) =
@@ -51,7 +58,7 @@ abstract class BotCommand(val ctx: MessageContext) : Command {
         val parseMode = if (markdown) ParseMode.MARKDOWN else ParseMode.HTML
         val messageIdToReply = if (replyMessage?.from?.isBot == false) messageId else message.messageId // todo: refact.
 
-        if (text.length <= MAX_MESSAGE_LENGTH) {
+        if (text.length <= TELEGRAM_MAX_MESSAGE_LENGTH) {
             ctx.replyToMessage(text)
                 .setReplyToMessageId(messageIdToReply)
                 .setParseMode(parseMode)
@@ -77,15 +84,6 @@ abstract class BotCommand(val ctx: MessageContext) : Command {
             .setFile(file)
             .call(ctx.sender)
 
-    protected suspend fun openaiKey() =
-        getApiKey(API_KEY_PROVIDER_OPENAI)
-
-    protected suspend fun getApiKey(provider: String) =
-        apiKeyDao.getKey(provider)
-
-    protected suspend fun isDeepSeekNotEnabled() =
-        !configurationsDao.isDeepSeekEnabled()
-
     protected fun replyToMessageWithPhoto(url: String, caption: String = "", messageId: Int? = message.messageId): Message =
         ctx.replyToMessageWithPhoto()
             .setFile(InputFile(url))
@@ -100,7 +98,7 @@ abstract class BotCommand(val ctx: MessageContext) : Command {
             .setReplyToMessageId(messageId)
             .call(ctx.sender)
 
-    protected fun errorReplyWithTextDocument(text: String, caption: String): Int =
+    protected fun replyWithTextDocument(text: String, caption: String): Int =
         ctx.replyWithDocument()
             .setFile("$userId-${message.messageId}.txt", text.byteInputStream())
             .setCaption(caption)
@@ -108,10 +106,26 @@ abstract class BotCommand(val ctx: MessageContext) : Command {
             .call(ctx.sender)
             .messageId
 
+    protected fun downloadPhoto(limitBytes: Int = 1024 * 1024): File? {
+        val photo = replyMessage?.photo?.maxByOrNull { it.fileSize }
+
+        return photo?.let {
+            if (it.fileSize <= limitBytes) {
+                try {
+                    ctx.sender.downloadFile(Methods.getFile(it.fileId).call(ctx.sender))
+                } catch (e: TelegramApiException) {
+                    log.error { e.message }
+                    null
+                }
+            } else
+                throw ImageTooLargeException(limitBytes)
+        }
+    }
+
     private fun chunkedReplyToMessage(text: String, messageId: Int, webPagePreview: Boolean, parseMode: String) {
         var messageIdToReply = messageId
 
-        text.chunked(MAX_MESSAGE_LENGTH).forEach {
+        text.chunked(TELEGRAM_MAX_MESSAGE_LENGTH).forEach {
             if (it.isNotBlank()) {
                 messageIdToReply =
                     ctx.replyToMessage(it)

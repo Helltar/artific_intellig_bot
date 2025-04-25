@@ -18,6 +18,6 @@ class ChatAllowlist(ctx: MessageContext) : BotCommand(ctx) {
         replyToMessage(text.ifEmpty { Strings.LIST_IS_EMPTY })
     }
 
-    override fun getCommandName() =
+    override fun commandName() =
         Commands.Admin.CMD_CHAT_ALLOW_LIST
 }

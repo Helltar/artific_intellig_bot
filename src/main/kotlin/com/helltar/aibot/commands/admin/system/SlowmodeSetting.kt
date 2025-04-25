@@ -14,14 +14,14 @@ class SlowmodeSetting(ctx: MessageContext) : BotCommand(ctx) {
             return
         }
 
-        val newMax = arguments[0].toIntOrNull() ?: return
-
-        if (configurationsDao.updateSlowmodeMaxUsageCount(newMax))
-            replyToMessage(Strings.SLOWMODE_SUCCESFULLY_CHANGED.format(newMax))
-        else
-            replyToMessage(Strings.SLOWMODE_CHANGE_FAIL)
+        arguments[0].toIntOrNull()?.let { newMax ->
+            if (configurationsDao.updateSlowmodeMaxUsageCount(newMax))
+                replyToMessage(Strings.SLOWMODE_SUCCESFULLY_CHANGED.format(newMax))
+            else
+                replyToMessage(Strings.SLOWMODE_CHANGE_FAIL)
+        }
     }
 
-    override fun getCommandName() =
+    override fun commandName() =
         Commands.Creator.CMD_SLOWMODE
 }

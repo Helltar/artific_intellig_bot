@@ -17,6 +17,6 @@ class About(ctx: MessageContext) : BotCommand(ctx) {
         )
     }
 
-    override fun getCommandName() =
+    override fun commandName() =
         Commands.Simple.CMD_ABOUT
 }
