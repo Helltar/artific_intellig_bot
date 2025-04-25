@@ -9,7 +9,6 @@ RUN gradle shadowJar --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine
 
-RUN apk add --no-cache ffmpeg
 WORKDIR /app
 
 COPY --from=builder /app/build/libs/*.jar aibot.jar
