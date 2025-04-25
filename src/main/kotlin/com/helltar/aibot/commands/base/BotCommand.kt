@@ -106,8 +106,8 @@ abstract class BotCommand(open val ctx: MessageContext) : Command {
             .call(ctx.sender)
             .messageId
 
-    protected fun downloadPhoto(limitBytes: Int = 1024 * 1024): File? {
-        val photo = replyMessage?.photo?.maxByOrNull { it.fileSize }
+    protected fun downloadPhoto(message: Message? = replyMessage, limitBytes: Int = 1024 * 1024): File? {
+        val photo = message?.photo?.maxByOrNull { it.fileSize }
 
         return photo?.let {
             if (it.fileSize <= limitBytes) {
