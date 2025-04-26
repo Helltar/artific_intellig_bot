@@ -16,7 +16,7 @@ class DallEGenerations(ctx: MessageContext) : AiCommand(ctx) {
 
     override suspend fun run() {
         if (arguments.isEmpty()) {
-            replyToMessage(Strings.DALLE_EXAMPLE)
+            replyToMessage(Strings.DALLE_COMMAND_USAGE_TEMPLATE_RAW.trimIndent())
             return
         }
 

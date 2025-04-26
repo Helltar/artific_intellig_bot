@@ -25,7 +25,6 @@ object Strings {
     const val COMMAND_NOT_SUPPORTED_IN_CHAT = "Command is not supported in this chat \uD83D\uDE48"
     const val COMMAND_TEMPORARY_DISABLED = "Command temporary disabled \uD83D\uDC40"
     const val DALLE_VARIATIONS_EXAMPLE = "Use this command as a reply to photo \uD83D\uDE43"
-    const val DALLE_EXAMPLE = "Please write a description of what you want to receive:\n\n<code>/$CMD_DALLE</code> <u>photo realistic portrait of young woman</u>"
     const val IMAGE_MUST_BE_LESS_THAN = "Image must be less than %s 😥"
     const val LIST_IS_EMPTY = "◻️ List is empty"
     const val MANY_CHARACTERS = "Max <b>%d</b> characters \uD83D\uDC40"
@@ -34,8 +33,11 @@ object Strings {
     const val NO_PHOTO_IN_MESSAGE = "No photo in message \uD83E\uDD14"
     const val PROVIDER_API_KEY_SUCCESS_ADD = "✅ API Key for <b>%s</b> succesfully added"
     const val PROVIDER_API_KEY_SUCCESS_UPDATE = "✅ API Key for <b>%s</b> succesfully updated"
-    const val TELEGRAM_API_EXCEPTION_CONTEXT_SAVED_TO_FILE = "An error occurred (TelegramApiException). The context has been saved to a file. You can try fixing it using the /$CMD_CHAT_CTX_REMOVE command ☺\uFE0F"
-    const val TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE = "An error occurred (TelegramApiException). The response has been saved to a file. You can try fixing it using the /$CMD_CHAT_CTX_REMOVE command ☺\uFE0F"
+
+    private const val TELEGRAM_API_EXCEPTION = "An error occurred (TelegramApiException)."
+    private const val TRY_FIX = "You can try fixing it using the /$CMD_CHAT_CTX_REMOVE command ☺\uFE0F"
+    const val TELEGRAM_API_EXCEPTION_CONTEXT_SAVED_TO_FILE = "$TELEGRAM_API_EXCEPTION The context has been saved to a file. $TRY_FIX"
+    const val TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE = "$TELEGRAM_API_EXCEPTION The response has been saved to a file. $TRY_FIX"
 
     const val USER_ALREADY_BANNED = "✅ User already banned"
     const val USER_BANNED = "❌ User banned"
@@ -61,14 +63,25 @@ object Strings {
     const val CREATOR_CONTEXT_CANNOT_BE_DELETED = "Creator context cannot be deleted ✋"
 
     const val SLOWMODE_PLEASE_WAIT = "✋ Slowmode, wait <b>%d</b> seconds"
-    const val SLOWMODE_CURRENT_VALUE = "ℹ\uFE0F The current value is <b>%d</b> requests per hour per user.\n\nTo change it, use the command <code>/$CMD_SLOWMODE</code> <u>15</u>"
     const val SLOWMODE_SUCCESFULLY_CHANGED = "✅ The value for system-slowmode has been successfully changed to <b>%d</b> requests per hour per user."
     const val SLOWMODE_CHANGE_FAIL = "❌ Error when change system-slowmode value"
+
+    const val SLOWMODE_COMMAND_USAGE_TEMPLATE_RAW = """
+        ℹ️ The current value is <b>%d</b> requests per hour per user.
+        
+        To change it, use the command <code>/$CMD_SLOWMODE</code> <u>15</u>
+        """
 
     const val UPDATE_API_KEY_COMMAND_USAGE_TEMPLATE_RAW = """
         ℹ️ How to use:
         
         <code>/$CMD_UPDATE_API_KEY</code> <u>sk-proj-qwertyuiop</u>
+        """
+
+    const val DALLE_COMMAND_USAGE_TEMPLATE_RAW = """
+        ℹ️ How to use:
+        
+        <code>/$CMD_DALLE</code> <u>cute cat</u>
         """
 
     private val localization = ResourceBundleLocalizationService("language")
