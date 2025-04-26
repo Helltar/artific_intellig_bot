@@ -4,6 +4,7 @@ import com.annimon.tgbotsmodule.services.ResourceBundleLocalizationService
 import com.helltar.aibot.commands.Commands.Creator.CMD_SLOWMODE
 import com.helltar.aibot.commands.Commands.Creator.CMD_UPDATE_API_KEY
 import com.helltar.aibot.commands.Commands.User.CMD_CHAT_CTX_REMOVE
+import com.helltar.aibot.commands.Commands.User.CMD_DALLE
 
 object Strings {
 
@@ -23,8 +24,8 @@ object Strings {
     const val COMMAND_NOT_AVAILABLE = "Command <b>%s</b> is not available. Available: %s"
     const val COMMAND_NOT_SUPPORTED_IN_CHAT = "Command is not supported in this chat \uD83D\uDE48"
     const val COMMAND_TEMPORARY_DISABLED = "Command temporary disabled \uD83D\uDC40"
-    const val DALLE_VARIATIONS_USE_AS_REPLY = "Use this command as a reply to photo \uD83D\uDE43"
-    const val EMPTY_ARGS = "Please write a description of what you want to receive:\n\n<code>/dalle photo realistic portrait of young woman</code>"
+    const val DALLE_VARIATIONS_EXAMPLE = "Use this command as a reply to photo \uD83D\uDE43"
+    const val DALLE_EXAMPLE = "Please write a description of what you want to receive:\n\n<code>/$CMD_DALLE</code> <u>photo realistic portrait of young woman</u>"
     const val IMAGE_MUST_BE_LESS_THAN = "Image must be less than %s 😥"
     const val LIST_IS_EMPTY = "◻️ List is empty"
     const val MANY_CHARACTERS = "Max <b>%d</b> characters \uD83D\uDC40"

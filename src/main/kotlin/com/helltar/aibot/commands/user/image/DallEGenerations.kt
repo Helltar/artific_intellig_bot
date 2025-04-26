@@ -1,9 +1,9 @@
 package com.helltar.aibot.commands.user.image
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
+import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.base.AiCommand
-import com.helltar.aibot.Strings
 import com.helltar.aibot.openai.ApiClient
 import com.helltar.aibot.openai.service.DalleService
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -16,7 +16,7 @@ class DallEGenerations(ctx: MessageContext) : AiCommand(ctx) {
 
     override suspend fun run() {
         if (arguments.isEmpty()) {
-            replyToMessage(Strings.EMPTY_ARGS)
+            replyToMessage(Strings.DALLE_EXAMPLE)
             return
         }
 

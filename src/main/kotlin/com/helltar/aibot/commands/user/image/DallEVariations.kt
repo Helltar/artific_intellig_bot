@@ -23,7 +23,7 @@ class DallEVariations(ctx: MessageContext) : AiCommand(ctx) {
 
     override suspend fun run() {
         if (isNotReply) {
-            replyToMessage(Strings.DALLE_VARIATIONS_USE_AS_REPLY)
+            replyToMessage(Strings.DALLE_VARIATIONS_EXAMPLE)
             return
         }
 
