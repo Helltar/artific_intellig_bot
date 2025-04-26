@@ -1,4 +1,4 @@
-package com.helltar.aibot.config
+package com.helltar.aibot
 
 import com.annimon.tgbotsmodule.services.ResourceBundleLocalizationService
 import com.helltar.aibot.commands.Commands.Creator.CMD_SLOWMODE

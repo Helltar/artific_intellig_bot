@@ -1,12 +1,12 @@
 package com.helltar.aibot.database
 
 import com.helltar.aibot.commands.Commands.disableableCommands
-import com.helltar.aibot.config.Config.creatorId
-import com.helltar.aibot.config.Config.databaseName
-import com.helltar.aibot.config.Config.databasePassword
-import com.helltar.aibot.config.Config.databaseUser
-import com.helltar.aibot.config.Config.postgresqlHost
-import com.helltar.aibot.config.Config.postgresqlPort
+import com.helltar.aibot.Config.creatorId
+import com.helltar.aibot.Config.databaseName
+import com.helltar.aibot.Config.databasePassword
+import com.helltar.aibot.Config.databaseUser
+import com.helltar.aibot.Config.postgresqlHost
+import com.helltar.aibot.Config.postgresqlPort
 import com.helltar.aibot.database.tables.*
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database

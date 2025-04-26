@@ -48,8 +48,8 @@ import com.helltar.aibot.commands.user.chat.ChatCtx
 import com.helltar.aibot.commands.user.chat.ChatCtxRemove
 import com.helltar.aibot.commands.user.image.DallEGenerations
 import com.helltar.aibot.commands.user.image.DallEVariations
-import com.helltar.aibot.config.Config.creatorId
-import com.helltar.aibot.config.Config.telegramBotUsername
+import com.helltar.aibot.Config.creatorId
+import com.helltar.aibot.Config.telegramBotUsername
 import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.EntityType
 import org.telegram.telegrambots.meta.api.objects.Update

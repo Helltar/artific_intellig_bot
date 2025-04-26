@@ -1,7 +1,7 @@
 package com.helltar.aibot.commands.user.chat
 
-import com.helltar.aibot.config.Strings
-import com.helltar.aibot.config.Strings.localizedString
+import com.helltar.aibot.Strings
+import com.helltar.aibot.Strings.localizedString
 import com.helltar.aibot.database.Database.utcNow
 import com.helltar.aibot.database.dao.chatHistoryDao
 import com.helltar.aibot.openai.ApiConfig.ChatRole

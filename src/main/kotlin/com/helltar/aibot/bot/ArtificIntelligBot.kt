@@ -4,7 +4,7 @@ import com.annimon.tgbotsmodule.BotModule
 import com.annimon.tgbotsmodule.BotModuleOptions
 import com.annimon.tgbotsmodule.Runner
 import com.annimon.tgbotsmodule.beans.Config
-import com.helltar.aibot.config.Config.telegramBotToken
+import com.helltar.aibot.Config.telegramBotToken
 import com.helltar.aibot.database.Database
 
 class ArtificIntelligBot : BotModule {

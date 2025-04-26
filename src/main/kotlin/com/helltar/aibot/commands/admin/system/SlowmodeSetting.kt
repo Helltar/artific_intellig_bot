@@ -3,7 +3,7 @@ package com.helltar.aibot.commands.admin.system
 import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.base.BotCommand
-import com.helltar.aibot.config.Strings
+import com.helltar.aibot.Strings
 import com.helltar.aibot.database.dao.configurationsDao
 
 class SlowmodeSetting(ctx: MessageContext) : BotCommand(ctx) {

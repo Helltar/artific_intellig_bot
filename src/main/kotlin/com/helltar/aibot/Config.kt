@@ -1,4 +1,4 @@
-package com.helltar.aibot.config
+package com.helltar.aibot
 
 import io.github.cdimascio.dotenv.dotenv
 

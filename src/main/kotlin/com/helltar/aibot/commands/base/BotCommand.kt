@@ -2,8 +2,8 @@ package com.helltar.aibot.commands.base
 
 import com.annimon.tgbotsmodule.api.methods.Methods
 import com.annimon.tgbotsmodule.commands.context.MessageContext
-import com.helltar.aibot.config.Config.creatorId
-import com.helltar.aibot.config.Config.telegramBotUsername
+import com.helltar.aibot.Config.creatorId
+import com.helltar.aibot.Config.telegramBotUsername
 import com.helltar.aibot.database.dao.banlistDao
 import com.helltar.aibot.database.dao.chatAllowlistDao
 import com.helltar.aibot.database.dao.commandsDao
