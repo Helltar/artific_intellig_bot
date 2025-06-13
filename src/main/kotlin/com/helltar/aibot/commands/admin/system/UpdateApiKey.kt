@@ -1,9 +1,9 @@
 package com.helltar.aibot.commands.admin.system
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
+import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.base.BotCommand
-import com.helltar.aibot.Strings
 import com.helltar.aibot.database.dao.apiKeyDao
 import com.helltar.aibot.openai.ApiConfig
 
@@ -15,7 +15,7 @@ class UpdateApiKey(ctx: MessageContext) : BotCommand(ctx) {
             return
         }
 
-        val provider = ApiConfig.OpenAi.PROVIDER_NAME
+        val provider = ApiConfig.PROVIDER_NAME
         val apiKey = arguments[0].trim()
 
         if (apiKey.length < 16) {
