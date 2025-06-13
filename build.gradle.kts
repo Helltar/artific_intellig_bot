@@ -23,7 +23,6 @@ object Versions {
     const val POSTGRESQL = "42.7.3"
 
     const val COROUTINES_CORE_JVM = "1.10.2"
-    const val KOTLINX_SERIALIZATION_JSON = "1.8.1"
 
     const val KOTLIN_LOGGING = "7.0.7"
     const val LOGBACK_CLASSIC = "1.5.18"
