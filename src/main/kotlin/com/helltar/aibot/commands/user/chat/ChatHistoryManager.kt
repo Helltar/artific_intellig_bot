@@ -2,10 +2,10 @@ package com.helltar.aibot.commands.user.chat
 
 import com.helltar.aibot.Strings
 import com.helltar.aibot.Strings.localizedString
-import com.helltar.aibot.database.Database.utcNow
 import com.helltar.aibot.database.dao.chatHistoryDao
 import com.helltar.aibot.openai.ApiConfig.ChatRole
 import com.helltar.aibot.openai.models.common.MessageData
+import com.helltar.aibot.utils.DateTimeUtils.utcNow
 import org.telegram.telegrambots.meta.api.objects.message.Message
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
