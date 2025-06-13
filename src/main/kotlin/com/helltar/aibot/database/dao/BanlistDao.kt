@@ -1,13 +1,14 @@
 package com.helltar.aibot.database.dao
 
 import com.helltar.aibot.database.Database.dbTransaction
-import com.helltar.aibot.database.Database.utcNow
 import com.helltar.aibot.database.models.BanlistData
 import com.helltar.aibot.database.tables.BannedUsersTable
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insertIgnore
-import org.jetbrains.exposed.sql.selectAll
+import com.helltar.aibot.utils.DateTimeUtils.utcNow
+import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.v1.jdbc.deleteWhere
+import org.jetbrains.exposed.v1.jdbc.insertIgnore
+import org.jetbrains.exposed.v1.jdbc.select
+import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.telegram.telegrambots.meta.api.objects.User
 
 class BanlistDao {

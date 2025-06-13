@@ -1,12 +1,12 @@
 plugins {
-    kotlin("jvm") version "2.1.20"
-    kotlin("plugin.serialization") version "2.1.20"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    kotlin("jvm") version "2.1.21"
+    kotlin("plugin.serialization") version "2.1.21"
+    id("com.gradleup.shadow") version "8.3.6"
     application
 }
 
 group = "com.helltar"
-version = "0.9.150"
+version = "0.9.500"
 
 repositories {
     mavenCentral()
@@ -15,15 +15,18 @@ repositories {
 object Versions {
     const val TGBOTS_MODULE = "8.0.0"
     const val JACKSON_MODULE_KOTLIN = "2.14.2"
-    const val FUEL = "2.3.1"
+
     const val DOTENV_KOTLIN = "6.4.1"
     const val IMGSCALR_LIB = "4.2"
-    const val EXPOSED = "0.57.0"
+
+    const val EXPOSED = "1.0.0-beta-2"
     const val POSTGRESQL = "42.7.3"
-    const val COROUTINES_CORE_JVM = "1.8.1"
-    const val KOTLINX_SERIALIZATION_JSON = "1.7.1"
-    const val LOGBACK_CLASSIC = "1.5.16"
-    const val KOTLIN_LOGGING = "7.0.3"
+
+    const val COROUTINES_CORE_JVM = "1.10.2"
+    const val KOTLINX_SERIALIZATION_JSON = "1.8.1"
+
+    const val KOTLIN_LOGGING = "7.0.7"
+    const val LOGBACK_CLASSIC = "1.5.18"
 }
 
 dependencies {
@@ -32,7 +35,6 @@ dependencies {
     }
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.JACKSON_MODULE_KOTLIN}")
-    implementation("com.github.kittinunf.fuel:fuel:${Versions.FUEL}")
     implementation("io.github.cdimascio:dotenv-kotlin:${Versions.DOTENV_KOTLIN}")
     implementation("org.imgscalr:imgscalr-lib:${Versions.IMGSCALR_LIB}")
 
@@ -42,8 +44,13 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:${Versions.EXPOSED}")
     implementation("org.postgresql:postgresql:${Versions.POSTGRESQL}")
 
+    implementation("io.ktor:ktor-client-cio:3.1.3")
+    implementation("io.ktor:ktor-client-auth:3.1.3")
+    implementation("io.ktor:ktor-client-content-negotiation:3.1.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.3")
+
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:${Versions.COROUTINES_CORE_JVM}")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION_JSON}")
+
 
     implementation("io.github.oshai:kotlin-logging-jvm:${Versions.KOTLIN_LOGGING}")
     implementation("ch.qos.logback:logback-classic:${Versions.LOGBACK_CLASSIC}")

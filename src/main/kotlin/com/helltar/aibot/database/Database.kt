@@ -1,21 +1,20 @@
 package com.helltar.aibot.database
 
-import com.helltar.aibot.commands.Commands.disableableCommands
 import com.helltar.aibot.Config.creatorId
 import com.helltar.aibot.Config.databaseName
 import com.helltar.aibot.Config.databasePassword
 import com.helltar.aibot.Config.databaseUser
 import com.helltar.aibot.Config.postgresqlHost
 import com.helltar.aibot.Config.postgresqlPort
+import com.helltar.aibot.commands.Commands.disableableCommands
 import com.helltar.aibot.database.tables.*
+import com.helltar.aibot.utils.DateTimeUtils.utcNow
 import kotlinx.coroutines.Dispatchers
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.insertIgnore
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import org.jetbrains.exposed.sql.transactions.transaction
-import java.time.Clock
-import java.time.Instant
+import org.jetbrains.exposed.v1.jdbc.Database
+import org.jetbrains.exposed.v1.jdbc.SchemaUtils
+import org.jetbrains.exposed.v1.jdbc.insertIgnore
+import org.jetbrains.exposed.v1.jdbc.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 object Database {
 
@@ -32,9 +31,6 @@ object Database {
 
     suspend fun <T> dbTransaction(block: suspend () -> T): T =
         newSuspendedTransaction(Dispatchers.IO) { block() }
-
-    fun utcNow(): Instant =
-        Instant.now(Clock.systemUTC())
 
     private fun createTables() {
         SchemaUtils.create(

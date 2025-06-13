@@ -1,14 +1,15 @@
 package com.helltar.aibot.database.dao
 
 import com.helltar.aibot.database.Database.dbTransaction
-import com.helltar.aibot.database.Database.utcNow
 import com.helltar.aibot.database.tables.ChatHistory
 import com.helltar.aibot.openai.ApiConfig.ChatRole
 import com.helltar.aibot.openai.models.common.MessageData
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
+import com.helltar.aibot.utils.DateTimeUtils.utcNow
+import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.jdbc.deleteWhere
+import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.select
 import java.time.Instant
 
 class ChatHistoryDao {

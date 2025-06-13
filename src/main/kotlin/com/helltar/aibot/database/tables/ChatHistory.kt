@@ -1,7 +1,7 @@
 package com.helltar.aibot.database.tables
 
-import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.javatime.timestamp
+import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
+import org.jetbrains.exposed.v1.javatime.timestamp
 
 object ChatHistory : IntIdTable() {
 

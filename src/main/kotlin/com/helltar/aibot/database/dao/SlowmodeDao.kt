@@ -1,12 +1,13 @@
 package com.helltar.aibot.database.dao
 
 import com.helltar.aibot.database.Database.dbTransaction
-import com.helltar.aibot.database.Database.utcNow
 import com.helltar.aibot.database.models.SlowmodeStatusData
 import com.helltar.aibot.database.tables.SlowmodeTable
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
-import org.jetbrains.exposed.sql.insertIgnore
-import org.jetbrains.exposed.sql.update
+import com.helltar.aibot.utils.DateTimeUtils.utcNow
+import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.plus
+import org.jetbrains.exposed.v1.jdbc.insertIgnore
+import org.jetbrains.exposed.v1.jdbc.select
+import org.jetbrains.exposed.v1.jdbc.update
 
 class SlowmodeDao {
 

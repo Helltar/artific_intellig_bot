@@ -1,9 +1,10 @@
 package com.helltar.aibot.database.dao
 
 import com.helltar.aibot.database.Database.dbTransaction
-import com.helltar.aibot.database.Database.utcNow
 import com.helltar.aibot.database.tables.CommandsStateTable
-import org.jetbrains.exposed.sql.update
+import com.helltar.aibot.utils.DateTimeUtils.utcNow
+import org.jetbrains.exposed.v1.jdbc.select
+import org.jetbrains.exposed.v1.jdbc.update
 
 class CommandsDao {
 
