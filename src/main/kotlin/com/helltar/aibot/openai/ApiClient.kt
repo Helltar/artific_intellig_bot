@@ -1,20 +1,79 @@
 package com.helltar.aibot.openai
 
-import com.github.kittinunf.fuel.core.FileDataPart
-import com.github.kittinunf.fuel.core.Parameters
-import com.helltar.aibot.utils.Network
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.auth.*
+import io.ktor.client.plugins.auth.providers.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.request.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.json.Json
 
-class ApiClient(apiKey: String?, private val baseUrl: String = ApiConfig.OpenAi.BASE_URL) {
+object ApiClient {
 
-    private val authorizationHeader = mapOf("Authorization" to "Bearer $apiKey")
-    private val headers = mapOf("Content-Type" to "application/json") + authorizationHeader
+    private const val DEFAULT_TIMEOUT = 60_000L
 
-    fun postAsString(endpoint: String, body: String) =
-        Network.postAsString(baseUrl + endpoint, headers, body)
+    private var httpClient: HttpClient? = null
+    private var apiKey: String? = null
+    private val mutex = Mutex()
 
-    fun postAsByteArray(endpoint: String, body: String) =
-        Network.postAsByteArray(baseUrl + endpoint, headers, body)
+    suspend fun configure(newApiKey: String?) = mutex.withLock {
+        if (apiKey == newApiKey)
+            return
 
-    fun uploadWithFile(endpoint: String, parameters: Parameters, dataPart: FileDataPart) =
-        Network.uploadWithFile(baseUrl + endpoint, authorizationHeader, parameters, dataPart)
+        apiKey = newApiKey
+
+        httpClient?.close()
+        httpClient = createHttpClient()
+    }
+
+    suspend fun client(): HttpClient {
+        httpClient?.let { return it }
+
+        return mutex.withLock {
+            httpClient ?: createHttpClient().also { httpClient = it }
+        }
+    }
+
+    suspend inline fun <reified T> post(endpoint: String, request: Any): T =
+        client()
+            .post(ApiConfig.BASE_URL + endpoint) {
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }
+            .body()
+
+    private fun createHttpClient(): HttpClient {
+        return HttpClient(CIO) {
+            expectSuccess = true
+
+            install(ContentNegotiation) {
+                json(
+                    Json {
+                        ignoreUnknownKeys = true
+                        encodeDefaults = true
+                        explicitNulls = false
+                    }
+                )
+            }
+
+            install(Auth) {
+                bearer {
+                    loadTokens { BearerTokens(apiKey ?: "", null) }
+                    sendWithoutRequest { true }
+                }
+            }
+
+            install(HttpTimeout) {
+                requestTimeoutMillis = DEFAULT_TIMEOUT
+                connectTimeoutMillis = DEFAULT_TIMEOUT
+                socketTimeoutMillis = DEFAULT_TIMEOUT
+            }
+        }
+    }
 }
