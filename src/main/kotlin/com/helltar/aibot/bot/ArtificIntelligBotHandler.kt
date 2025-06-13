@@ -6,6 +6,8 @@ import com.annimon.tgbotsmodule.commands.CommandRegistry
 import com.annimon.tgbotsmodule.commands.SimpleCommand
 import com.annimon.tgbotsmodule.commands.authority.SimpleAuthority
 import com.annimon.tgbotsmodule.commands.context.MessageContext
+import com.helltar.aibot.Config.creatorId
+import com.helltar.aibot.Config.telegramBotUsername
 import com.helltar.aibot.commands.Commands.Admin.CMD_ADMIN_LIST
 import com.helltar.aibot.commands.Commands.Admin.CMD_BAN_LIST
 import com.helltar.aibot.commands.Commands.Admin.CMD_BAN_USER
@@ -26,7 +28,6 @@ import com.helltar.aibot.commands.Commands.User.CMD_CHAT
 import com.helltar.aibot.commands.Commands.User.CMD_CHATCTX
 import com.helltar.aibot.commands.Commands.User.CMD_CHAT_CTX_REMOVE
 import com.helltar.aibot.commands.Commands.User.CMD_DALLE
-import com.helltar.aibot.commands.Commands.User.CMD_DALLE_VARIATIONS
 import com.helltar.aibot.commands.admin.ban.BanUser
 import com.helltar.aibot.commands.admin.ban.Banlist
 import com.helltar.aibot.commands.admin.ban.UnbanUser
@@ -47,9 +48,6 @@ import com.helltar.aibot.commands.user.chat.Chat
 import com.helltar.aibot.commands.user.chat.ChatCtx
 import com.helltar.aibot.commands.user.chat.ChatCtxRemove
 import com.helltar.aibot.commands.user.image.DallEGenerations
-import com.helltar.aibot.commands.user.image.DallEVariations
-import com.helltar.aibot.Config.creatorId
-import com.helltar.aibot.Config.telegramBotUsername
 import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.EntityType
 import org.telegram.telegrambots.meta.api.objects.Update
@@ -72,7 +70,6 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
 
         registerLongRunningCommand(CMD_CHAT, ::Chat)
         registerLongRunningCommand(CMD_DALLE, ::DallEGenerations)
-        registerLongRunningCommand(CMD_DALLE_VARIATIONS, ::DallEVariations)
 
         registerAdminCommand(CMD_ENABLE, ::CommandState)
         registerAdminCommand(CMD_DISABLE, { CommandState(it, disable = true) })

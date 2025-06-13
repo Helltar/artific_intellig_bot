@@ -7,17 +7,11 @@ import com.helltar.aibot.openai.ApiConfig
 abstract class AiCommand(ctx: MessageContext) : BotCommand(ctx) {
 
     protected suspend fun openaiKey(): String? =
-        apiKeyDao.getKey(ApiConfig.OpenAi.PROVIDER_NAME)
+        apiKeyDao.getKey(ApiConfig.PROVIDER_NAME)
 
     protected fun chatModel() =
         ApiConfig.Models.CHAT
 
     protected fun visionModel() =
         ApiConfig.Models.VISION
-
-    protected fun ttsModel() =
-        ApiConfig.Models.TTS
-
-    protected fun transcriptionModel() =
-        ApiConfig.Models.TRANSCRIPTION
 }

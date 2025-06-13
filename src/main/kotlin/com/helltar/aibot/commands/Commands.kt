@@ -2,7 +2,6 @@ package com.helltar.aibot.commands
 
 import com.helltar.aibot.commands.Commands.User.CMD_CHAT
 import com.helltar.aibot.commands.Commands.User.CMD_DALLE
-import com.helltar.aibot.commands.Commands.User.CMD_DALLE_VARIATIONS
 
 object Commands {
 
@@ -17,7 +16,6 @@ object Commands {
         const val CMD_CHATCTX = "chatctx" // dialog context
         const val CMD_CHAT_CTX_REMOVE = "chatrm" // remove context
         const val CMD_DALLE = "dalle"
-        const val CMD_DALLE_VARIATIONS = "dallevar"
     }
 
     object Creator {
@@ -40,9 +38,5 @@ object Commands {
     }
 
     val disableableCommands =
-        setOf(
-            CMD_CHAT,
-            CMD_DALLE,
-            CMD_DALLE_VARIATIONS
-        )
+        setOf(CMD_CHAT, CMD_DALLE)
 }
