@@ -38,7 +38,7 @@ Add it using the command in the bot:
 ### Commands
 
 - `/chat` - Chat and analyze images
-- `/imgen` - Generate an image based on a text prompt
+- `/imgen` - Generate images from text prompts
 
 ### Additional Chat Commands
 
