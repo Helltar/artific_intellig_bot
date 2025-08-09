@@ -4,6 +4,6 @@ import com.helltar.aibot.openai.models.common.ImageData
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DalleResponseData(
+data class ImageGenResponseData(
     val data: List<ImageData>
 )

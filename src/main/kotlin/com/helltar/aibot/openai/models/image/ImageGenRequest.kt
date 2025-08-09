@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 /* https://platform.openai.com/docs/api-reference/images */
 
 @Serializable
-data class DalleGenerationsRequest(
+data class ImageGenRequest(
     val model: String,
     val prompt: String,
     val n: Int,
