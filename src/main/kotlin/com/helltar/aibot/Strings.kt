@@ -6,7 +6,7 @@ import com.helltar.aibot.commands.Commands.Creator.CMD_UPDATE_API_KEY
 import com.helltar.aibot.commands.Commands.Creator.CMD_UPDATE_CHAT_MODEL
 import com.helltar.aibot.commands.Commands.Creator.CMD_UPDATE_IMAGE_GEN_MODEL
 import com.helltar.aibot.commands.Commands.User.CMD_CHAT_CTX_REMOVE
-import com.helltar.aibot.commands.Commands.User.CMD_DALLE
+import com.helltar.aibot.commands.Commands.User.CMD_IMAGE_GEN
 
 object Strings {
 
@@ -95,10 +95,10 @@ object Strings {
         <code>/$CMD_UPDATE_API_KEY</code> <u>sk-proj-qwertyuiop</u>
         """
 
-    const val DALLE_COMMAND_USAGE_TEMPLATE_RAW = """
+    const val IMG_GEN_COMMAND_USAGE_TEMPLATE_RAW = """
         ℹ️ How to use:
         
-        <code>/$CMD_DALLE</code> <u>cute cat</u>
+        <code>/$CMD_IMAGE_GEN</code> <u>cute cat</u>
         """
 
     private val localization = ResourceBundleLocalizationService("language")

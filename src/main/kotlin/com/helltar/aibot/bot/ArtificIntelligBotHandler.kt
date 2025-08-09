@@ -29,7 +29,7 @@ import com.helltar.aibot.commands.Commands.Simple.CMD_START
 import com.helltar.aibot.commands.Commands.User.CMD_CHAT
 import com.helltar.aibot.commands.Commands.User.CMD_CHATCTX
 import com.helltar.aibot.commands.Commands.User.CMD_CHAT_CTX_REMOVE
-import com.helltar.aibot.commands.Commands.User.CMD_DALLE
+import com.helltar.aibot.commands.Commands.User.CMD_IMAGE_GEN
 import com.helltar.aibot.commands.admin.ban.BanUser
 import com.helltar.aibot.commands.admin.ban.Banlist
 import com.helltar.aibot.commands.admin.ban.UnbanUser
@@ -69,7 +69,7 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
         registerSimpleCommand(CMD_CHAT_CTX_REMOVE, ::ChatCtxRemove, checkRights = true)
 
         registerLongRunningCommand(CMD_CHAT, ::Chat)
-        registerLongRunningCommand(CMD_DALLE, ::ImageGen)
+        registerLongRunningCommand(CMD_IMAGE_GEN, ::ImageGen)
 
         registerAdminCommand(CMD_ENABLE, ::CommandState)
         registerAdminCommand(CMD_DISABLE, { CommandState(it, disable = true) })

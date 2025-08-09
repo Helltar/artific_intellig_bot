@@ -15,7 +15,7 @@ class ImageGen(ctx: MessageContext) : AiCommand(ctx) {
 
     override suspend fun run() {
         if (arguments.isEmpty()) {
-            replyToMessage(Strings.DALLE_COMMAND_USAGE_TEMPLATE_RAW.trimIndent())
+            replyToMessage(Strings.IMG_GEN_COMMAND_USAGE_TEMPLATE_RAW.trimIndent())
             return
         }
 
@@ -35,5 +35,5 @@ class ImageGen(ctx: MessageContext) : AiCommand(ctx) {
     }
 
     override fun commandName() =
-        Commands.User.CMD_DALLE
+        Commands.User.CMD_IMAGE_GEN
 }
