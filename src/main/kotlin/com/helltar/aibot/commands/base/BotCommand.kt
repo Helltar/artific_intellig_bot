@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture
 abstract class BotCommand(open val ctx: MessageContext) : Command {
 
     private companion object {
-        const val TELEGRAM_MAX_MESSAGE_LENGTH = 4096
+        const val TELEGRAM_MESSAGE_LENGTH_LIMIT = 4096
         val log = KotlinLogging.logger {}
     }
 
@@ -57,7 +57,7 @@ abstract class BotCommand(open val ctx: MessageContext) : Command {
         val parseMode = if (markdown) ParseMode.MARKDOWN else ParseMode.HTML
         val messageIdToReply = if (replyMessage?.from?.isBot == false) messageId else message.messageId // todo: refact.
 
-        if (text.length <= TELEGRAM_MAX_MESSAGE_LENGTH) {
+        if (text.length <= TELEGRAM_MESSAGE_LENGTH_LIMIT) {
             ctx.replyToMessage(text)
                 .setReplyToMessageId(messageIdToReply)
                 .setParseMode(parseMode)
@@ -118,7 +118,7 @@ abstract class BotCommand(open val ctx: MessageContext) : Command {
     private fun chunkedReplyToMessage(text: String, messageId: Int, webPagePreview: Boolean, parseMode: String) {
         var messageIdToReply = messageId
 
-        text.chunked(TELEGRAM_MAX_MESSAGE_LENGTH).forEach {
+        text.chunked(TELEGRAM_MESSAGE_LENGTH_LIMIT).forEach {
             if (it.isNotBlank()) {
                 messageIdToReply =
                     ctx.replyToMessage(it)
