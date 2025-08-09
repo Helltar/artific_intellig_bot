@@ -3,6 +3,8 @@ package com.helltar.aibot
 import com.annimon.tgbotsmodule.services.ResourceBundleLocalizationService
 import com.helltar.aibot.commands.Commands.Creator.CMD_SLOWMODE
 import com.helltar.aibot.commands.Commands.Creator.CMD_UPDATE_API_KEY
+import com.helltar.aibot.commands.Commands.Creator.CMD_UPDATE_CHAT_MODEL
+import com.helltar.aibot.commands.Commands.Creator.CMD_UPDATE_IMAGE_GEN_MODEL
 import com.helltar.aibot.commands.Commands.User.CMD_CHAT_CTX_REMOVE
 import com.helltar.aibot.commands.Commands.User.CMD_DALLE
 
@@ -62,6 +64,24 @@ object Strings {
     const val SLOWMODE_PLEASE_WAIT = "✋ Slowmode, wait <b>%d</b> seconds"
     const val SLOWMODE_SUCCESFULLY_CHANGED = "✅ The value for system-slowmode has been successfully changed to <b>%d</b> requests per hour per user."
     const val SLOWMODE_CHANGE_FAIL = "❌ Error when change system-slowmode value"
+
+    const val CHAT_MODEL_SUCCESS_UPDATE = "✅ Chat model has been successfully updated to <b>%s</b>"
+    const val CHAT_MODEL_FAIL_UPDATE = "⚠\uFE0F Error while updating chat model"
+    const val IMAGES_MODEL_SUCCESS_UPDATE = "✅ Model for images generations has been successfully updated to <b>%s</b>"
+    const val IMAGES_MODEL_FAIL_UPDATE = "⚠\uFE0F Error while updating model for images generations"
+    const val BAD_MODEL_NAME_LENGTH = "❌ Incorrect model name length"
+
+    const val UPDATE_CHAT_MODEL_COMMAND_USAGE_TEMPLATE_RAW = """
+        ℹ️ Currently, the chat is using <b>%s</b>. To change it, use the command like this:
+        
+        <code>/$CMD_UPDATE_CHAT_MODEL</code> gpt-4.1
+        """
+
+    const val UPDATE_IMAGES_MODEL_COMMAND_USAGE_TEMPLATE_RAW = """
+        ℹ️ Currently, the image generation is using <b>%s</b>. To change it, use the command like this:
+        
+        <code>/$CMD_UPDATE_IMAGE_GEN_MODEL</code> dall-e-3
+        """
 
     const val SLOWMODE_COMMAND_USAGE_TEMPLATE_RAW = """
         ℹ️ The current value is <b>%d</b> requests per hour per user.
