@@ -37,9 +37,8 @@ Add it using the command in the bot:
 
 ### Commands
 
-- `/chat` - Chat and analyze images using _gpt-4.1_
-- `/dalle` - Generate an image based on a text prompt using _dall-e-3_
-- `/dallevar` - Create a variation of a provided image using _dall-e-2_
+- `/chat` - Chat and analyze images
+- `/imgen` - Generate an image based on a text prompt
 
 ### Additional Chat Commands
 
@@ -48,10 +47,15 @@ Add it using the command in the bot:
 
 ### Admin Commands
 
+#### Update Models
+
+- `/chatmodel` - Change OpenAI model for chat and vision
+- `/imgmodel` - Change model for image generation
+
 #### Change Command State
 
 - `/enable commandName` (Example: `/enable chat`)
-- `/disable commandName` (Example: `/disable dalle`)
+- `/disable commandName` (Example: `/disable imgen`)
 
 > **NOTE:** Run `/enable` or `/disable` with no arguments to view supported commands.
 
@@ -76,6 +80,3 @@ Add it using the command in the bot:
 - `/addchat` (Add chat to allowlist, Use in chat or by ID)
 - `/rmchat` (Remove chat from allowlist, Use in chat or by ID)
 - `/chats` (View a chat list)
-
-<br>
-<a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA.png" alt="IntelliJ IDEA logo." width="32%"></a>
