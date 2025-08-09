@@ -50,7 +50,7 @@ class Chat(ctx: MessageContext) : AiCommand(ctx) {
 
     private suspend fun retrieveChatAnswer(messages: List<MessageData>): String? =
         try {
-            ChatService(model = chatModel()).getReply(messages)
+            ChatService(model = chatModel(), apiKey = openaiApiKey()).getReply(messages)
         } catch (e: Exception) {
             log.error { e.message }
             replyToMessage(Strings.CHAT_EXCEPTION)
@@ -67,7 +67,7 @@ class Chat(ctx: MessageContext) : AiCommand(ctx) {
             }
 
         return try {
-            VisionService(model = visionModel()).analyzeImage(prompt, photo)
+            VisionService(model = visionModel(), apiKey = openaiApiKey()).analyzeImage(prompt, photo)
         } catch (e: Exception) {
             log.error { e.message }
             replyToMessage(Strings.CHAT_EXCEPTION)

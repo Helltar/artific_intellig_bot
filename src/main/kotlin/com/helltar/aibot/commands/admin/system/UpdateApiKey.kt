@@ -5,7 +5,6 @@ import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.base.BotCommand
 import com.helltar.aibot.database.dao.apiKeyDao
-import com.helltar.aibot.openai.ApiClient
 import com.helltar.aibot.openai.ApiConfig
 
 class UpdateApiKey(ctx: MessageContext) : BotCommand(ctx) {
@@ -32,16 +31,14 @@ class UpdateApiKey(ctx: MessageContext) : BotCommand(ctx) {
         }
 
         if (currentApiKey == null) {
-            if (apiKeyDao.add(provider, apiKey)) {
-                ApiClient.configure(apiKey)
+            if (apiKeyDao.add(provider, apiKey))
                 replyToMessage(Strings.PROVIDER_API_KEY_SUCCESS_ADD.format(provider))
-            } else
+            else
                 replyToMessage(Strings.API_KEY_FAIL_ADD.format(provider))
         } else {
-            if (apiKeyDao.update(provider, apiKey)) {
-                ApiClient.configure(apiKey)
+            if (apiKeyDao.update(provider, apiKey))
                 replyToMessage(Strings.PROVIDER_API_KEY_SUCCESS_UPDATE.format(provider))
-            } else
+            else
                 replyToMessage(Strings.API_KEY_FAIL_UPDATE.format(provider))
         }
     }

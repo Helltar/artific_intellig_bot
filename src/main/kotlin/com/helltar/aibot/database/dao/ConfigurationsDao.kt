@@ -6,31 +6,74 @@ import com.helltar.aibot.utils.DateTimeUtils.utcNow
 import org.jetbrains.exposed.v1.jdbc.insertIgnore
 import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.update
+import java.util.concurrent.ConcurrentHashMap
 
 class ConfigurationsDao {
 
     private companion object {
+        const val KEY_CHAT_MODEL = "chat_model"
+        const val KEY_VISION_MODEL = "vision_model"
+        const val KEY_IMAGE_GEN_MODEL = "image_gen_model"
+
         const val KEY_SLOWMODE_MAX_USAGE_COUNT = "global_slowmode_max_usage_count"
         const val KEY_LOADING_GIF_FILE_ID = "loading_gif_file_id"
+
+        const val NULL_MARKER = "<NULL>"
     }
 
-    suspend fun getLoadingGifFileId(): String? =
-        getConfigValue(KEY_LOADING_GIF_FILE_ID)
+    private val cache = ConcurrentHashMap<String, String>()
+
+    suspend fun loadingGifFileId(): String? =
+        getCached(KEY_LOADING_GIF_FILE_ID)
 
     suspend fun updateLoadingGifFileId(fileId: String): Boolean =
-        setConfiguration(KEY_LOADING_GIF_FILE_ID, fileId)
+        setAndCache(KEY_LOADING_GIF_FILE_ID, fileId)
 
-    suspend fun getSlowmodeMaxUsageCount(): Int =
-        getConfigValue(KEY_SLOWMODE_MAX_USAGE_COUNT)?.toIntOrNull() ?: 10
+    suspend fun slowmodeMaxUsageCount(): Int =
+        getCached(KEY_SLOWMODE_MAX_USAGE_COUNT)?.toIntOrNull() ?: 10
 
     suspend fun updateSlowmodeMaxUsageCount(newMax: Int): Boolean =
-        setConfiguration(KEY_SLOWMODE_MAX_USAGE_COUNT, newMax.toString())
+        setAndCache(KEY_SLOWMODE_MAX_USAGE_COUNT, newMax)
+
+    suspend fun chatModel(): String =
+        getCached(KEY_CHAT_MODEL) ?: "gpt-4.1"
+
+    suspend fun updateChatModel(model: String): Boolean =
+        setAndCache(KEY_CHAT_MODEL, model)
+
+    suspend fun visionModel(): String =
+        getCached(KEY_VISION_MODEL) ?: "gpt-4.1"
+
+    suspend fun updateVisionModel(model: String): Boolean =
+        setAndCache(KEY_VISION_MODEL, model)
+
+    suspend fun imageGenModel(): String =
+        getCached(KEY_IMAGE_GEN_MODEL) ?: "dall-e-3"
+
+    suspend fun updateImageGenModel(model: String): Boolean =
+        setAndCache(KEY_IMAGE_GEN_MODEL, model)
+
+    private suspend fun getCached(key: String): String? =
+        when (val cached = cache[key]) {
+            null -> {
+                val value = getConfigValue(key)
+                cache[key] = value ?: NULL_MARKER
+                value
+            }
+
+            NULL_MARKER -> null
+            else -> cached
+        }
+
+    private suspend fun setAndCache(key: String, value: Any): Boolean =
+        setConfiguration(key, value.toString()).also { if (it) cache[key] = value.toString() }
 
     private suspend fun getConfigValue(key: String): String? = dbTransaction {
         ConfigurationsTable
             .select(ConfigurationsTable.value)
             .where { ConfigurationsTable.key eq key }
-            .singleOrNull()?.getOrNull(ConfigurationsTable.value)
+            .singleOrNull()
+            ?.getOrNull(ConfigurationsTable.value)
     }
 
     private suspend fun setConfiguration(key: String, value: String): Boolean = dbTransaction {

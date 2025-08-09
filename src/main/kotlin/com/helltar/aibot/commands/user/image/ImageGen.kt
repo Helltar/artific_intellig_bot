@@ -4,10 +4,10 @@ import com.annimon.tgbotsmodule.commands.context.MessageContext
 import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.base.AiCommand
-import com.helltar.aibot.openai.service.DalleService
+import com.helltar.aibot.openai.service.ImageGenService
 import io.github.oshai.kotlinlogging.KotlinLogging
 
-class DallEGenerations(ctx: MessageContext) : AiCommand(ctx) {
+class ImageGen(ctx: MessageContext) : AiCommand(ctx) {
 
     private companion object {
         val log = KotlinLogging.logger {}
@@ -25,7 +25,7 @@ class DallEGenerations(ctx: MessageContext) : AiCommand(ctx) {
         }
 
         try {
-            val imageUrl = DalleService().generateImage(argumentsString)
+            val imageUrl = ImageGenService(model = imagesModel(), apiKey = openaiApiKey()).generateImage(argumentsString)
             log.debug { "image url: $imageUrl" }
             replyToMessageWithPhoto(imageUrl, argumentsString)
         } catch (e: Exception) {

@@ -21,6 +21,8 @@ import com.helltar.aibot.commands.Commands.Creator.CMD_ADD_ADMIN
 import com.helltar.aibot.commands.Commands.Creator.CMD_ADD_CHAT
 import com.helltar.aibot.commands.Commands.Creator.CMD_SLOWMODE
 import com.helltar.aibot.commands.Commands.Creator.CMD_UPDATE_API_KEY
+import com.helltar.aibot.commands.Commands.Creator.CMD_UPDATE_CHAT_MODEL
+import com.helltar.aibot.commands.Commands.Creator.CMD_UPDATE_IMAGE_GEN_MODEL
 import com.helltar.aibot.commands.Commands.Simple.CMD_ABOUT
 import com.helltar.aibot.commands.Commands.Simple.CMD_MYID
 import com.helltar.aibot.commands.Commands.Simple.CMD_START
@@ -37,9 +39,7 @@ import com.helltar.aibot.commands.admin.chat.RemoveChat
 import com.helltar.aibot.commands.admin.sudoers.AddAdmin
 import com.helltar.aibot.commands.admin.sudoers.AdminList
 import com.helltar.aibot.commands.admin.sudoers.RemoveAdmin
-import com.helltar.aibot.commands.admin.system.CommandState
-import com.helltar.aibot.commands.admin.system.SlowmodeSetting
-import com.helltar.aibot.commands.admin.system.UpdateApiKey
+import com.helltar.aibot.commands.admin.system.*
 import com.helltar.aibot.commands.base.BotCommand
 import com.helltar.aibot.commands.simple.About
 import com.helltar.aibot.commands.simple.MyId
@@ -47,7 +47,7 @@ import com.helltar.aibot.commands.simple.Start
 import com.helltar.aibot.commands.user.chat.Chat
 import com.helltar.aibot.commands.user.chat.ChatCtx
 import com.helltar.aibot.commands.user.chat.ChatCtxRemove
-import com.helltar.aibot.commands.user.image.DallEGenerations
+import com.helltar.aibot.commands.user.image.ImageGen
 import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.EntityType
 import org.telegram.telegrambots.meta.api.objects.Update
@@ -69,7 +69,7 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
         registerSimpleCommand(CMD_CHAT_CTX_REMOVE, ::ChatCtxRemove, checkRights = true)
 
         registerLongRunningCommand(CMD_CHAT, ::Chat)
-        registerLongRunningCommand(CMD_DALLE, ::DallEGenerations)
+        registerLongRunningCommand(CMD_DALLE, ::ImageGen)
 
         registerAdminCommand(CMD_ENABLE, ::CommandState)
         registerAdminCommand(CMD_DISABLE, { CommandState(it, disable = true) })
@@ -85,6 +85,8 @@ class ArtificIntelligBotHandler(botModuleOptions: BotModuleOptions) : BotHandler
         registerCreatorCommand(CMD_ADD_CHAT, ::AddChat)
         registerCreatorCommand(CMD_SLOWMODE, ::SlowmodeSetting)
         registerCreatorCommand(CMD_UPDATE_API_KEY, ::UpdateApiKey, privateChatOnly = true)
+        registerCreatorCommand(CMD_UPDATE_CHAT_MODEL, ::UpdateChatModel)
+        registerCreatorCommand(CMD_UPDATE_IMAGE_GEN_MODEL, ::UpdateImageGenModel)
     }
 
     override fun onUpdate(update: Update): BotApiMethod<*>? {

@@ -23,6 +23,8 @@ object Commands {
         const val CMD_ADD_CHAT = "addchat"
         const val CMD_SLOWMODE = "slowmode"
         const val CMD_UPDATE_API_KEY = "updatekey"
+        const val CMD_UPDATE_CHAT_MODEL = "chatmodel"
+        const val CMD_UPDATE_IMAGE_GEN_MODEL = "imgmodel"
     }
 
     object Admin {
