@@ -10,7 +10,7 @@ class SlowmodeSetting(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
         if (arguments.isEmpty() || arguments[0].toIntOrNull() == null) {
-            val maxUsageCount = configurationsDao.getSlowmodeMaxUsageCount()
+            val maxUsageCount = configurationsDao.slowmodeMaxUsageCount()
             replyToMessage(Strings.SLOWMODE_COMMAND_USAGE_TEMPLATE_RAW.trimIndent().format(maxUsageCount))
             return
         }
