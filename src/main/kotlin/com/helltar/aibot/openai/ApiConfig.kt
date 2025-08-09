@@ -20,10 +20,4 @@ object ApiConfig {
         const val TEXT = "text"
         const val IMAGE_URL = "image_url"
     }
-
-    object Models {
-        const val CHAT = "gpt-4.1"
-        const val VISION = "gpt-4.1"
-        const val IMAGE_GENERATION = "dall-e-3"
-    }
 }
