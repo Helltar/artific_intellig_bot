@@ -1,10 +1,10 @@
 package com.helltar.aibot.bot
 
-import com.helltar.aibot.commands.Commands
-import com.helltar.aibot.commands.base.BotCommand
 import com.helltar.aibot.Config
 import com.helltar.aibot.Config.LOADING_ANIMATION_FILE
 import com.helltar.aibot.Strings
+import com.helltar.aibot.commands.Commands
+import com.helltar.aibot.commands.base.BotCommand
 import com.helltar.aibot.database.dao.banlistDao
 import com.helltar.aibot.database.dao.configurationsDao
 import com.helltar.aibot.database.dao.slowmodeDao
@@ -150,7 +150,7 @@ class CommandExecutor {
             return 0
         }
 
-        val slowmodeMaxUsageCount = configurationsDao.getSlowmodeMaxUsageCount()
+        val slowmodeMaxUsageCount = configurationsDao.slowmodeMaxUsageCount()
 
         if (userSlowmodeStatus.usageCount >= slowmodeMaxUsageCount)
             return SLOW_MODE_TIMEOUT_HOURS.hours.inWholeSeconds - timeElapsed.seconds
@@ -172,7 +172,7 @@ class CommandExecutor {
             return message.messageId
         }
 
-        val fileId = configurationsDao.getLoadingGifFileId()
+        val fileId = configurationsDao.loadingGifFileId()
 
         return if (fileId != null) {
             try {
