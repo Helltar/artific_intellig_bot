@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "2.1.21"
-    kotlin("plugin.serialization") version "2.1.21"
+    kotlin("jvm") version "2.2.0"
+    kotlin("plugin.serialization") version "2.2.0"
     id("com.gradleup.shadow") version "8.3.6"
     application
 }
@@ -19,7 +19,7 @@ object Versions {
     const val DOTENV_KOTLIN = "6.4.1"
     const val IMGSCALR_LIB = "4.2"
 
-    const val EXPOSED = "1.0.0-beta-2"
+    const val EXPOSED = "1.0.0-beta-5"
     const val POSTGRESQL = "42.7.3"
 
     const val COROUTINES_CORE_JVM = "1.10.2"
