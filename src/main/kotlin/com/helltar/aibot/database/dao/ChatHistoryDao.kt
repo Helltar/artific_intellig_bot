@@ -5,11 +5,15 @@ import com.helltar.aibot.database.tables.ChatHistory
 import com.helltar.aibot.openai.ApiConfig.ChatRole
 import com.helltar.aibot.openai.models.common.MessageData
 import com.helltar.aibot.utils.DateTimeUtils.utcNow
-import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.singleOrNull
+import kotlinx.coroutines.flow.toList
 import org.jetbrains.exposed.v1.core.and
-import org.jetbrains.exposed.v1.jdbc.deleteWhere
-import org.jetbrains.exposed.v1.jdbc.insert
-import org.jetbrains.exposed.v1.jdbc.select
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.neq
+import org.jetbrains.exposed.v1.r2dbc.deleteWhere
+import org.jetbrains.exposed.v1.r2dbc.insert
+import org.jetbrains.exposed.v1.r2dbc.select
 import java.time.Instant
 
 class ChatHistoryDao {
@@ -34,7 +38,7 @@ class ChatHistoryDao {
                     it[ChatHistory.role],
                     it[ChatHistory.content]
                 ) to it[ChatHistory.createdAt]
-            }
+            }.toList() // todo: flow
     }
 
     suspend fun deleteOldestEntry(userId: Long): Boolean = dbTransaction {

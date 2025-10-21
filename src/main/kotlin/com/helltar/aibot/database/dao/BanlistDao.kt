@@ -4,11 +4,14 @@ import com.helltar.aibot.database.Database.dbTransaction
 import com.helltar.aibot.database.models.BanlistData
 import com.helltar.aibot.database.tables.BannedUsersTable
 import com.helltar.aibot.utils.DateTimeUtils.utcNow
-import org.jetbrains.exposed.v1.core.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.v1.jdbc.deleteWhere
-import org.jetbrains.exposed.v1.jdbc.insertIgnore
-import org.jetbrains.exposed.v1.jdbc.select
-import org.jetbrains.exposed.v1.jdbc.selectAll
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.singleOrNull
+import kotlinx.coroutines.flow.toList
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.r2dbc.deleteWhere
+import org.jetbrains.exposed.v1.r2dbc.insertIgnore
+import org.jetbrains.exposed.v1.r2dbc.select
+import org.jetbrains.exposed.v1.r2dbc.selectAll
 import org.telegram.telegrambots.meta.api.objects.User
 
 class BanlistDao {
@@ -56,7 +59,7 @@ class BanlistDao {
                     it[BannedUsersTable.reason],
                     it[BannedUsersTable.bannedAt]
                 )
-            }
+            }.toList()
     }
 
 }
