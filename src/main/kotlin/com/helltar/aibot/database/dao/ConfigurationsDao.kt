@@ -21,6 +21,10 @@ class ConfigurationsDao {
         const val KEY_LOADING_GIF_FILE_ID = "loading_gif_file_id"
 
         const val NULL_MARKER = "<NULL>"
+
+        const val DEFAULT_CHAT_MODEL = "gpt-5"
+        const val DEFAULT_VISION_MODEL = "gpt-5"
+        const val DEFAULT_IMAGE_GEN_MODEL = "dall-e-3"
     }
 
     private val cache = ConcurrentHashMap<String, String>()
@@ -38,19 +42,19 @@ class ConfigurationsDao {
         setAndCache(KEY_SLOWMODE_MAX_USAGE_COUNT, newMax)
 
     suspend fun chatModel(): String =
-        getCached(KEY_CHAT_MODEL) ?: "gpt-4.1"
+        getCached(KEY_CHAT_MODEL) ?: DEFAULT_CHAT_MODEL
 
     suspend fun updateChatModel(model: String): Boolean =
         setAndCache(KEY_CHAT_MODEL, model)
 
     suspend fun visionModel(): String =
-        getCached(KEY_VISION_MODEL) ?: "gpt-4.1"
+        getCached(KEY_VISION_MODEL) ?: DEFAULT_VISION_MODEL
 
     suspend fun updateVisionModel(model: String): Boolean =
         setAndCache(KEY_VISION_MODEL, model)
 
     suspend fun imageGenModel(): String =
-        getCached(KEY_IMAGE_GEN_MODEL) ?: "dall-e-3"
+        getCached(KEY_IMAGE_GEN_MODEL) ?: DEFAULT_IMAGE_GEN_MODEL
 
     suspend fun updateImageGenModel(model: String): Boolean =
         setAndCache(KEY_IMAGE_GEN_MODEL, model)
