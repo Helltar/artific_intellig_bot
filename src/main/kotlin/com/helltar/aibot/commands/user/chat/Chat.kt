@@ -79,7 +79,7 @@ class Chat(ctx: MessageContext) : AiCommand(ctx) {
 
     private fun replyToMessage(text: String, messageId: Int) {
         try {
-            replyToMessage(text, messageId, markdown = true)
+            super.replyToMessage(text, messageId, webPagePreview = false)
         } catch (e: Exception) {
             log.error { e.message }
             replyWithTextDocument(text, Strings.TELEGRAM_API_EXCEPTION_RESPONSE_SAVED_TO_FILE)

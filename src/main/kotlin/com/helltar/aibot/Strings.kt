@@ -53,7 +53,6 @@ object Strings {
     const val CHAT_REMOVED = "✅ Chat has been removed"
     const val CHAT_NOT_EXISTS = "❌ Chat does not exist"
 
-    const val CHAT_GPT_SYSTEM_MESSAGE = "system_prompt"
     const val CHAT_WAIT_MESSAGE = "long_running_command_message"
     const val VISION_DEFAULT_PROMPT = "vision_default_prompt"
 

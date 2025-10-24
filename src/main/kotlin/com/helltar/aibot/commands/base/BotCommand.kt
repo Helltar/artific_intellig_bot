@@ -53,18 +53,17 @@ abstract class BotCommand(open val ctx: MessageContext) : Command {
     fun isNotMyMessage(message: Message?) =
         message?.from?.userName != telegramBotUsername
 
-    fun replyToMessage(text: String, messageId: Int = message.messageId, webPagePreview: Boolean = false, markdown: Boolean = false) {
-        val parseMode = if (markdown) ParseMode.MARKDOWN else ParseMode.HTML
+    fun replyToMessage(text: String, messageId: Int = message.messageId, webPagePreview: Boolean = false) {
         val messageIdToReply = if (replyMessage?.from?.isBot == false) messageId else message.messageId // todo: refact.
 
         if (text.length <= TELEGRAM_MESSAGE_LENGTH_LIMIT) {
             ctx.replyToMessage(text)
                 .setReplyToMessageId(messageIdToReply)
-                .setParseMode(parseMode)
+                .setParseMode(ParseMode.HTML)
                 .setWebPagePreviewEnabled(webPagePreview)
                 .call(ctx.sender)
         } else
-            chunkedReplyToMessage(text, messageIdToReply, webPagePreview, parseMode)
+            chunkedReplyToMessage(text, messageIdToReply, webPagePreview)
     }
 
     fun replyToMessageWithDocument(fileId: String, caption: String): Int =
@@ -115,7 +114,7 @@ abstract class BotCommand(open val ctx: MessageContext) : Command {
         }
     }
 
-    private fun chunkedReplyToMessage(text: String, messageId: Int, webPagePreview: Boolean, parseMode: String) {
+    private fun chunkedReplyToMessage(text: String, messageId: Int, webPagePreview: Boolean) {
         var messageIdToReply = messageId
 
         text.chunked(TELEGRAM_MESSAGE_LENGTH_LIMIT).forEach {
@@ -123,7 +122,7 @@ abstract class BotCommand(open val ctx: MessageContext) : Command {
                 messageIdToReply =
                     ctx.replyToMessage(it)
                         .setReplyToMessageId(messageIdToReply)
-                        .setParseMode(parseMode)
+                        .setParseMode(ParseMode.HTML)
                         .setWebPagePreviewEnabled(webPagePreview)
                         .call(ctx.sender)
                         .messageId

@@ -12,6 +12,6 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 COPY --from=builder /app/build/libs/*.jar aibot.jar
-COPY data/files/loading.gif data/files/loading.gif
+COPY data/files/* data/files/
 
 ENTRYPOINT ["java", "-jar", "aibot.jar"]

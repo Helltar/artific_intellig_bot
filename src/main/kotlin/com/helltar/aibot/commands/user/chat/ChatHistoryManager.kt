@@ -1,7 +1,6 @@
 package com.helltar.aibot.commands.user.chat
 
-import com.helltar.aibot.Strings
-import com.helltar.aibot.Strings.localizedString
+import com.helltar.aibot.Config.SYSTEM_PROMPT_FILE
 import com.helltar.aibot.database.dao.chatHistoryDao
 import com.helltar.aibot.openai.ApiConfig.ChatRole
 import com.helltar.aibot.openai.models.common.MessageData
@@ -63,8 +62,7 @@ class ChatHistoryManager(private val userId: Long) {
 
     private suspend fun addSystemPromptIfNeeded(message: Message) {
         if (chatHistory().isEmpty()) {
-            val languageCode = message.from.languageCode ?: "en"
-            val systemPrompt = localizedString(Strings.CHAT_GPT_SYSTEM_MESSAGE, languageCode)
+            val systemPrompt = java.io.File(SYSTEM_PROMPT_FILE).readText()
             val username = message.from.userName ?: message.from.firstName
             val chatTitle = message.chat.title ?: username
             val systemPromptContent = systemPrompt.format(chatTitle, username, userId)

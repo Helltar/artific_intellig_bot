@@ -1,9 +1,9 @@
 package com.helltar.aibot.commands.user.chat
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
+import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.base.BotCommand
-import com.helltar.aibot.Strings
 import com.helltar.aibot.openai.ApiConfig.ChatRole
 import com.helltar.aibot.openai.models.common.MessageData
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -29,7 +29,7 @@ class ChatCtx(ctx: MessageContext) : BotCommand(ctx) {
         val text = formatUserChatHistory(userChatHistory)
 
         try {
-            replyToMessage(text, markdown = true)
+            replyToMessage(text)
         } catch (e: Exception) {
             log.error { e.message }
 
@@ -59,7 +59,7 @@ class ChatCtx(ctx: MessageContext) : BotCommand(ctx) {
 
             userChatHistory
                 .filter { it.first.role == ChatRole.USER }
-                .joinToString("\n") { """▫️ *${formatter.format(it.second)}* - ${it.first.content}""" }
+                .joinToString("\n") { """▫️ <b>${formatter.format(it.second)}</b> - ${it.first.content}""" }
         } else
             Strings.CHAT_CONTEXT_EMPTY
 }
