@@ -14,7 +14,7 @@ import kotlinx.serialization.json.Json
 
 object HttpClient {
 
-    private const val DEFAULT_TIMEOUT = 60_000L
+    private const val DEFAULT_TIMEOUT = 120_000L
 
     private val mutex = Mutex()
     private var ktorClient: io.ktor.client.HttpClient? = null
