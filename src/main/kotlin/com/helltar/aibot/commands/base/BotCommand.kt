@@ -92,7 +92,7 @@ abstract class BotCommand(open val ctx: MessageContext) : Command {
 
     protected fun replyWithTextDocument(text: String, caption: String): Int =
         ctx.replyWithDocument()
-            .setFile("$userId-${message.messageId}.txt", text.byteInputStream())
+            .setFile("$userId-${message.messageId}.html", text.byteInputStream())
             .setCaption(caption)
             .setReplyToMessageId(message.messageId)
             .call(ctx.sender)
