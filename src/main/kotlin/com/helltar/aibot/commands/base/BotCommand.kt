@@ -9,6 +9,7 @@ import com.helltar.aibot.database.dao.chatAllowlistDao
 import com.helltar.aibot.database.dao.commandsDao
 import com.helltar.aibot.database.dao.sudoersDao
 import com.helltar.aibot.exceptions.ImageTooLargeException
+import com.helltar.aibot.utils.HtmlUtils.buildStyledHtmlPage
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.objects.InputFile
@@ -90,13 +91,17 @@ abstract class BotCommand(open val ctx: MessageContext) : Command {
             .setParseMode(ParseMode.HTML)
             .call(ctx.sender)
 
-    protected fun replyWithTextDocument(text: String, caption: String): Int =
-        ctx.replyWithDocument()
-            .setFile("$userId-${message.messageId}.html", text.byteInputStream())
+    protected fun replyWithTextDocument(text: String, caption: String): Int {
+        val title = "replyToMessageId-${message.messageId}"
+        val html = buildStyledHtmlPage(title, text.trim()).byteInputStream()
+
+        return ctx.replyWithDocument()
+            .setFile("$title.html", html)
             .setCaption(caption)
             .setReplyToMessageId(message.messageId)
             .call(ctx.sender)
             .messageId
+    }
 
     protected fun downloadPhoto(message: Message? = replyMessage, limitBytes: Int = 1024 * 1024): File? {
         val photo = message?.photo?.maxByOrNull { it.fileSize }
