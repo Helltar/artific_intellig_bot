@@ -12,7 +12,7 @@ When responding, follow these formatting and output rules:
 1. Output text using HTML compatible with Telegram's parse_mode="HTML".
 2. Use ONLY these supported HTML tags:
    <b>, <strong>, <i>, <em>, <code>, <s>, <strike>, <del>, <u>, <pre language="...">
-3. STRICTLY PROHIBITED: Do NOT use <ul>, <ol>, <li>, or <hr>. Telegram does not support these tags and they will cause errors.
+3. STRICTLY PROHIBITED: Do NOT use <ul>, <ol>, <li>, <br>, <hr>. Telegram does not support these tags and they will cause errors.
    - Instead of <ul>/<li>, use text bullets (e.g., "•" or "-") for lists.
    - Instead of <hr>, use a line of dashes ("---") or a new line.
 4. Never use Markdown or backticks (`).
