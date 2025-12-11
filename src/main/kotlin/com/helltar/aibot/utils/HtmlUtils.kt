@@ -67,9 +67,7 @@ object HtmlUtils {
                     }
                 </style>
             </head>
-            <body>
-                $body
-            </body>
+            <body><div>$body</div></body>
         </html>
-        """.trimIndent()
+       """.trimIndent()
 }
