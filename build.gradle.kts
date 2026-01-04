@@ -1,7 +1,7 @@
 plugins {
-    kotlin("jvm") version "2.2.20"
-    kotlin("plugin.serialization") version "2.2.20"
-    id("com.gradleup.shadow") version "8.3.6"
+    kotlin("jvm") version "2.3.0"
+    kotlin("plugin.serialization") version "2.3.0"
+    id("com.gradleup.shadow") version "9.3.0"
     application
 }
 
@@ -15,16 +15,12 @@ repositories {
 object Versions {
     const val TGBOTS_MODULE = "8.0.0"
     const val JACKSON_MODULE_KOTLIN = "2.14.2"
-
     const val DOTENV_KOTLIN = "6.4.1"
-    const val IMGSCALR_LIB = "4.2"
-
-    const val EXPOSED = "1.0.0-rc-2"
+    const val EXPOSED = "1.0.0-rc-4"
     const val R2DBC_POSTGRESQL = "1.1.0.RELEASE"
-    const val KTOR = "3.3.1"
-
-    const val KOTLIN_LOGGING = "7.0.7"
-    const val LOGBACK_CLASSIC = "1.5.20"
+    const val KTOR = "3.3.3"
+    const val KOTLIN_LOGGING = "7.0.13"
+    const val LOGBACK_CLASSIC = "1.5.21"
 }
 
 dependencies {
@@ -32,10 +28,8 @@ dependencies {
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Versions.JACKSON_MODULE_KOTLIN}")
     implementation("io.github.cdimascio:dotenv-kotlin:${Versions.DOTENV_KOTLIN}")
-    implementation("org.imgscalr:imgscalr-lib:${Versions.IMGSCALR_LIB}")
 
-    implementation("org.postgresql:r2dbc-postgresql:${Versions.R2DBC_POSTGRESQL}")
-    implementation("org.jetbrains.exposed:exposed-core:${Versions.EXPOSED}")
+    runtimeOnly("org.postgresql:r2dbc-postgresql:${Versions.R2DBC_POSTGRESQL}")
     implementation("org.jetbrains.exposed:exposed-r2dbc:${Versions.EXPOSED}")
     implementation("org.jetbrains.exposed:exposed-java-time:${Versions.EXPOSED}")
 
@@ -45,9 +39,19 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:${Versions.KTOR}")
 
     implementation("io.github.oshai:kotlin-logging-jvm:${Versions.KOTLIN_LOGGING}")
-    implementation("ch.qos.logback:logback-classic:${Versions.LOGBACK_CLASSIC}")
+    runtimeOnly("ch.qos.logback:logback-classic:${Versions.LOGBACK_CLASSIC}")
+
+    testImplementation(kotlin("test"))
 }
 
 application {
     mainClass.set("com.helltar.aibot.bot.ArtificIntelligBot")
+}
+
+kotlin {
+    jvmToolchain(21)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
