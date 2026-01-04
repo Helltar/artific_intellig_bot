@@ -27,7 +27,7 @@ abstract class BotCommand(open val ctx: MessageContext) : Command {
 
     val userLanguageCode = ctx.user().languageCode ?: "en"
 
-    protected val userId = ctx.user().id
+    protected val userId: Long = ctx.user().id
     protected val message = ctx.message()
     protected val replyMessage: Message? = message.replyToMessage
     protected val isReply = message.isReply && message.replyToMessage.messageId != message.replyToMessage.messageThreadId // todo: tmp. fix, check.

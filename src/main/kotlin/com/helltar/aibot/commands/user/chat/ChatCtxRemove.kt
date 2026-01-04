@@ -1,15 +1,15 @@
 package com.helltar.aibot.commands.user.chat
 
 import com.annimon.tgbotsmodule.commands.context.MessageContext
+import com.helltar.aibot.Strings
 import com.helltar.aibot.commands.Commands
 import com.helltar.aibot.commands.base.BotCommand
-import com.helltar.aibot.Strings
 
 class ChatCtxRemove(ctx: MessageContext) : BotCommand(ctx) {
 
     override suspend fun run() {
         val repliedUser = message.replyToMessage?.from
-        val repliedUserId = repliedUser?.id
+        val repliedUserId: Long? = repliedUser?.id
 
         val (targetUserId, username) =
             if (isReply) {
