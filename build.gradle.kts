@@ -13,7 +13,7 @@ repositories {
 }
 
 object Versions {
-    const val TGBOTS_MODULE = "8.0.0"
+    const val TGBOTS_MODULE = "9.2.0"
     const val JACKSON_MODULE_KOTLIN = "2.14.2"
     const val DOTENV_KOTLIN = "6.4.1"
     const val EXPOSED = "1.0.0-rc-4"
