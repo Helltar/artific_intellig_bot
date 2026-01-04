@@ -14,4 +14,8 @@ WORKDIR /app
 COPY --from=builder /app/build/libs/*.jar aibot.jar
 COPY data/files/* data/files/
 
+RUN adduser -u 10001 -D -s /bin/sh aibot && chown -R aibot:aibot /app
+
+USER aibot
+
 ENTRYPOINT ["java", "-jar", "aibot.jar"]
