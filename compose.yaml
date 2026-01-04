@@ -6,7 +6,8 @@ services:
     restart: unless-stopped
     env_file: .env
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     volumes:
       - aibot_data:/app/data
     logging:
@@ -17,7 +18,7 @@ services:
 
   postgres:
     container_name: postgres_container
-    image: postgres:17.2-alpine
+    image: postgres:17.7
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DATABASE_NAME}
@@ -26,6 +27,11 @@ services:
       PGPORT: ${POSTGRESQL_PORT}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:
